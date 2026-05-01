@@ -1,0 +1,324 @@
+SIMASBUK/
+│
+├── app/
+│   ├── Http/
+│   │   ├── Controllers/
+│   │   │   │
+│   │   │   ├── Auth/
+│   │   │   │   ├── AuthLoginHistory.php
+│   │   │   │   ├── AuthUser.php
+│   │   │   │   └── AuthMember.php
+│   │   │   │
+│   │   │   ├── Dashboard/
+│   │   │   │   ├── DashboardAdmin.php
+│   │   │   │   ├── DashboardStaff.php
+│   │   │   │   └── DashboardMember.php
+│   │   │   │
+│   │   │   ├── Master/
+│   │   │   │   ├── Event.php
+│   │   │   │   └── Adress.php
+│   │   │   │
+│   │   │   ├── User/
+│   │   │   │   ├── RoleUser.php
+│   │   │   │   └── User.php
+│   │   │   │
+│   │   │   ├── Member/
+│   │   │   │   ├── CategoryMember.php
+│   │   │   │   └── Member.php
+│   │   │   │
+│   │   │   ├── Employee/
+│   │   │   │   ├── PositionMember.php
+│   │   │   │   └── Employee.php
+│   │   │   │
+│   │   │   ├── Fasility/
+│   │   │   │   ├── Merk.php
+│   │   │   │   ├── Fined.php
+│   │   │   │   ├── Building.php
+│   │   │   │   ├── Room.php
+│   │   │   │   ├── Equipment.php
+│   │   │   │   ├── Lending.php
+│   │   │   │   └── Return.php
+│   │   │   │
+│   │   │   ├── Letter/
+│   │   │   │   ├── LetterType.php
+│   │   │   │   ├── Lettering.php
+│   │   │   │   ├── LetteringDetail.php
+│   │   │   │   ├── LetterKind.php
+│   │   │   │   └── LetterManagement.php
+│   │   │   │
+│   │   │   ├── Event/
+│   │   │   │   ├── Cash.php
+│   │   │   │   ├── Bazis.php
+│   │   │   │   ├── Shalat.php
+│   │   │   │   ├── Qurban.php
+│   │   │   │   └── Donation.php
+│   │   │   │
+│   │   │   ├── Publication/
+│   │   │   │   ├── Article.php
+│   │   │   │   ├── Comment.php
+│   │   │   │   ├── DailyReport.php
+│   │   │   │   ├── MonthlyReport.php
+│   │   │   │   └── AnnualReport.php
+│   │   │   │
+│   │   │   ├── MemberArea/
+│   │   │   │   ├── MemberArea.php
+│   │   │   │   └── TransactionMemberArea.php 
+│   │   │   │
+│   │   │   └── Landing/
+│   │   │       └── LandingArea.php
+│   │   │
+│   │   └── Middleware/
+│   │       ├── MiddlewareMember.php
+│   │       └── UserMiddleware.php
+│   │
+│   ├── Listener/
+│   │   └── LogSuccesfulLogin.php
+│   │
+│   ├── Models/
+│   │   ├── Member.php
+│   │   ├── Event.php
+│   │   ├── Adress.php
+│   │   ├── RoleUser.php
+│   │   ├── CategoryMember.php
+│   │   ├── LoginHistory.php
+│   │   ├── PosiitonEmployee.php
+│   │   ├── Employee.php
+│   │   ├── Merk.php
+│   │   ├── Fined.php
+│   │   ├── Building.php
+│   │   ├── Room.php
+│   │   ├── Equipment.php
+│   │   ├── Lending.php
+│   │   ├── LendingDetail.php
+│   │   ├── Lettertype.php
+│   │   ├── Lettering.php
+│   │   ├── LetteringDetail.php
+│   │   ├── LetterKind.php
+│   │   ├── lettermanagement.php
+│   │   ├── Cash.php
+│   │   ├── CashDetail.php
+│   │   ├── Bazis.php
+│   │   ├── BazisDetail.php
+│   │   ├── Shalat.php
+│   │   ├── ShalatDetail.php
+│   │   ├── Qurban.php
+│   │   ├── QurbanDetail.php
+│   │   ├── Donation.php
+│   │   ├── DonetionDetail.php
+│   │   ├── Article.php
+│   │   └── Comment.php
+│   │
+│   └── Providers/
+│       └── AppServiceProvider.php
+│       └── EventServiceProvider.php
+│   │
+│   └── services/
+│       └── AutoArticleServices.php
+│
+├── bootstrap/
+├── config/
+│
+├── database/
+│   ├── migrations/
+│   │   └── migrasisimasbuk.php
+│   │
+│   └── seeders/
+│       └── seedersimasbuk.php
+│
+├── public/
+│   ├── dist/       ← AdminLTE
+│   ├── plugins/    ← AdminLTE
+│   ├── foto/
+│   │   ├── asset/
+│   │   └── carousel/
+│   └── index.php
+│
+├── resources/
+│   ├── views/
+│   │   │
+│   │   ├── layouts/   
+│   │   │   ├── apppublic.blade.php
+│   │   │   ├── appuser.blade.php
+│   │   │   ├── appmember.blade.php
+│   │   │   ├── public/
+│   │   │   │   ├── navbar.blade.php
+│   │   │   │   ├── sidebar.blade.php
+│   │   │   │   └── footer.blade.php
+│   │   │   ├── user/
+│   │   │   │   ├── navbar.blade.php
+│   │   │   │   ├── sidebaradmin.blade.php
+│   │   │   │   ├── sidebarstaff.blade.php
+│   │   │   │   └── footer.blade.php
+│   │   │   └── member/
+│   │   │       ├── navbar.blade.php
+│   │   │       ├── sidebar.blade.php
+│   │   │       └── footer.blade.php
+│   │   │
+│   │   ├── user/   ← (ADMIN & STAFF)
+│   │   │   ├── dashboard/
+│   │   │   │   ├── dashboardadmin.blade.php
+│   │   │   │   └── dashboardstaff.blade.php
+│   │   │   ├── user/
+│   │   │   │   ├── index.blade.php
+│   │   │   │   ├── create.blade.php
+│   │   │   │   ├── edit.blade.php
+│   │   │   │   └── show.blade.php
+│   │   │   ├── event/
+│   │   │   │   ├── index.blade.php
+│   │   │   │   ├── create.blade.php
+│   │   │   │   ├── edit.blade.php
+│   │   │   │   └── show.blade.php
+│   │   │   ├── adress/
+│   │   │   │   ├── index.blade.php
+│   │   │   │   ├── create.blade.php
+│   │   │   │   ├── edit.blade.php
+│   │   │   │   └── show.blade.php
+│   │   │   ├── roleuser/
+│   │   │   │   ├── index.blade.php
+│   │   │   │   ├── create.blade.php
+│   │   │   │   ├── edit.blade.php
+│   │   │   │   └── show.blade.php
+│   │   │   ├── positionmember/
+│   │   │   │   ├── index.blade.php
+│   │   │   │   ├── create.blade.php
+│   │   │   │   ├── edit.blade.php
+│   │   │   │   └── show.blade.php
+│   │   │   ├── merk/
+│   │   │   │   ├── index.blade.php
+│   │   │   │   ├── create.blade.php
+│   │   │   │   ├── edit.blade.php
+│   │   │   │   └── show.blade.php
+│   │   │   ├── fined/
+│   │   │   │   ├── index.blade.php
+│   │   │   │   ├── create.blade.php
+│   │   │   │   ├── edit.blade.php
+│   │   │   │   └── show.blade.php
+│   │   │   ├── building/
+│   │   │   │   ├── index.blade.php
+│   │   │   │   ├── create.blade.php
+│   │   │   │   ├── edit.blade.php
+│   │   │   │   └── show.blade.php
+│   │   │   ├── room/
+│   │   │   │   ├── index.blade.php
+│   │   │   │   ├── create.blade.php
+│   │   │   │   ├── edit.blade.php
+│   │   │   │   └── show.blade.php
+│   │   │   ├── equipment/
+│   │   │   │   ├── index.blade.php
+│   │   │   │   ├── create.blade.php
+│   │   │   │   ├── edit.blade.php
+│   │   │   │   └── show.blade.php
+│   │   │   ├── lending/
+│   │   │   │   ├── index.blade.php
+│   │   │   │   ├── create.blade.php
+│   │   │   │   ├── edit.blade.php
+│   │   │   │   └── show.blade.php
+│   │   │   ├── return/
+│   │   │   │   ├── index.blade.php
+│   │   │   │   ├── create.blade.php
+│   │   │   │   ├── edit.blade.php
+│   │   │   │   └── show.blade.php
+│   │   │   ├── lettertype/
+│   │   │   │   ├── index.blade.php
+│   │   │   │   ├── create.blade.php
+│   │   │   │   ├── edit.blade.php
+│   │   │   │   └── show.blade.php
+│   │   │   ├── lettering/
+│   │   │   │   ├── index.blade.php
+│   │   │   │   ├── create.blade.php
+│   │   │   │   ├── edit.blade.php
+│   │   │   │   └── show.blade.php
+│   │   │   ├── letterkind/
+│   │   │   │   ├── index.blade.php
+│   │   │   │   ├── create.blade.php
+│   │   │   │   ├── edit.blade.php
+│   │   │   │   └── show.blade.php
+│   │   │   ├── lettermanagement/
+│   │   │   │   ├── index.blade.php
+│   │   │   │   ├── create.blade.php
+│   │   │   │   ├── edit.blade.php
+│   │   │   │   └── show.blade.php
+│   │   │   ├── cash/
+│   │   │   │   ├── index.blade.php
+│   │   │   │   ├── create.blade.php
+│   │   │   │   ├── edit.blade.php
+│   │   │   │   └── show.blade.php
+│   │   │   ├── shalat/
+│   │   │   │   ├── index.blade.php
+│   │   │   │   ├── create.blade.php
+│   │   │   │   ├── edit.blade.php
+│   │   │   │   └── show.blade.php
+│   │   │   ├── qurban/
+│   │   │   │   ├── index.blade.php
+│   │   │   │   ├── create.blade.php
+│   │   │   │   ├── edit.blade.php
+│   │   │   │   └── show.blade.php
+│   │   │   ├── donation/
+│   │   │   │   ├── index.blade.php
+│   │   │   │   ├── create.blade.php
+│   │   │   │   ├── edit.blade.php
+│   │   │   │   └── show.blade.php
+│   │   │   ├── article/
+│   │   │   │   ├── index.blade.php
+│   │   │   │   ├── create.blade.php
+│   │   │   │   ├── edit.blade.php
+│   │   │   │   ├── show.blade.php
+│   │   │   │   ├── draft.blade.php
+│   │   │   │   ├── slug.blade.php
+│   │   │   │   └── autoarticle.blade.php
+│   │   │   ├── comment/
+│   │   │   │   ├── partials/
+│   │   │   │   │   ├── item.blade.php
+│   │   │   │   │   └── itemedit.blade.php
+│   │   │   │   ├── index.blade.php
+│   │   │   │   ├── create.blade.php
+│   │   │   │   ├── edit.blade.php
+│   │   │   │   └── show.blade.php
+│   │   │   └── report/
+│   │   │       ├── dailyreport.blade.php
+│   │   │       ├── monthlyreport.blade.php
+│   │   │       ├── annualreport.blade.php
+│   │   │       ├── cashfloweport.blade.php
+│   │   │       ├── dailyreport.blade.php
+│   │   │       ├── monthlyReport.blade.php
+│   │   │       ├── annualReport.blade.php
+│   │   │       └── cashfloweport.blade.php
+│   │   │
+│   │   │
+│   │   ├── memberarea/   ← (LOGIN MEMBER)
+│   │   │   ├── dashboard/
+│   │   │   │   └── dashboardmember.blade.php  (halaman yang berisi rangkuman data 5 pembayaran terakhir, 5 setoran terakhir, dan tunggakan pembayaran dan setoran)
+│   │   │   └── transaction/
+│   │   │       ├── letterhistory.blade.php  (halaman yang berisi seluruh data setoran bulanan yang terbreakdown dalam filter set tahun yang mirip dengan fitur setoran disisi user)
+│   │   │       ├── qurbanhistory.blade.php   (halaman yang berisi seluruh data pembayaran yang pernah dilakukan dan berupa daftar tabulasi yang jika di klik langsung menuju halaman detailpembayaran)
+│   │   │       ├── bazishistory.blade.php  (halaman yang berisi seluruh data setoran bulanan yang terbreakdown dalam filter set tahun yang mirip dengan fitur setoran disisi user)
+│   │   │       ├── shalathistory.blade.php   (halaman yang berisi seluruh data pembayaran yang pernah dilakukan dan berupa daftar tabulasi yang jika di klik langsung menuju halaman detailpembayaran)
+│   │   │       ├── adddonationhistory.blade.php  (halaman yang berisi seluruh data setoran bulanan yang terbreakdown dalam filter set tahun yang mirip dengan fitur setoran disisi user)
+│   │   │       └── getdonationhistory.blade.php   (halaman yang tampil ketika klik daftar pembayaran di halaman riwayatpembayaranmember)
+│   │   │
+│   │   ├── landing/   ← (PUBLIC)
+│   │   │   ├── home.blade.php (halaman defafult paling depan)
+│   │   │   ├── detailarticle.blade.php (tampil ketika diklik baca selengkapnya dan berisi isi dari seluruh konten dan menampilkan gambar termasuk seluruh atribut yang ada di fitur berita)
+│   │   │   ├── daftarcategory.blade.php (halaman yang ada di navbar menu daftar category berisi seluruh category yang bisa menampilkan konten sesuai category yang diklik)
+│   │   │   ├── category.blade.php (halaman yang muncul ketika klik sebuah deskripsi dan menampilkan seluruh konten yang ada di category tersebut)
+│   │   │   ├── tag.blade.php (halaman yang muncul ketika klik sebuah deskripsi dan menampilkan seluruh konten yang ada di tag tersebut)
+│   │   │   ├── about.blade.php (halaman yang muncul ketika klik navbar menu tentang)
+│   │   │   ├── contact.blade.php (halaman yang muncul ketika klik navbar menu kontak)
+│   │   │   └── tableofcontent.blade.php (halaman yang muncul ketika klik navbar menu daftarisi)
+│   │   │
+│   │   ├── auth/   
+│   │   │   ├── loginuser.blade.php
+│   │   │   ├── loginmember.blade.php
+│   │   │   └── registermember.blade.php
+│   │   │
+│   │   └── errors/   ← (GLOBAL ERROR HANDLER)
+│   │       ├── 404.blade.php
+│   │       ├── 403.blade.php
+│   │       └── 500.blade.php
+│   │
+├── routes/
+│   └── web.php
+│
+├── storage/
+├── tests/
+└── .env

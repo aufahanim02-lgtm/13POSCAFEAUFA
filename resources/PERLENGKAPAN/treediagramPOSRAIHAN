@@ -6,7 +6,7 @@ CAFEPOS/
 │   │   │   │
 │   │   │   ├── Auth/
 │   │   │   │   ├── ControllerAuthLoginHistory.php
-│   │   │   │   ├── ControllerAuthUser.php
+│   │   │   │   └── ControllerAuthUser.php
 │   │   │   │
 │   │   │   ├── Dashboard/
 │   │   │   │   ├── ControllerDashboardOwner.php
@@ -33,9 +33,7 @@ CAFEPOS/
 │   │   │   ├── Transaksi/
 │   │   │   │   ├── ControllerPenjualan.php
 │   │   │   │   ├── ControllerCetakStruk.php
-│   │   │   │   ├── ControllerVoid.php
-│   │   │   │   ├── ControllerRetur.php
-│   │   │   │   ├── ControllerShift.php
+│   │   │   │   └── ControllerShift.php
 │   │   │   │
 │   │   │   ├── Laporan/
 │   │   │   │   ├── ControllerLaporan.php
@@ -70,8 +68,6 @@ CAFEPOS/
 │   │   ├── ModelPenjualan.php
 │   │   ├── ModelDetailPenjualan.php
 │   │   ├── ModelPembayaran.php
-│   │   ├── ModelVoid.php
-│   │   ├── ModelRetur.php
 │   │   ├── ModelShift.php
 │   │   ├── ModelStok.php
 │   │   ├── ModelStokMasuk.php
@@ -103,7 +99,7 @@ CAFEPOS/
 ├── public/
 │   ├── dist/              ← AdminLTE
 │   ├── plugins/
-│   ├── foto/
+│   ├── foto/              ← AdminLTE
 │   │   ├── produk/
 │   │   ├── banner/
 │   │   └── user/
@@ -136,7 +132,7 @@ CAFEPOS/
 │   │   │
 │   │   ├── admin/
 │   │   │   ├── dashboard/
-│   │   │   │   └── dashboardowner.blade.php
+│   │   │   │   └── dashboardadmin.blade.php
 │   │   │   ├── user/
 │   │   │   ├── kategori/
 │   │   │   ├── produk/
