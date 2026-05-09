@@ -25,7 +25,7 @@ class ControllerShift extends Controller
     }
 
     // ==========================
-    // FORM BUKA SHIFT
+    // FORM BUKA SHIFT (GET)
     // ==========================
     public function bukaShift()
     {
@@ -43,7 +43,7 @@ class ControllerShift extends Controller
     }
 
     // ==========================
-    // PROSES BUKA SHIFT
+    // PROSES BUKA SHIFT (POST)
     // ==========================
     public function prosesBukaShift(Request $request)
     {
@@ -76,9 +76,9 @@ class ControllerShift extends Controller
     }
 
     // ==========================
-    // FORM TUTUP SHIFT (REALTIME)
+    // HALAMAN TUTUP SHIFT (GET)
     // ==========================
-    public function tutupShift()
+    public function halamanTutupShift()
     {
         $shiftAktif = ModelShift::where('userid', Auth::id())
             ->where('status', 'open')
@@ -90,7 +90,6 @@ class ControllerShift extends Controller
                 ->with('error', 'Tidak ada shift OPEN untuk ditutup!');
         }
 
-        // ✅ HITUNG TRANSAKSI BERDASARKAN SHIFTID
         $totalTransaksi = ModelPenjualan::where('shiftid', $shiftAktif->id)
             ->where('status', 'paid')
             ->count();
@@ -110,9 +109,9 @@ class ControllerShift extends Controller
     }
 
     // ==========================
-    // PROSES TUTUP SHIFT (AUTO UPDATE)
+    // PROSES TUTUP SHIFT (POST)
     // ==========================
-    public function prosesTutupShift(Request $request)
+    public function tutupShift()
     {
         $shiftAktif = ModelShift::where('userid', Auth::id())
             ->where('status', 'open')
@@ -124,7 +123,6 @@ class ControllerShift extends Controller
                 ->with('error', 'Tidak ada shift OPEN untuk ditutup!');
         }
 
-        // ✅ HITUNG TRANSAKSI BERDASARKAN SHIFTID
         $totalTransaksi = ModelPenjualan::where('shiftid', $shiftAktif->id)
             ->where('status', 'paid')
             ->count();
@@ -135,7 +133,6 @@ class ControllerShift extends Controller
 
         $saldoAkhirOtomatis = $shiftAktif->saldoawal + $totalPendapatan;
 
-        // UPDATE SHIFT
         $shiftAktif->update([
             'shiftselesai' => now(),
             'saldoakhir' => $saldoAkhirOtomatis,

@@ -3,43 +3,52 @@
 @section('title', 'Tambah Stok Masuk')
 
 @section('content')
-<div class="card">
-    <div class="card-header">
-        <h3 class="card-title">Tambah Stok Masuk</h3>
+<div class="container-fluid px-4 mt-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h4 class="mb-0">Tambah Stok Masuk</h4>
+            <small class="text-muted">Input transaksi stok masuk</small>
+        </div>
+
+        <a href="{{ route('inventory.stokmasuk.index') }}" class="btn btn-secondary btn-sm">
+            <i class="fas fa-arrow-left"></i> Kembali
+        </a>
     </div>
 
-    <div class="card-body">
-        <form action="{{ url('/inventory/stokmasuk/store') }}" method="POST">
-            @csrf
+    <div class="card shadow-sm">
+        <div class="card-body">
 
-            <div class="form-group">
-                <label>Bahan Baku</label>
-                <select name="bahanbakuid" class="form-control" required>
-                    <option value="">-- Pilih Bahan Baku --</option>
-                    @foreach($bahanbaku as $row)
-                        <option value="{{ $row->id }}">{{ $row->namabahan }}</option>
-                    @endforeach
-                </select>
-            </div>
+            <form action="{{ route('inventory.stokmasuk.store') }}" method="POST">
+                @csrf
 
-            <div class="form-group">
-                <label>Jumlah</label>
-                <input type="number" step="0.01" name="jumlah" class="form-control" required>
-            </div>
+                <div class="mb-3">
+                    <label class="form-label">Bahan Baku ID</label>
+                    <input type="number" name="bahanbakuid" class="form-control" required>
+                </div>
 
-            <div class="form-group">
-                <label>Tanggal Masuk</label>
-                <input type="date" name="tanggalmasuk" class="form-control">
-            </div>
+                <div class="mb-3">
+                    <label class="form-label">Jumlah</label>
+                    <input type="number" name="jumlah" class="form-control" required>
+                </div>
 
-            <div class="form-group">
-                <label>Keterangan</label>
-                <textarea name="keterangan" class="form-control"></textarea>
-            </div>
+                <div class="mb-3">
+                    <label class="form-label">Tanggal Masuk</label>
+                    <input type="date" name="tanggalmasuk" class="form-control" required>
+                </div>
 
-            <button class="btn btn-primary"><i class="fas fa-save"></i> Simpan</button>
-            <a href="{{ url('/inventory/stokmasuk') }}" class="btn btn-secondary">Kembali</a>
-        </form>
+                <div class="mb-3">
+                    <label class="form-label">Keterangan</label>
+                    <textarea name="keterangan" class="form-control" rows="3"></textarea>
+                </div>
+
+                <button class="btn btn-primary btn-sm">
+                    <i class="fas fa-save"></i> Simpan
+                </button>
+            </form>
+
+        </div>
     </div>
+
 </div>
 @endsection

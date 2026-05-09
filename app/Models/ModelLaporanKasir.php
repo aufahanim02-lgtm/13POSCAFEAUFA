@@ -11,6 +11,7 @@ class ModelLaporanKasir extends Model
     protected $fillable = [
         'userid',
         'kasirid',
+        'tanggal',
         'totaltransaksi',
         'totalpendapatan'
     ];

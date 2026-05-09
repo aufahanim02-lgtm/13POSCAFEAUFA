@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Inventory;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+
 use App\Models\ModelPembelian;
+use App\Models\ModelDetailPembelian;
 
 class ControllerPembelian extends Controller
 {
@@ -22,13 +24,12 @@ class ControllerPembelian extends Controller
 
     public function index()
     {
-        $data = ModelPembelian::with(['supplier', 'user'])->orderBy('id', 'desc')->get();
+        $data = ModelPembelian::orderBy('id', 'desc')->get();
         return view($this->viewPath('index'), compact('data'));
     }
 
     public function create()
     {
-        // jika manager tidak boleh create pembelian
         if (Auth::user()->role == 'manager') {
             return redirect()->back()->with('error', 'Manager tidak punya izin membuat pembelian.');
         }
@@ -36,20 +37,25 @@ class ControllerPembelian extends Controller
         return view($this->viewPath('create'));
     }
 
+    public function show($id)
+    {
+        $pembelian = ModelPembelian::findOrFail($id);
+
+        $detail = ModelDetailPembelian::where('pembelianid', $id)->get();
+
+        return view($this->viewPath('show'), compact('pembelian', 'detail'));
+    }
+
     public function edit($id)
     {
-        // jika manager tidak boleh edit pembelian
         if (Auth::user()->role == 'manager') {
             return redirect()->back()->with('error', 'Manager tidak punya izin edit pembelian.');
         }
 
-        $data = ModelPembelian::findOrFail($id);
-        return view($this->viewPath('edit'), compact('data'));
-    }
+        $pembelian = ModelPembelian::findOrFail($id);
 
-    public function show($id)
-    {
-        $data = ModelPembelian::with(['supplier', 'user'])->findOrFail($id);
-        return view($this->viewPath('show'), compact('data'));
+        $detail = ModelDetailPembelian::where('pembelianid', $id)->get();
+
+        return view($this->viewPath('edit'), compact('pembelian', 'detail'));
     }
 }

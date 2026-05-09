@@ -3,69 +3,103 @@
 @section('title', 'Data Supplier')
 
 @section('content')
-<div class="content-wrapper">
 
-    <section class="content-header">
-        <div class="container-fluid">
-            <h1>Data Supplier</h1>
+<div class="container-fluid">
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4>Data Supplier</h4>
+
+        <a href="{{ route('master.supplier.create') }}"
+           class="btn btn-primary">
+            + Tambah Supplier
+        </a>
+    </div>
+
+    @if(session('success'))
+        <div class="alert alert-success">
+            {{ session('success') }}
         </div>
-    </section>
+    @endif
 
-    <section class="content">
-        <div class="container-fluid">
+    <div class="card">
+        <div class="card-body table-responsive">
 
-            <div class="card card-info card-outline">
-                <div class="card-header">
-                    <h3 class="card-title">List Supplier</h3>
-                    <div class="card-tools">
-                        <a href="#" class="btn btn-info btn-sm">
-                            <i class="fas fa-plus"></i> Tambah Supplier
-                        </a>
-                    </div>
-                </div>
+            <table class="table table-bordered table-striped">
 
-                <div class="card-body table-responsive">
-                    <table class="table table-bordered table-striped">
-                        <thead class="bg-light">
-                            <tr>
-                                <th width="50">#</th>
-                                <th>Nama Supplier</th>
-                                <th>No HP</th>
-                                <th>Alamat</th>
-                                <th width="150">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse($data as $row)
-                                <tr>
-                                    <td>{{ $loop->iteration }}</td>
-                                    <td>{{ $row->namasupplier }}</td>
-                                    <td>{{ $row->nohp ?? '-' }}</td>
-                                    <td>{{ $row->alamat ?? '-' }}</td>
-                                    <td>
-                                        <a href="#" class="btn btn-warning btn-sm">
-                                            <i class="fas fa-edit"></i>
-                                        </a>
-                                        <a href="#" class="btn btn-danger btn-sm">
-                                            <i class="fas fa-trash"></i>
-                                        </a>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="5" class="text-center text-muted">
-                                        Data supplier masih kosong.
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
+                <thead class="table-dark">
+                    <tr>
+                        <th width="5%">No</th>
+                        <th>Nama Supplier</th>
+                        <th>No HP</th>
+                        <th>Alamat</th>
+                        <th width="25%">Aksi</th>
+                    </tr>
+                </thead>
 
-            </div>
+                <tbody>
+
+                    @forelse($data as $item)
+
+                    <tr>
+
+                        <td>{{ $loop->iteration }}</td>
+
+                        <td>{{ $item->namasupplier }}</td>
+
+                        <td>{{ $item->nohp ?? '-' }}</td>
+
+                        <td>{{ $item->alamat ?? '-' }}</td>
+
+                        <td>
+
+                            <a href="{{ route('master.supplier.show', $item->id) }}"
+                               class="btn btn-info btn-sm">
+                                Detail
+                            </a>
+
+                            <a href="{{ route('master.supplier.edit', $item->id) }}"
+                               class="btn btn-warning btn-sm">
+                                Edit
+                            </a>
+
+                            <form action="{{ route('master.supplier.destroy', $item->id) }}"
+                                  method="POST"
+                                  class="d-inline">
+
+                                @csrf
+                                @method('DELETE')
+
+                                <button type="submit"
+                                        class="btn btn-danger btn-sm"
+                                        onclick="return confirm('Yakin hapus supplier?')">
+
+                                    Hapus
+
+                                </button>
+
+                            </form>
+
+                        </td>
+
+                    </tr>
+
+                    @empty
+
+                    <tr>
+                        <td colspan="5" class="text-center">
+                            Data supplier masih kosong
+                        </td>
+                    </tr>
+
+                    @endforelse
+
+                </tbody>
+
+            </table>
 
         </div>
-    </section>
+    </div>
 
 </div>
+
 @endsection

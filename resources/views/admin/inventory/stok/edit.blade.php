@@ -3,47 +3,56 @@
 @section('title', 'Edit Stok')
 
 @section('content')
-<div class="card">
-    <div class="card-header">
-        <h3 class="card-title">Edit Stok</h3>
+<div class="container-fluid px-4 mt-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h4 class="mb-0">Edit Stok</h4>
+            <small class="text-muted">Update stok bahan baku</small>
+        </div>
+
+        <a href="{{ route('inventory.stok.index') }}" class="btn btn-secondary btn-sm">
+            <i class="fas fa-arrow-left"></i> Kembali
+        </a>
     </div>
 
-    <div class="card-body">
-        <form action="{{ url('/inventory/stok/update/'.$data->id) }}" method="POST">
-            @csrf
+    <div class="card shadow-sm">
+        <div class="card-body">
 
-            <div class="form-group">
-                <label>Bahan Baku</label>
-                <select name="bahanbakuid" class="form-control" required>
-                    @foreach($bahanbaku as $row)
-                        <option value="{{ $row->id }}" {{ $data->bahanbakuid == $row->id ? 'selected' : '' }}>
-                            {{ $row->namabahan }}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
+            <form action="{{ route('inventory.stok.update', $data->id) }}" method="POST">
+                @csrf
 
-            <div class="form-group">
-                <label>Stok Tersedia</label>
-                <input type="number" step="0.01" name="stoktersedia" class="form-control" value="{{ $data->stoktersedia }}" required>
-            </div>
+                <div class="mb-3">
+                    <label class="form-label">Bahan Baku ID</label>
+                    <input type="number" name="bahanbakuid" value="{{ $data->bahanbakuid }}" class="form-control" required>
+                </div>
 
-            <div class="form-group">
-                <label>Stok Minimal</label>
-                <input type="number" step="0.01" name="stokminimal" class="form-control" value="{{ $data->stokminimal }}" required>
-            </div>
+                <div class="mb-3">
+                    <label class="form-label">Stok Tersedia</label>
+                    <input type="number" name="stoktersedia" value="{{ $data->stoktersedia }}" class="form-control" required>
+                </div>
 
-            <div class="form-group">
-                <label>Status</label>
-                <select name="status" class="form-control" required>
-                    <option value="aman" {{ $data->status == 'aman' ? 'selected' : '' }}>Aman</option>
-                    <option value="habis" {{ $data->status == 'habis' ? 'selected' : '' }}>Habis</option>
-                </select>
-            </div>
+                <div class="mb-3">
+                    <label class="form-label">Stok Minimal</label>
+                    <input type="number" name="stokminimal" value="{{ $data->stokminimal }}" class="form-control" required>
+                </div>
 
-            <button class="btn btn-primary"><i class="fas fa-save"></i> Update</button>
-            <a href="{{ url('/inventory/stok') }}" class="btn btn-secondary">Kembali</a>
-        </form>
+                <div class="mb-3">
+                    <label class="form-label">Status</label>
+                    <select name="status" class="form-control">
+                        <option value="Aman" {{ $data->status == 'Aman' ? 'selected' : '' }}>Aman</option>
+                        <option value="Menipis" {{ $data->status == 'Menipis' ? 'selected' : '' }}>Menipis</option>
+                        <option value="Habis" {{ $data->status == 'Habis' ? 'selected' : '' }}>Habis</option>
+                    </select>
+                </div>
+
+                <button class="btn btn-warning btn-sm">
+                    <i class="fas fa-save"></i> Update
+                </button>
+            </form>
+
+        </div>
     </div>
+
 </div>
 @endsection

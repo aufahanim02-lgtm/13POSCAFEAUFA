@@ -18,6 +18,7 @@ class ControllerLaporanKasir extends Controller
     public function index()
     {
         $data = ModelLaporanKasir::with(['user', 'kasir'])
+            ->orderBy('tanggal', 'desc')
             ->orderBy('totalpendapatan', 'desc')
             ->get();
 
@@ -26,7 +27,8 @@ class ControllerLaporanKasir extends Controller
 
     public function show($id)
     {
-        $data = ModelLaporanKasir::with(['user', 'kasir'])->findOrFail($id);
-        return view($this->viewPath('show'), compact('data'));
+        $row = ModelLaporanKasir::with(['user', 'kasir'])->findOrFail($id);
+
+        return view($this->viewPath('show'), compact('row'));
     }
 }

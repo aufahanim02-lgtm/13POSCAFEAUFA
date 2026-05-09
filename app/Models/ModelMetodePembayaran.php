@@ -12,5 +12,6 @@ class ModelMetodePembayaran extends Model
         'namametode',
         'jenis',
         'status',
+        'qrcode',
     ];
 }

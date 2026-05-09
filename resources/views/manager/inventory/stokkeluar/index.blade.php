@@ -1,65 +1,82 @@
 @extends('layouts.appmanager')
 
-@section('title', 'Monitoring Stok Keluar')
+@section('title', 'Data Stok Keluar')
 
 @section('content')
-<div class="content-wrapper">
-
-    <section class="content-header">
-        <div class="container-fluid">
-            <h1 class="fw-bold">Monitoring Stok Keluar</h1>
-            <small class="text-muted">Riwayat stok keluar bahan baku</small>
+<div class="content-header">
+    <div class="container-fluid d-flex justify-content-between align-items-center">
+        <div>
+            <h1 class="m-0">Data Stok Keluar</h1>
+            <small class="text-muted">Monitoring stok keluar bahan baku</small>
         </div>
-    </section>
-
-    <section class="content">
-        <div class="container-fluid">
-
-            <div class="card shadow-sm">
-                <div class="card-header bg-danger text-white">
-                    <h3 class="card-title">
-                        <i class="fas fa-arrow-up"></i> Data Stok Keluar
-                    </h3>
-                </div>
-
-                <div class="card-body table-responsive">
-
-                    <table class="table table-bordered table-striped">
-                        <thead class="bg-light">
-                            <tr>
-                                <th width="50">No</th>
-                                <th>Nama Bahan</th>
-                                <th>Jumlah</th>
-                                <th>Tanggal Keluar</th>
-                                <th>Alasan</th>
-                            </tr>
-                        </thead>
-
-                        <tbody>
-                            @forelse($data as $row)
-                                <tr>
-                                    <td>{{ $loop->iteration }}</td>
-                                    <td>{{ $row->bahanbaku->namabahan ?? '-' }}</td>
-                                    <td>{{ $row->jumlah }}</td>
-                                    <td>{{ $row->tanggalkeluar }}</td>
-                                    <td>{{ $row->alasan ?? '-' }}</td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="5" class="text-center text-muted">
-                                        Tidak ada data stok keluar
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-
-                    </table>
-
-                </div>
-            </div>
-
-        </div>
-    </section>
-
+    </div>
 </div>
+
+<section class="content">
+    <div class="container-fluid">
+
+        <div class="card shadow-sm">
+            <div class="card-body">
+
+                @if($data->count() == 0)
+                    <div class="alert alert-warning mb-0">
+                        Data stok keluar masih kosong.
+                    </div>
+                @else
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped align-middle">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th width="5%">No</th>
+                                    <th>Bahan Baku</th>
+                                    <th width="15%">Jumlah</th>
+                                    <th width="20%">Tanggal Keluar</th>
+                                    <th>Alasan</th>
+                                    <th width="10%">Detail</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($data as $item)
+                                    <tr>
+                                        <td>{{ $loop->iteration }}</td>
+
+                                        <td>
+                                            <b>{{ $item->bahanbaku->namabahan ?? '-' }}</b>
+                                            <br>
+                                            <small class="text-muted">
+                                                ID: {{ $item->bahanbakuid }}
+                                            </small>
+                                        </td>
+
+                                        <td class="text-center">
+                                            <span class="fw-bold">{{ $item->jumlah ?? 0 }}</span>
+                                        </td>
+
+                                        <td class="text-center">
+                                            {{ $item->tanggalkeluar ?? '-' }}
+                                        </td>
+
+                                        <td>
+                                            {{ $item->alasan ?? '-' }}
+                                        </td>
+
+                                        <td class="text-center">
+                                            <a href="{{ route('inventory.stokkeluar.show', $item->id) }}"
+                                               class="btn btn-sm btn-info">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                        </td>
+
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                @endif
+
+            </div>
+        </div>
+
+    </div>
+</section>
 @endsection

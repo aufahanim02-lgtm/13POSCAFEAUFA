@@ -1,91 +1,122 @@
 @extends('layouts.appmanager')
 
-@section('title', 'Monitoring Stok')
+@section('title', 'Data Stok')
 
 @section('content')
-<div class="content-wrapper">
-
-    <section class="content-header">
-        <div class="container-fluid">
-            <h1 class="fw-bold">Monitoring Stok</h1>
-            <small class="text-muted">Pantau stok bahan baku yang tersedia</small>
+<div class="content-header">
+    <div class="container-fluid d-flex justify-content-between align-items-center">
+        <div>
+            <h1 class="m-0">Data Stok</h1>
+            <small class="text-muted">Monitoring stok bahan baku</small>
         </div>
-    </section>
-
-    <section class="content">
-        <div class="container-fluid">
-
-            @if(session('success'))
-                <div class="alert alert-success">
-                    <i class="fas fa-check-circle"></i> {{ session('success') }}
-                </div>
-            @endif
-
-            @if(session('error'))
-                <div class="alert alert-danger">
-                    <i class="fas fa-times-circle"></i> {{ session('error') }}
-                </div>
-            @endif
-
-            <div class="card shadow-sm">
-                <div class="card-header bg-primary text-white">
-                    <h3 class="card-title">
-                        <i class="fas fa-boxes"></i> Data Stok
-                    </h3>
-                </div>
-
-                <div class="card-body table-responsive">
-
-                    <table class="table table-bordered table-striped">
-                        <thead class="bg-light">
-                            <tr>
-                                <th width="50">No</th>
-                                <th>Nama Bahan</th>
-                                <th>Stok Tersedia</th>
-                                <th>Stok Minimal</th>
-                                <th>Status</th>
-                                <th width="100">Aksi</th>
-                            </tr>
-                        </thead>
-
-                        <tbody>
-                            @forelse($data as $row)
-                                <tr>
-                                    <td>{{ $loop->iteration }}</td>
-                                    <td>{{ $row->bahanbaku->namabahan ?? '-' }}</td>
-                                    <td>{{ $row->stoktersedia }}</td>
-                                    <td>{{ $row->stokminimal }}</td>
-                                    <td>
-                                        @if($row->status == 'aman')
-                                            <span class="badge badge-success">AMAN</span>
-                                        @elseif($row->status == 'menipis')
-                                            <span class="badge badge-warning">MENIPIS</span>
-                                        @else
-                                            <span class="badge badge-danger">HABIS</span>
-                                        @endif
-                                    </td>
-                                    <td>
-                                        <a href="{{ url('inventory/stok/show/'.$row->id) }}" class="btn btn-info btn-sm">
-                                            <i class="fas fa-eye"></i>
-                                        </a>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="6" class="text-center text-muted">
-                                        Tidak ada data stok
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-
-                    </table>
-
-                </div>
-            </div>
-
-        </div>
-    </section>
-
+    </div>
 </div>
+
+<section class="content">
+    <div class="container-fluid">
+
+        @if(session('success'))
+            <div class="alert alert-success alert-dismissible fade show">
+                {{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        @endif
+
+        @if(session('error'))
+            <div class="alert alert-danger alert-dismissible fade show">
+                {{ session('error') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        @endif
+
+        <div class="card shadow-sm">
+            <div class="card-body">
+
+                @if($data->count() == 0)
+                    <div class="alert alert-warning mb-0">
+                        Data stok masih kosong.
+                    </div>
+                @else
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped align-middle">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th width="5%">No</th>
+                                    <th>Bahan Baku</th>
+                                    <th width="15%">Stok Tersedia</th>
+                                    <th width="15%">Stok Minimal</th>
+                                    <th width="15%">Status</th>
+                                    <th width="20%">Terakhir Update</th>
+                                    <th width="10%">Detail</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($data as $item)
+
+                                    @php
+                                        $stokTersedia = $item->stoktersedia ?? 0;
+                                        $stokMinimal  = $item->stokminimal ?? 0;
+
+                                        if($stokTersedia <= 0){
+                                            $badgeClass = 'danger';
+                                            $statusText = 'Habis';
+                                        } elseif($stokTersedia <= $stokMinimal){
+                                            $badgeClass = 'warning';
+                                            $statusText = 'Menipis';
+                                        } else {
+                                            $badgeClass = 'success';
+                                            $statusText = 'Aman';
+                                        }
+                                    @endphp
+
+                                    <tr>
+                                        <td>{{ $loop->iteration }}</td>
+
+                                        <td>
+                                            <b>{{ $item->bahanbaku->namabahan ?? '-' }}</b>
+                                            <br>
+                                            <small class="text-muted">
+                                                ID: {{ $item->bahanbakuid }}
+                                            </small>
+                                        </td>
+
+                                        <td class="text-center">
+                                            <span class="fw-bold">
+                                                {{ $stokTersedia }}
+                                            </span>
+                                        </td>
+
+                                        <td class="text-center">
+                                            {{ $stokMinimal }}
+                                        </td>
+
+                                        <td class="text-center">
+                                            <span class="badge bg-{{ $badgeClass }}">
+                                                {{ $statusText }}
+                                            </span>
+                                        </td>
+
+                                        <td>
+                                            {{ $item->updated_at ? $item->updated_at->format('d-m-Y H:i') : '-' }}
+                                        </td>
+
+                                        <td class="text-center">
+                                            <a href="{{ route('inventory.stok.show', $item->id) }}"
+                                               class="btn btn-sm btn-info">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                        </td>
+
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                @endif
+
+            </div>
+        </div>
+
+    </div>
+</section>
 @endsection

@@ -3,75 +3,111 @@
 @section('title', 'Data Pajak')
 
 @section('content')
-<div class="content-wrapper">
 
-    <section class="content-header">
-        <div class="container-fluid">
-            <h1>Data Pajak</h1>
+<div class="container-fluid">
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4>Data Pajak</h4>
+
+        <a href="{{ route('master.pajak.create') }}"
+           class="btn btn-dark">
+            + Tambah Pajak
+        </a>
+    </div>
+
+    @if(session('success'))
+        <div class="alert alert-success">
+            {{ session('success') }}
         </div>
-    </section>
+    @endif
 
-    <section class="content">
-        <div class="container-fluid">
+    <div class="card">
+        <div class="card-body table-responsive">
 
-            <div class="card card-dark card-outline">
-                <div class="card-header">
-                    <h3 class="card-title">List Pajak</h3>
-                    <div class="card-tools">
-                        <a href="#" class="btn btn-dark btn-sm">
-                            <i class="fas fa-plus"></i> Tambah Pajak
-                        </a>
-                    </div>
-                </div>
+            <table class="table table-bordered table-striped">
 
-                <div class="card-body table-responsive">
-                    <table class="table table-bordered table-striped">
-                        <thead class="bg-light">
-                            <tr>
-                                <th width="50">#</th>
-                                <th>Nama Pajak</th>
-                                <th>Persen</th>
-                                <th>Status</th>
-                                <th width="150">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse($data as $row)
-                                <tr>
-                                    <td>{{ $loop->iteration }}</td>
-                                    <td>{{ $row->namapajak }}</td>
-                                    <td>{{ $row->persen }}%</td>
-                                    <td>
-                                        @if($row->status == 'aktif')
-                                            <span class="badge badge-success">AKTIF</span>
-                                        @else
-                                            <span class="badge badge-danger">NONAKTIF</span>
-                                        @endif
-                                    </td>
-                                    <td>
-                                        <a href="#" class="btn btn-warning btn-sm">
-                                            <i class="fas fa-edit"></i>
-                                        </a>
-                                        <a href="#" class="btn btn-danger btn-sm">
-                                            <i class="fas fa-trash"></i>
-                                        </a>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="5" class="text-center text-muted">
-                                        Data pajak masih kosong.
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
+                <thead>
+                    <tr>
+                        <th width="5%">No</th>
+                        <th>Nama Pajak</th>
+                        <th>Persen</th>
+                        <th>Status</th>
+                        <th width="25%">Aksi</th>
+                    </tr>
+                </thead>
 
-            </div>
+                <tbody>
+
+                    @forelse($data as $item)
+
+                    <tr>
+
+                        <td>{{ $loop->iteration }}</td>
+
+                        <td>{{ $item->namapajak }}</td>
+
+                        <td>{{ $item->persen }}%</td>
+
+                        <td>
+                            @if($item->status == 'aktif')
+                                <span class="badge bg-success">
+                                    AKTIF
+                                </span>
+                            @else
+                                <span class="badge bg-danger">
+                                    NONAKTIF
+                                </span>
+                            @endif
+                        </td>
+
+                        <td>
+
+                            <a href="{{ route('master.pajak.show', $item->id) }}"
+                               class="btn btn-info btn-sm">
+                                Detail
+                            </a>
+
+                            <a href="{{ route('master.pajak.edit', $item->id) }}"
+                               class="btn btn-warning btn-sm">
+                                Edit
+                            </a>
+
+                            <form action="{{ route('master.pajak.destroy', $item->id) }}"
+                                  method="POST"
+                                  class="d-inline">
+
+                                @csrf
+                                @method('DELETE')
+
+                                <button type="submit"
+                                        class="btn btn-danger btn-sm"
+                                        onclick="return confirm('Yakin hapus data?')">
+                                    Hapus
+                                </button>
+
+                            </form>
+
+                        </td>
+
+                    </tr>
+
+                    @empty
+
+                    <tr>
+                        <td colspan="5" class="text-center">
+                            Data pajak kosong
+                        </td>
+                    </tr>
+
+                    @endforelse
+
+                </tbody>
+
+            </table>
 
         </div>
-    </section>
+    </div>
 
 </div>
+
 @endsection

@@ -5,14 +5,24 @@ namespace App\Http\Controllers\Master;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 
 use App\Models\ModelUser;
 
 class ControllerUser extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $data = ModelUser::orderBy('id', 'desc')->get();
+        $query = ModelUser::query();
+
+        if ($request->q) {
+            $query->where('name', 'like', '%' . $request->q . '%')
+                ->orWhere('username', 'like', '%' . $request->q . '%')
+                ->orWhere('email', 'like', '%' . $request->q . '%');
+        }
+
+        $data = $query->orderBy('id', 'desc')->get();
+
         return view('admin.user.index', compact('data'));
     }
 
@@ -24,12 +34,20 @@ class ControllerUser extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required',
-            'username' => 'required|unique:user,username',
-            'email' => 'nullable|unique:user,email',
+            'name' => 'required|string|max:100',
+            'username' => 'required|string|max:50|unique:user,username',
+            'email' => 'nullable|email|max:100|unique:user,email',
             'password' => 'required|min:6',
-            'role' => 'required',
+            'role' => 'required|in:owner,manager,kasir',
+            'isactive' => 'required|in:0,1',
+            'foto' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
+
+        $fotoPath = null;
+
+        if ($request->hasFile('foto')) {
+            $fotoPath = $request->file('foto')->store('user', 'public');
+        }
 
         ModelUser::create([
             'name' => $request->name,
@@ -37,11 +55,17 @@ class ControllerUser extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'role' => $request->role,
-            'foto' => null,
-            'isactive' => 'active',
+            'foto' => $fotoPath,
+            'isactive' => $request->isactive,
         ]);
 
-        return redirect()->route('user.index')->with('success', 'User berhasil ditambahkan!');
+        return redirect()->route('master.user.index')->with('success', 'User berhasil ditambahkan!');
+    }
+
+    public function show($id)
+    {
+        $data = ModelUser::findOrFail($id);
+        return view('admin.user.show', compact('data'));
     }
 
     public function edit($id)
@@ -55,10 +79,13 @@ class ControllerUser extends Controller
         $data = ModelUser::findOrFail($id);
 
         $request->validate([
-            'name' => 'required',
-            'username' => 'required|unique:user,username,' . $data->id,
-            'email' => 'nullable|unique:user,email,' . $data->id,
-            'role' => 'required',
+            'name' => 'required|string|max:100',
+            'username' => 'required|string|max:50|unique:user,username,' . $data->id,
+            'email' => 'nullable|email|max:100|unique:user,email,' . $data->id,
+            'role' => 'required|in:owner,manager,kasir',
+            'isactive' => 'required|in:0,1',
+            'password' => 'nullable|min:6',
+            'foto' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
         $updateData = [
@@ -69,20 +96,38 @@ class ControllerUser extends Controller
             'isactive' => $request->isactive,
         ];
 
-        if ($request->password) {
+        // jika password diisi
+        if ($request->filled('password')) {
             $updateData['password'] = Hash::make($request->password);
+        }
+
+        // jika upload foto baru
+        if ($request->hasFile('foto')) {
+
+            // hapus foto lama jika ada
+            if ($data->foto && Storage::disk('public')->exists($data->foto)) {
+                Storage::disk('public')->delete($data->foto);
+            }
+
+            $updateData['foto'] = $request->file('foto')->store('user', 'public');
         }
 
         $data->update($updateData);
 
-        return redirect()->route('user.index')->with('success', 'User berhasil diupdate!');
+        return redirect()->route('master.user.index')->with('success', 'User berhasil diupdate!');
     }
 
-    public function delete($id)
+    public function destroy($id)
     {
         $data = ModelUser::findOrFail($id);
+
+        // hapus foto jika ada
+        if ($data->foto && Storage::disk('public')->exists($data->foto)) {
+            Storage::disk('public')->delete($data->foto);
+        }
+
         $data->delete();
 
-        return redirect()->route('user.index')->with('success', 'User berhasil dihapus!');
+        return redirect()->route('master.user.index')->with('success', 'User berhasil dihapus!');
     }
 }

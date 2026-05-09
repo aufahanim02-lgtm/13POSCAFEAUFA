@@ -12,6 +12,7 @@ class ControllerSupplier extends Controller
     public function index()
     {
         $data = ModelSupplier::orderBy('id', 'desc')->get();
+
         return view('admin.supplier.index', compact('data'));
     }
 
@@ -24,6 +25,8 @@ class ControllerSupplier extends Controller
     {
         $request->validate([
             'namasupplier' => 'required',
+            'nohp' => 'nullable',
+            'alamat' => 'nullable',
         ]);
 
         ModelSupplier::create([
@@ -32,12 +35,22 @@ class ControllerSupplier extends Controller
             'alamat' => $request->alamat,
         ]);
 
-        return redirect('/admin/supplier')->with('success', 'Supplier berhasil ditambahkan!');
+        return redirect()
+            ->route('master.supplier.index')
+            ->with('success', 'Supplier berhasil ditambahkan');
+    }
+
+    public function show($id)
+    {
+        $data = ModelSupplier::findOrFail($id);
+
+        return view('admin.supplier.show', compact('data'));
     }
 
     public function edit($id)
     {
         $data = ModelSupplier::findOrFail($id);
+
         return view('admin.supplier.edit', compact('data'));
     }
 
@@ -47,6 +60,8 @@ class ControllerSupplier extends Controller
 
         $request->validate([
             'namasupplier' => 'required',
+            'nohp' => 'nullable',
+            'alamat' => 'nullable',
         ]);
 
         $data->update([
@@ -55,14 +70,19 @@ class ControllerSupplier extends Controller
             'alamat' => $request->alamat,
         ]);
 
-        return redirect('/admin/supplier')->with('success', 'Supplier berhasil diupdate!');
+        return redirect()
+            ->route('master.supplier.index')
+            ->with('success', 'Supplier berhasil diupdate');
     }
 
-    public function delete($id)
+    public function destroy($id)
     {
         $data = ModelSupplier::findOrFail($id);
+
         $data->delete();
 
-        return redirect('/admin/supplier')->with('success', 'Supplier berhasil dihapus!');
+        return redirect()
+            ->route('master.supplier.index')
+            ->with('success', 'Supplier berhasil dihapus');
     }
 }

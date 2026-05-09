@@ -11,7 +11,7 @@ class ModelPenjualan extends Model
     protected $fillable = [
         'kodeinvoice',
         'userid',
-        'shiftid', // ✅ FIX
+        'shiftid',
         'mejaid',
         'promoid',
         'pajakid',
@@ -29,36 +29,43 @@ class ModelPenjualan extends Model
     |--------------------------------------------------------------------------
     */
 
+    // USER / KASIR
     public function user()
     {
         return $this->belongsTo(ModelUser::class, 'userid', 'id');
     }
 
+    // SHIFT
     public function shift()
     {
-        return $this->belongsTo(ModelShift::class, 'shiftid', 'id'); // ✅ FIX
+        return $this->belongsTo(ModelShift::class, 'shiftid', 'id');
     }
 
+    // MEJA
     public function meja()
     {
         return $this->belongsTo(ModelMeja::class, 'mejaid', 'id');
     }
 
+    // PROMO
     public function promo()
     {
         return $this->belongsTo(ModelPromo::class, 'promoid', 'id');
     }
 
-    public function pajakData()
+    // PAJAK
+    public function pajak()
     {
         return $this->belongsTo(ModelPajak::class, 'pajakid', 'id');
     }
 
-    public function detail()
+    // DETAIL PENJUALAN
+    public function detailpenjualan()
     {
         return $this->hasMany(ModelDetailPenjualan::class, 'penjualanid', 'id');
     }
 
+    // PEMBAYARAN
     public function pembayaran()
     {
         return $this->hasOne(ModelPembayaran::class, 'penjualanid', 'id');

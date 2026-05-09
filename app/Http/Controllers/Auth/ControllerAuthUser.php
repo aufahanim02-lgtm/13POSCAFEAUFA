@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\ModelLoginHistory;
+use Carbon\Carbon;
 
 class ControllerAuthUser extends Controller
 {
@@ -29,6 +31,16 @@ class ControllerAuthUser extends Controller
 
             $request->session()->regenerate();
 
+            // SIMPAN LOGIN HISTORY
+            ModelLoginHistory::create([
+                'userid'    => Auth::user()->id,
+                'ipaddress' => $request->ip(),
+                'useragent' => $request->userAgent(),
+                'loginat'   => Carbon::now(),
+                'logoutat'  => null,
+                'status'    => 'success'
+            ]);
+
             $role = Auth::user()->role;
 
             if ($role == 'owner') {
@@ -47,11 +59,41 @@ class ControllerAuthUser extends Controller
             return redirect('/login')->with('error', 'Role tidak valid!');
         }
 
+        // SIMPAN LOGIN GAGAL (OPTIONAL)
+        // Kalau kamu mau, bisa aktifkan ini:
+        /*
+        ModelLoginHistory::create([
+            'userid'    => null,
+            'ipaddress' => $request->ip(),
+            'useragent' => $request->userAgent(),
+            'loginat'   => Carbon::now(),
+            'logoutat'  => null,
+            'status'    => 'failed'
+        ]);
+        */
+
         return redirect('/login')->with('error', 'Username atau Password salah!');
     }
 
     public function logout(Request $request)
     {
+        $user = Auth::user();
+
+        // UPDATE LOGOUT HISTORY TERAKHIR (AMAN)
+        if ($user) {
+            $history = ModelLoginHistory::where('userid', $user->id)
+                ->whereNull('logoutat')
+                ->orderBy('id', 'desc')
+                ->first();
+
+            if ($history) {
+                $history->update([
+                    'logoutat' => Carbon::now(),
+                    'status'   => 'logout'
+                ]);
+            }
+        }
+
         Auth::logout();
 
         $request->session()->invalidate();

@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class ModelLoginHistory extends Model
 {
+    use HasFactory;
+
     protected $table = 'loginhistory';
 
     protected $fillable = [
@@ -14,7 +17,7 @@ class ModelLoginHistory extends Model
         'useragent',
         'loginat',
         'logoutat',
-        'status',
+        'status'
     ];
 
     public function user()

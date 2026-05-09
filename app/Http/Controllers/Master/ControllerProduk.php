@@ -12,13 +12,17 @@ class ControllerProduk extends Controller
 {
     public function index()
     {
-        $data = ModelProduk::with('kategori')->orderBy('id', 'desc')->get();
+        $data = ModelProduk::with('kategori')
+            ->orderBy('id', 'desc')
+            ->get();
+
         return view('admin.produk.index', compact('data'));
     }
 
     public function create()
     {
         $kategori = ModelKategori::all();
+
         return view('admin.produk.create', compact('kategori'));
     }
 
@@ -42,12 +46,23 @@ class ControllerProduk extends Controller
             'status' => 'aktif',
         ]);
 
-        return redirect('/admin/produk')->with('success', 'Produk berhasil ditambahkan!');
+        return redirect()
+            ->route('master.produk.index')
+            ->with('success', 'Produk berhasil ditambahkan!');
+    }
+
+    public function show($id)
+    {
+        $data = ModelProduk::with('kategori')
+            ->findOrFail($id);
+
+        return view('admin.produk.show', compact('data'));
     }
 
     public function edit($id)
     {
         $data = ModelProduk::findOrFail($id);
+
         $kategori = ModelKategori::all();
 
         return view('admin.produk.edit', compact('data', 'kategori'));
@@ -75,14 +90,19 @@ class ControllerProduk extends Controller
             'status' => $request->status,
         ]);
 
-        return redirect('/admin/produk')->with('success', 'Produk berhasil diupdate!');
+        return redirect()
+            ->route('master.produk.index')
+            ->with('success', 'Produk berhasil diupdate!');
     }
 
-    public function delete($id)
+    public function destroy($id)
     {
         $data = ModelProduk::findOrFail($id);
+
         $data->delete();
 
-        return redirect('/admin/produk')->with('success', 'Produk berhasil dihapus!');
+        return redirect()
+            ->route('master.produk.index')
+            ->with('success', 'Produk berhasil dihapus!');
     }
 }

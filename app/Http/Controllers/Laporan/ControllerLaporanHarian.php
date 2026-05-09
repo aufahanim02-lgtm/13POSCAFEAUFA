@@ -26,7 +26,8 @@ class ControllerLaporanHarian extends Controller
 
     public function show($id)
     {
-        $data = ModelLaporanHarian::with('user')->findOrFail($id);
-        return view($this->viewPath('show'), compact('data'));
+        $row = \App\Models\ModelLaporanHarian::findOrFail($id);
+
+        return view('manager.laporan.harian.show', compact('row'));
     }
 }

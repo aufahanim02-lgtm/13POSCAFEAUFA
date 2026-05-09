@@ -181,10 +181,9 @@
                 <!-- TRANSAKSI -->
                 <li class="nav-header text-warning">TRANSAKSI</li>
 
-                <!-- OWNER TIDAK PERLU POS KASIR -->
                 <li class="nav-item">
-                    <a href="{{ route('kasir.riwayat.index') }}"
-                        class="nav-link {{ request()->is('kasir/riwayat*') ? 'active' : '' }}">
+                    <a href="{{ route('transaksi.riwayat.index') }}"
+                        class="nav-link {{ request()->is('transaksi/riwayat*') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-receipt"></i>
                         <p>Riwayat Transaksi</p>
                     </a>
@@ -193,18 +192,23 @@
                 <li class="nav-header text-warning">LAPORAN</li>
 
                 @php
-                $laporanActive = request()->is('laporan*');
+                $laporanActive =
+                request()->is('laporan') ||
+                request()->is('laporan/*');
                 @endphp
 
-                <li class="nav-item {{ $laporanActive ? 'menu-open' : '' }}">
-                    <a href="#"
-                        onclick="return false;"
+                <li class="nav-item has-treeview {{ $laporanActive ? 'menu-open' : '' }}">
+
+                    <a href="javascript:void(0)"
                         class="nav-link {{ $laporanActive ? 'active' : '' }}">
+
                         <i class="nav-icon fas fa-file-alt"></i>
+
                         <p>
                             Menu Laporan
                             <i class="right fas fa-angle-left"></i>
                         </p>
+
                     </a>
 
                     <ul class="nav nav-treeview">
@@ -212,7 +216,7 @@
                         <li class="nav-item">
                             <a href="{{ route('laporan.harian.index') }}"
                                 class="nav-link {{ request()->is('laporan/harian*') ? 'active' : '' }}">
-                                <i class="far fa-calendar nav-icon"></i>
+                                <i class="far fa-circle nav-icon"></i>
                                 <p>Laporan Harian</p>
                             </a>
                         </li>
@@ -220,7 +224,7 @@
                         <li class="nav-item">
                             <a href="{{ route('laporan.bulanan.index') }}"
                                 class="nav-link {{ request()->is('laporan/bulanan*') ? 'active' : '' }}">
-                                <i class="far fa-calendar-alt nav-icon"></i>
+                                <i class="far fa-circle nav-icon"></i>
                                 <p>Laporan Bulanan</p>
                             </a>
                         </li>
@@ -228,7 +232,7 @@
                         <li class="nav-item">
                             <a href="{{ route('laporan.produk.index') }}"
                                 class="nav-link {{ request()->is('laporan/produk*') ? 'active' : '' }}">
-                                <i class="fas fa-box nav-icon"></i>
+                                <i class="far fa-circle nav-icon"></i>
                                 <p>Laporan Produk</p>
                             </a>
                         </li>
@@ -236,7 +240,7 @@
                         <li class="nav-item">
                             <a href="{{ route('laporan.kasir.index') }}"
                                 class="nav-link {{ request()->is('laporan/kasir*') ? 'active' : '' }}">
-                                <i class="fas fa-user nav-icon"></i>
+                                <i class="far fa-circle nav-icon"></i>
                                 <p>Laporan Kasir</p>
                             </a>
                         </li>
@@ -244,7 +248,7 @@
                         <li class="nav-item">
                             <a href="{{ route('laporan.shift.index') }}"
                                 class="nav-link {{ request()->is('laporan/shift*') ? 'active' : '' }}">
-                                <i class="fas fa-user-clock nav-icon"></i>
+                                <i class="far fa-circle nav-icon"></i>
                                 <p>Laporan Shift</p>
                             </a>
                         </li>
@@ -252,7 +256,7 @@
                         <li class="nav-item">
                             <a href="{{ route('laporan.keuntungan.index') }}"
                                 class="nav-link {{ request()->is('laporan/keuntungan*') ? 'active' : '' }}">
-                                <i class="fas fa-coins nav-icon"></i>
+                                <i class="far fa-circle nav-icon"></i>
                                 <p>Laporan Keuntungan</p>
                             </a>
                         </li>

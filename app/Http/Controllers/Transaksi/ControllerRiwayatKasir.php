@@ -60,4 +60,28 @@ class ControllerRiwayatKasir extends Controller
 
         return view('kasir.riwayat.show', compact('penjualan', 'detail', 'pembayaran'));
     }
+    public function adminIndex()
+{
+    $data = \App\Models\ModelPenjualan::with([
+        'user',
+        'meja'
+    ])
+    ->latest()
+    ->get();
+
+    return view('admin.riwayat.index', compact('data'));
+}
+
+public function adminShow($id)
+{
+    $data = \App\Models\ModelPenjualan::with([
+        'detailpenjualan.produk',
+        'user',
+        'meja',
+        'promo',
+        'pajak'
+    ])->findOrFail($id);
+
+    return view('admin.riwayat.show', compact('data'));
+}
 }

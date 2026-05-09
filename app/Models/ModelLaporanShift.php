@@ -11,10 +11,10 @@ class ModelLaporanShift extends Model
     protected $fillable = [
         'userid',
         'shiftid',
+        'tanggal',
         'totaltransaksi',
         'totalpendapatan'
     ];
-
     public function user()
     {
         return $this->belongsTo(ModelUser::class, 'userid', 'id');

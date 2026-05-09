@@ -18,6 +18,7 @@ class ControllerLaporanShift extends Controller
     public function index()
     {
         $data = ModelLaporanShift::with(['user', 'shift'])
+            ->orderBy('tanggal', 'desc')
             ->orderBy('id', 'desc')
             ->get();
 
@@ -26,7 +27,8 @@ class ControllerLaporanShift extends Controller
 
     public function show($id)
     {
-        $data = ModelLaporanShift::with(['user', 'shift'])->findOrFail($id);
-        return view($this->viewPath('show'), compact('data'));
+        $row = ModelLaporanShift::with(['user', 'shift'])->findOrFail($id);
+
+        return view($this->viewPath('show'), compact('row'));
     }
 }

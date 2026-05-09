@@ -4,14 +4,14 @@ namespace App\Http\Controllers\Master;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-
 use App\Models\ModelMetodePembayaran;
 
 class ControllerMetodePembayaran extends Controller
 {
     public function index()
     {
-        $data = ModelMetodePembayaran::orderBy('id', 'desc')->get();
+        $data = ModelMetodePembayaran::latest()->get();
+
         return view('admin.metodepembayaran.index', compact('data'));
     }
 
@@ -25,20 +25,34 @@ class ControllerMetodePembayaran extends Controller
         $request->validate([
             'namametode' => 'required',
             'jenis' => 'required',
+            'status' => 'required',
+            'qrcode' => 'nullable|image',
         ]);
+
+        $qrcode = null;
+
+        if ($request->hasFile('qrcode')) {
+
+            $qrcode = $request->file('qrcode')
+                ->store('qrcode', 'public');
+        }
 
         ModelMetodePembayaran::create([
             'namametode' => $request->namametode,
             'jenis' => $request->jenis,
-            'status' => 'aktif',
+            'status' => $request->status,
+            'qrcode' => $qrcode,
         ]);
 
-        return redirect('/admin/metodepembayaran')->with('success', 'Metode pembayaran berhasil ditambahkan!');
+        return redirect()
+            ->route('master.metodepembayaran.index')
+            ->with('success', 'Metode pembayaran berhasil ditambahkan');
     }
 
     public function edit($id)
     {
         $data = ModelMetodePembayaran::findOrFail($id);
+
         return view('admin.metodepembayaran.edit', compact('data'));
     }
 
@@ -50,22 +64,37 @@ class ControllerMetodePembayaran extends Controller
             'namametode' => 'required',
             'jenis' => 'required',
             'status' => 'required',
+            'qrcode' => 'nullable|image',
         ]);
+
+        $qrcode = $data->qrcode;
+
+        if ($request->hasFile('qrcode')) {
+
+            $qrcode = $request->file('qrcode')
+                ->store('qrcode', 'public');
+        }
 
         $data->update([
             'namametode' => $request->namametode,
             'jenis' => $request->jenis,
             'status' => $request->status,
+            'qrcode' => $qrcode,
         ]);
 
-        return redirect('/admin/metodepembayaran')->with('success', 'Metode pembayaran berhasil diupdate!');
+        return redirect()
+            ->route('master.metodepembayaran.index')
+            ->with('success', 'Metode pembayaran berhasil diupdate');
     }
 
-    public function delete($id)
+    public function destroy($id)
     {
         $data = ModelMetodePembayaran::findOrFail($id);
+
         $data->delete();
 
-        return redirect('/admin/metodepembayaran')->with('success', 'Metode pembayaran berhasil dihapus!');
+        return redirect()
+            ->route('master.metodepembayaran.index')
+            ->with('success', 'Metode pembayaran berhasil dihapus');
     }
 }

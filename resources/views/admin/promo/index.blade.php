@@ -3,79 +3,122 @@
 @section('title', 'Data Promo')
 
 @section('content')
-<div class="content-wrapper">
 
-    <section class="content-header">
-        <div class="container-fluid">
-            <h1>Data Promo</h1>
+<div class="container-fluid">
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4>Data Promo</h4>
+
+        <a href="{{ route('master.promo.create') }}"
+           class="btn btn-primary">
+            + Tambah Promo
+        </a>
+    </div>
+
+    @if(session('success'))
+        <div class="alert alert-success">
+            {{ session('success') }}
         </div>
-    </section>
+    @endif
 
-    <section class="content">
-        <div class="container-fluid">
+    <div class="card">
+        <div class="card-body table-responsive">
 
-            <div class="card card-danger card-outline">
-                <div class="card-header">
-                    <h3 class="card-title">List Promo</h3>
-                    <div class="card-tools">
-                        <a href="#" class="btn btn-danger btn-sm">
-                            <i class="fas fa-plus"></i> Tambah Promo
-                        </a>
-                    </div>
-                </div>
+            <table class="table table-bordered table-striped">
 
-                <div class="card-body table-responsive">
-                    <table class="table table-bordered table-striped">
-                        <thead class="bg-light">
-                            <tr>
-                                <th width="50">#</th>
-                                <th>Nama Promo</th>
-                                <th>Jenis</th>
-                                <th>Nilai Diskon</th>
-                                <th>Minimal Belanja</th>
-                                <th>Status</th>
-                                <th width="150">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse($data as $row)
-                                <tr>
-                                    <td>{{ $loop->iteration }}</td>
-                                    <td>{{ $row->namapromo }}</td>
-                                    <td>{{ strtoupper($row->jenis) }}</td>
-                                    <td>{{ $row->nilaidiskon }}</td>
-                                    <td>Rp {{ number_format($row->minimalbelanja ?? 0, 0, ',', '.') }}</td>
-                                    <td>
-                                        @if($row->status == 'aktif')
-                                            <span class="badge badge-success">AKTIF</span>
-                                        @else
-                                            <span class="badge badge-danger">NONAKTIF</span>
-                                        @endif
-                                    </td>
-                                    <td>
-                                        <a href="#" class="btn btn-warning btn-sm">
-                                            <i class="fas fa-edit"></i>
-                                        </a>
-                                        <a href="#" class="btn btn-danger btn-sm">
-                                            <i class="fas fa-trash"></i>
-                                        </a>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="7" class="text-center text-muted">
-                                        Data promo masih kosong.
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Kode</th>
+                        <th>Nama Promo</th>
+                        <th>Jenis</th>
+                        <th>Diskon</th>
+                        <th>Minimal Belanja</th>
+                        <th>Status</th>
+                        <th width="25%">Aksi</th>
+                    </tr>
+                </thead>
 
-            </div>
+                <tbody>
+
+                    @forelse($data as $item)
+
+                    <tr>
+
+                        <td>{{ $loop->iteration }}</td>
+
+                        <td>{{ $item->kodepromo }}</td>
+
+                        <td>{{ $item->namapromo }}</td>
+
+                        <td>{{ strtoupper($item->jenis) }}</td>
+
+                        <td>{{ $item->nilaidiskon }}</td>
+
+                        <td>
+                            Rp {{ number_format($item->minimalbelanja,0,',','.') }}
+                        </td>
+
+                        <td>
+                            @if($item->status == 'aktif')
+                                <span class="badge bg-success">
+                                    Aktif
+                                </span>
+                            @else
+                                <span class="badge bg-danger">
+                                    Nonaktif
+                                </span>
+                            @endif
+                        </td>
+
+                        <td>
+
+                            <a href="{{ route('master.promo.show', $item->id) }}"
+                               class="btn btn-info btn-sm">
+                                Detail
+                            </a>
+
+                            <a href="{{ route('master.promo.edit', $item->id) }}"
+                               class="btn btn-warning btn-sm">
+                                Edit
+                            </a>
+
+                            <form action="{{ route('master.promo.destroy', $item->id) }}"
+                                  method="POST"
+                                  class="d-inline">
+
+                                @csrf
+                                @method('DELETE')
+
+                                <button type="submit"
+                                        class="btn btn-danger btn-sm"
+                                        onclick="return confirm('Yakin hapus promo?')">
+                                    Hapus
+                                </button>
+
+                            </form>
+
+                        </td>
+
+                    </tr>
+
+                    @empty
+
+                    <tr>
+                        <td colspan="8" class="text-center">
+                            Data promo kosong
+                        </td>
+                    </tr>
+
+                    @endforelse
+
+                </tbody>
+
+            </table>
 
         </div>
-    </section>
+    </div>
 
 </div>
+
 @endsection

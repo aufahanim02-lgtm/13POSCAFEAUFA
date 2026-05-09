@@ -28,25 +28,25 @@ Controllers/Auth/ControllerAuthUser -> middleware/RoleMiddleware(kasir)   -> /lo
     ├──/stok (id,bahanbakuid,stoktersedia,stokminimal,status(aman,habis))
     ├──/stokmasuk (id,bahanbakuid,jumlah,tanggalmasuk,keterangan)
     ├──/stokkeluar (id,bahanbakuid,jumlah,tanggalkeluar,alasan)
-    ├──/pembelian (id,supplierid,userid,total,tanggalpembelian)
+    ├──/pembelian (id,kodepembelian,supplierid,userid,total,tanggalpembelian)
     └──/detailpembelian (id,pembelianid,bahanbakuid,qty,harga,subtotal)
 
 └───*transaksi division (POS)
-    ├──/penjualan (id,kodeinvoice,userid,mejaid,promoid,pajakid,subtotal,diskon,pajak,total,status(pending,paid),tanggalpenjualan)
+    ├──/penjualan (id,kodeinvoice,userid,shiftid,mejaid,promoid,pajakid,subtotal,diskon,pajak,total,status(pending,paid),tanggalpenjualan)
     ├──/detailpenjualan (id,penjualanid,produkid,qty,harga,subtotal)
-    ├──/pembayaran (id,penjualanid,metodepembayaranid,jumlahbayar,kembalian,buktibayar,status(paid,unpaid))
+    ├──/pembayaran (id,penjualanid,metodepembayaranid,jumlahbayar,kembalian,tanggalbayar,buktibayar,status(paid,unpaid))
     └──/cetakstruk (id,penjualanid,strukfile,tanggalcetak)
 
 └───*shift division
     └──/shift (id,userid,shiftmulai,shiftselesai,saldoawal,saldoakhir,totaltransaksi,status(open,closed))
 
 └───*laporan division (generate from transaksi + inventory)
-    ├──/laporan (id,userid,jenislaporan,periodeawal,periodeakhir,totaldata,createdat)
+    ├──/laporan (id,userid,jenislaporan,periodeawal,periodeakhir,totaldata,created_at)
     ├──/laporanharian (id,userid,tanggal,totaltransaksi,totalpendapatan,totaldiskon,totalpajak)
     ├──/laporanbulanan (id,userid,bulan,tahun,totaltransaksi,totalpendapatan,totaldiskon,totalpajak)
     ├──/laporanproduk (id,userid,produkid,totalterjual,totalpendapatan)
-    ├──/laporankasir (id,userid,kasirid,totaltransaksi,totalpendapatan)
-    ├──/laporanshift (id,userid,shiftid,totaltransaksi,totalpendapatan)
+    ├──/laporankasir (id,userid,kasirid,tanggal,totaltransaksi,totalpendapatan)
+    ├──/laporanshift (id,userid,shiftid,tanggal,totaltransaksi,totalpendapatan)
     └──/laporankeuntungan (id,userid,tanggal,totalpemasukan,totalpengeluaran,keuntungan)
 
 └───*zonakasir division

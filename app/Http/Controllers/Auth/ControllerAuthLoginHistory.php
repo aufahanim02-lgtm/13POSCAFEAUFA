@@ -3,19 +3,32 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\DB;
+use App\Models\ModelLoginHistory;
 
 class ControllerAuthLoginHistory extends Controller
 {
     public function index()
     {
-        $data = DB::table('loginhistory')
-            ->join('user', 'loginhistory.userid', '=', 'user.id')
-            ->select('loginhistory.*', 'user.name', 'user.username')
-            ->orderBy('loginhistory.id', 'desc')
+        $data = ModelLoginHistory::with('user')
+            ->orderBy('id', 'desc')
             ->get();
 
-        // FIX VIEW PATH (OWNER = ADMIN)
         return view('admin.loginhistory.index', compact('data'));
+    }
+
+    public function show($id)
+    {
+        $data = ModelLoginHistory::with('user')->findOrFail($id);
+
+        return view('admin.loginhistory.show', compact('data'));
+    }
+
+    public function destroy($id)
+    {
+        $data = ModelLoginHistory::findOrFail($id);
+        $data->delete();
+
+        return redirect()->route('loginhistory.index')
+            ->with('success', 'Log berhasil dihapus.');
     }
 }
