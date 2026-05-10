@@ -14,4 +14,20 @@ class ModelMetodePembayaran extends Model
         'status',
         'qrcode',
     ];
+
+    /*
+    |--------------------------------------------------------------------------
+    | RELATIONSHIP
+    |--------------------------------------------------------------------------
+    */
+
+    // SATU METODE BISA DIGUNAKAN BANYAK PEMBAYARAN
+    public function pembayaran()
+    {
+        return $this->hasMany(
+            ModelPembayaran::class,
+            'metodepembayaranid',
+            'id'
+        );
+    }
 }

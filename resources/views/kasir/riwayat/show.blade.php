@@ -33,9 +33,9 @@
                             </p>
                             <p class="mb-1"><b>Status:</b>
                                 @if($penjualan->status == 'paid')
-                                    <span class="badge badge-success px-3 py-2">PAID</span>
+                                <span class="badge badge-success px-3 py-2">PAID</span>
                                 @else
-                                    <span class="badge badge-warning px-3 py-2">PENDING</span>
+                                <span class="badge badge-warning px-3 py-2">PENDING</span>
                                 @endif
                             </p>
                         </div>
@@ -72,21 +72,21 @@
 
                             <tbody>
                                 @forelse($detail as $item)
-                                    <tr>
-                                        <td class="text-center">{{ $loop->iteration }}</td>
-                                        <td>
-                                            {{ $item->produk->namaproduk ?? 'Produk tidak ditemukan' }}
-                                        </td>
-                                        <td class="text-center">{{ $item->qty }}</td>
-                                        <td>Rp {{ number_format($item->harga, 0, ',', '.') }}</td>
-                                        <td>Rp {{ number_format($item->subtotal, 0, ',', '.') }}</td>
-                                    </tr>
+                                <tr>
+                                    <td class="text-center">{{ $loop->iteration }}</td>
+                                    <td>
+                                        {{ $item->produk->namaproduk ?? 'Produk tidak ditemukan' }}
+                                    </td>
+                                    <td class="text-center">{{ $item->qty }}</td>
+                                    <td>Rp {{ number_format($item->harga, 0, ',', '.') }}</td>
+                                    <td>Rp {{ number_format($item->subtotal, 0, ',', '.') }}</td>
+                                </tr>
                                 @empty
-                                    <tr>
-                                        <td colspan="5" class="text-center text-muted py-3">
-                                            Tidak ada detail produk.
-                                        </td>
-                                    </tr>
+                                <tr>
+                                    <td colspan="5" class="text-center text-muted py-3">
+                                        Tidak ada detail produk.
+                                    </td>
+                                </tr>
                                 @endforelse
                             </tbody>
                         </table>
@@ -123,7 +123,7 @@
                             <i class="fas fa-arrow-left"></i> Kembali
                         </a>
 
-                        <a href="{{ route('kasir.struk', $penjualan->id) }}" class="btn btn-success">
+                        <a href="{{ route('kasir.cetakstruk.print', $penjualan->id) }}" class="btn btn-success">
                             <i class="fas fa-print"></i> Cetak Struk
                         </a>
                     </div>

@@ -14,23 +14,30 @@ class ControllerRiwayatKasir extends Controller
 {
     /*
     |--------------------------------------------------------------------------
-    | INDEX (LIST RIWAYAT TRANSAKSI KASIR)
+    | INDEX RIWAYAT KASIR
     |--------------------------------------------------------------------------
     */
     public function index(Request $request)
     {
-        $query = ModelPenjualan::with(['pembayaran'])
+        $query = ModelPenjualan::with([
+                'pembayaran.metode',
+                'meja'
+            ])
             ->where('userid', Auth::id())
             ->orderBy('id', 'desc');
 
-        // FILTER STATUS (optional)
+        // FILTER STATUS
         if ($request->status) {
             $query->where('status', $request->status);
         }
 
-        // SEARCH INVOICE (optional)
+        // SEARCH INVOICE
         if ($request->search) {
-            $query->where('kodeinvoice', 'like', '%' . $request->search . '%');
+            $query->where(
+                'kodeinvoice',
+                'like',
+                '%' . $request->search . '%'
+            );
         }
 
         $data = $query->paginate(10);
@@ -38,15 +45,21 @@ class ControllerRiwayatKasir extends Controller
         return view('kasir.riwayat.index', compact('data'));
     }
 
-
     /*
     |--------------------------------------------------------------------------
-    | SHOW (DETAIL RIWAYAT TRANSAKSI)
+    | SHOW DETAIL TRANSAKSI KASIR
     |--------------------------------------------------------------------------
     */
     public function show($id)
     {
-        $penjualan = ModelPenjualan::where('userid', Auth::id())
+        $penjualan = ModelPenjualan::with([
+                'user',
+                'meja',
+                'promo',
+                'pajak',
+                'pembayaran.metode'
+            ])
+            ->where('userid', Auth::id())
             ->where('id', $id)
             ->firstOrFail();
 
@@ -58,30 +71,72 @@ class ControllerRiwayatKasir extends Controller
             ->where('penjualanid', $penjualan->id)
             ->first();
 
-        return view('kasir.riwayat.show', compact('penjualan', 'detail', 'pembayaran'));
+        return view(
+            'kasir.riwayat.show',
+            compact(
+                'penjualan',
+                'detail',
+                'pembayaran'
+            )
+        );
     }
-    public function adminIndex()
-{
-    $data = \App\Models\ModelPenjualan::with([
-        'user',
-        'meja'
-    ])
-    ->latest()
-    ->get();
 
-    return view('admin.riwayat.index', compact('data'));
-}
+    /*
+    |--------------------------------------------------------------------------
+    | ADMIN INDEX RIWAYAT
+    |--------------------------------------------------------------------------
+    */
+    public function adminIndex(Request $request)
+    {
+        $query = ModelPenjualan::with([
+                'user',
+                'meja',
+                'pembayaran.metode'
+            ])
+            ->latest();
 
-public function adminShow($id)
-{
-    $data = \App\Models\ModelPenjualan::with([
-        'detailpenjualan.produk',
-        'user',
-        'meja',
-        'promo',
-        'pajak'
-    ])->findOrFail($id);
+        // FILTER STATUS
+        if ($request->status) {
+            $query->where('status', $request->status);
+        }
 
-    return view('admin.riwayat.show', compact('data'));
-}
+        // SEARCH INVOICE
+        if ($request->search) {
+            $query->where(
+                'kodeinvoice',
+                'like',
+                '%' . $request->search . '%'
+            );
+        }
+
+        $data = $query->paginate(10);
+
+        return view(
+            'transaksi.riwayat.index',
+            compact('data')
+        );
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | ADMIN SHOW DETAIL RIWAYAT
+    |--------------------------------------------------------------------------
+    */
+    public function adminShow($id)
+    {
+        $data = ModelPenjualan::with([
+                'detailpenjualan.produk',
+                'user',
+                'meja',
+                'promo',
+                'pajak',
+                'pembayaran.metode'
+            ])
+            ->findOrFail($id);
+
+        return view(
+            'transaksi.riwayat.show',
+            compact('data')
+        );
+    }
 }

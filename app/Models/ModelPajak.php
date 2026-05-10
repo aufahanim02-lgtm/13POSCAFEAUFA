@@ -10,7 +10,7 @@ class ModelPajak extends Model
 
     protected $fillable = [
         'namapajak',
-        'persen',
+        'persentase',
         'status',
     ];
 }

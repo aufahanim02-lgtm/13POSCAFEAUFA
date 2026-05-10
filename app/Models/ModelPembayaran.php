@@ -24,13 +24,23 @@ class ModelPembayaran extends Model
     |--------------------------------------------------------------------------
     */
 
+    // PENJUALAN
     public function penjualan()
     {
-        return $this->belongsTo(ModelPenjualan::class, 'penjualanid', 'id');
+        return $this->belongsTo(
+            ModelPenjualan::class,
+            'penjualanid',
+            'id'
+        );
     }
 
-    public function metodePembayaran()
+    // METODE PEMBAYARAN
+    public function metode()
     {
-        return $this->belongsTo(ModelMetodePembayaran::class, 'metodepembayaranid', 'id');
+        return $this->belongsTo(
+            ModelMetodePembayaran::class,
+            'metodepembayaranid',
+            'id'
+        );
     }
 }
