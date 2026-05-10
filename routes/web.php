@@ -141,26 +141,13 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('/user/{id}', [ControllerUser::class, 'destroy'])->name('master.user.destroy');
 
         // KATEGORI
-        Route::get('/kategori', [ControllerKategori::class, 'index'])
-            ->name('master.kategori.index');
-
-        Route::get('/kategori/create', [ControllerKategori::class, 'create'])
-            ->name('master.kategori.create');
-
-        Route::post('/kategori', [ControllerKategori::class, 'store'])
-            ->name('master.kategori.store');
-
-        Route::get('/kategori/{id}', [ControllerKategori::class, 'show'])
-            ->name('master.kategori.show');
-
-        Route::get('/kategori/{id}/edit', [ControllerKategori::class, 'edit'])
-            ->name('master.kategori.edit');
-
-        Route::put('/kategori/{id}', [ControllerKategori::class, 'update'])
-            ->name('master.kategori.update');
-
-        Route::delete('/kategori/{id}', [ControllerKategori::class, 'destroy'])
-            ->name('master.kategori.destroy');
+        Route::get('/kategori', [ControllerKategori::class, 'index'])->name('master.kategori.index');
+        Route::get('/kategori/create', [ControllerKategori::class, 'create'])->name('master.kategori.create');
+        Route::post('/kategori', [ControllerKategori::class, 'store'])->name('master.kategori.store');
+        Route::get('/kategori/{id}', [ControllerKategori::class, 'show'])->name('master.kategori.show');
+        Route::get('/kategori/{id}/edit', [ControllerKategori::class, 'edit'])->name('master.kategori.edit');
+        Route::put('/kategori/{id}', [ControllerKategori::class, 'update'])->name('master.kategori.update');
+        Route::delete('/kategori/{id}', [ControllerKategori::class, 'destroy'])->name('master.kategori.destroy');
 
         // PRODUK
         Route::get('/produk', [ControllerProduk::class, 'index'])->name('master.produk.index');
@@ -226,13 +213,13 @@ Route::middleware(['auth'])->group(function () {
     Route::prefix('inventory')->middleware(['role:owner,manager'])->group(function () {
 
         // BAHAN BAKU
-        Route::get('/bahanbaku', [ControllerBahanBaku::class, 'index'])->name('inventory.bahanbaku.index');
+        Route::get('/bahanbaku', [ControllerBahanBaku::class, 'index']) ->name('inventory.bahanbaku.index');
         Route::get('/bahanbaku/create', [ControllerBahanBaku::class, 'create'])->name('inventory.bahanbaku.create');
         Route::post('/bahanbaku', [ControllerBahanBaku::class, 'store'])->name('inventory.bahanbaku.store');
-        Route::get('/bahanbaku/{id}/edit', [ControllerBahanBaku::class, 'edit'])->name('inventory.bahanbaku.edit');
+        Route::get('/bahanbaku/{id}', [ControllerBahanBaku::class, 'show'])->name('inventory.bahanbaku.show');
+        Route::get('/bahanbaku/{id}/edit', [ControllerBahanBaku::class, 'edit']) ->name('inventory.bahanbaku.edit');
         Route::put('/bahanbaku/{id}', [ControllerBahanBaku::class, 'update'])->name('inventory.bahanbaku.update');
         Route::delete('/bahanbaku/{id}', [ControllerBahanBaku::class, 'destroy'])->name('inventory.bahanbaku.destroy');
-
         // STOK
         Route::get('/stok', [ControllerStok::class, 'index'])->name('inventory.stok.index');
         Route::get('/stok/create', [ControllerStok::class, 'create'])->name('inventory.stok.create');

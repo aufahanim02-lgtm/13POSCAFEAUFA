@@ -3,80 +3,117 @@
 @section('title', 'Data Stok Keluar')
 
 @section('content')
-<div class="content-header">
-    <div class="container-fluid d-flex justify-content-between align-items-center">
-        <div>
-            <h1 class="m-0">Data Stok Keluar</h1>
-            <small class="text-muted">Monitoring stok keluar bahan baku</small>
-        </div>
+
+<div class="card">
+
+    <div class="card-header d-flex justify-content-between align-items-center">
+
+        <h3 class="card-title">
+            Data Stok Keluar
+        </h3>
+
+        <a href="{{ route('inventory.stokkeluar.create') }}"
+           class="btn btn-primary btn-sm">
+            Tambah
+        </a>
+
     </div>
+
+    <div class="card-body">
+
+        @if(session('success'))
+
+            <div class="alert alert-success">
+                {{ session('success') }}
+            </div>
+
+        @endif
+
+        <table class="table table-bordered table-striped">
+
+            <thead>
+
+                <tr>
+                    <th>No</th>
+                    <th>Bahan Baku</th>
+                    <th>Jumlah</th>
+                    <th>Tanggal Keluar</th>
+                    <th>Alasan</th>
+                    <th width="250">Aksi</th>
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                @forelse($data as $no => $row)
+
+                <tr>
+
+                    <td>{{ $no + 1 }}</td>
+
+                    <td>
+                        {{ $row->bahanbaku->namabahan ?? '-' }}
+                    </td>
+
+                    <td>{{ $row->jumlah }}</td>
+
+                    <td>{{ $row->tanggalkeluar }}</td>
+
+                    <td>{{ $row->alasan }}</td>
+
+                    <td>
+
+                        <a href="{{ route('inventory.stokkeluar.show', $row->id) }}"
+                           class="btn btn-info btn-sm">
+                            Show
+                        </a>
+
+                        <a href="{{ route('inventory.stokkeluar.edit', $row->id) }}"
+                           class="btn btn-warning btn-sm">
+                            Edit
+                        </a>
+
+                        <form action="{{ route('inventory.stokkeluar.destroy', $row->id) }}"
+                              method="POST"
+                              style="display:inline-block;">
+
+                            @csrf
+                            @method('DELETE')
+
+                            <button type="submit"
+                                    onclick="return confirm('Yakin hapus data?')"
+                                    class="btn btn-danger btn-sm">
+                                Delete
+                            </button>
+
+                        </form>
+
+                    </td>
+
+                </tr>
+
+                @empty
+
+                <tr>
+
+                    <td colspan="6"
+                        class="text-center">
+
+                        Data stok keluar kosong
+
+                    </td>
+
+                </tr>
+
+                @endforelse
+
+            </tbody>
+
+        </table>
+
+    </div>
+
 </div>
 
-<section class="content">
-    <div class="container-fluid">
-
-        <div class="card shadow-sm">
-            <div class="card-body">
-
-                @if($data->count() == 0)
-                    <div class="alert alert-warning mb-0">
-                        Data stok keluar masih kosong.
-                    </div>
-                @else
-                    <div class="table-responsive">
-                        <table class="table table-bordered table-striped align-middle">
-                            <thead class="table-dark">
-                                <tr>
-                                    <th width="5%">No</th>
-                                    <th>Bahan Baku</th>
-                                    <th width="15%">Jumlah</th>
-                                    <th width="20%">Tanggal Keluar</th>
-                                    <th>Alasan</th>
-                                    <th width="10%">Detail</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($data as $item)
-                                    <tr>
-                                        <td>{{ $loop->iteration }}</td>
-
-                                        <td>
-                                            <b>{{ $item->bahanbaku->namabahan ?? '-' }}</b>
-                                            <br>
-                                            <small class="text-muted">
-                                                ID: {{ $item->bahanbakuid }}
-                                            </small>
-                                        </td>
-
-                                        <td class="text-center">
-                                            <span class="fw-bold">{{ $item->jumlah ?? 0 }}</span>
-                                        </td>
-
-                                        <td class="text-center">
-                                            {{ $item->tanggalkeluar ?? '-' }}
-                                        </td>
-
-                                        <td>
-                                            {{ $item->alasan ?? '-' }}
-                                        </td>
-
-                                        <td class="text-center">
-                                            <a href="{{ route('inventory.stokkeluar.show', $item->id) }}"
-                                               class="btn btn-sm btn-info">
-                                                <i class="fas fa-eye"></i>
-                                            </a>
-                                        </td>
-
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                @endif
-
-            </div>
-        </div>
-
-    </div>
-</section>
 @endsection

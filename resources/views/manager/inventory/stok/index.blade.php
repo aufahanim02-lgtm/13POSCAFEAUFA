@@ -3,120 +3,132 @@
 @section('title', 'Data Stok')
 
 @section('content')
-<div class="content-header">
-    <div class="container-fluid d-flex justify-content-between align-items-center">
-        <div>
-            <h1 class="m-0">Data Stok</h1>
-            <small class="text-muted">Monitoring stok bahan baku</small>
-        </div>
-    </div>
-</div>
 
-<section class="content">
-    <div class="container-fluid">
+<div class="card">
+
+    <div class="card-header d-flex justify-content-between align-items-center">
+
+        <h3 class="card-title">
+            Data Stok
+        </h3>
+
+        <a href="{{ route('inventory.stok.create') }}"
+           class="btn btn-primary btn-sm">
+            Tambah
+        </a>
+
+    </div>
+
+    <div class="card-body">
 
         @if(session('success'))
-            <div class="alert alert-success alert-dismissible fade show">
+            <div class="alert alert-success">
                 {{ session('success') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
         @endif
 
-        @if(session('error'))
-            <div class="alert alert-danger alert-dismissible fade show">
-                {{ session('error') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        @endif
+        <table class="table table-bordered table-striped">
 
-        <div class="card shadow-sm">
-            <div class="card-body">
+            <thead>
 
-                @if($data->count() == 0)
-                    <div class="alert alert-warning mb-0">
-                        Data stok masih kosong.
-                    </div>
-                @else
-                    <div class="table-responsive">
-                        <table class="table table-bordered table-striped align-middle">
-                            <thead class="table-dark">
-                                <tr>
-                                    <th width="5%">No</th>
-                                    <th>Bahan Baku</th>
-                                    <th width="15%">Stok Tersedia</th>
-                                    <th width="15%">Stok Minimal</th>
-                                    <th width="15%">Status</th>
-                                    <th width="20%">Terakhir Update</th>
-                                    <th width="10%">Detail</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($data as $item)
+                <tr>
+                    <th>No</th>
+                    <th>Bahan Baku</th>
+                    <th>Stok Tersedia</th>
+                    <th>Stok Minimal</th>
+                    <th>Status</th>
+                    <th width="250">Aksi</th>
+                </tr>
 
-                                    @php
-                                        $stokTersedia = $item->stoktersedia ?? 0;
-                                        $stokMinimal  = $item->stokminimal ?? 0;
+            </thead>
 
-                                        if($stokTersedia <= 0){
-                                            $badgeClass = 'danger';
-                                            $statusText = 'Habis';
-                                        } elseif($stokTersedia <= $stokMinimal){
-                                            $badgeClass = 'warning';
-                                            $statusText = 'Menipis';
-                                        } else {
-                                            $badgeClass = 'success';
-                                            $statusText = 'Aman';
-                                        }
-                                    @endphp
+            <tbody>
 
-                                    <tr>
-                                        <td>{{ $loop->iteration }}</td>
+                @forelse($data as $no => $row)
 
-                                        <td>
-                                            <b>{{ $item->bahanbaku->namabahan ?? '-' }}</b>
-                                            <br>
-                                            <small class="text-muted">
-                                                ID: {{ $item->bahanbakuid }}
-                                            </small>
-                                        </td>
+                <tr>
 
-                                        <td class="text-center">
-                                            <span class="fw-bold">
-                                                {{ $stokTersedia }}
-                                            </span>
-                                        </td>
+                    <td>{{ $no + 1 }}</td>
 
-                                        <td class="text-center">
-                                            {{ $stokMinimal }}
-                                        </td>
+                    <td>
+                        {{ $row->bahanbaku->namabahan ?? '-' }}
+                    </td>
 
-                                        <td class="text-center">
-                                            <span class="badge bg-{{ $badgeClass }}">
-                                                {{ $statusText }}
-                                            </span>
-                                        </td>
+                    <td>
+                        {{ $row->stoktersedia }}
+                    </td>
 
-                                        <td>
-                                            {{ $item->updated_at ? $item->updated_at->format('d-m-Y H:i') : '-' }}
-                                        </td>
+                    <td>
+                        {{ $row->stokminimal }}
+                    </td>
 
-                                        <td class="text-center">
-                                            <a href="{{ route('inventory.stok.show', $item->id) }}"
-                                               class="btn btn-sm btn-info">
-                                                <i class="fas fa-eye"></i>
-                                            </a>
-                                        </td>
+                    <td>
 
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                @endif
+                        @if($row->status == 'aman')
 
-            </div>
-        </div>
+                            <span class="badge bg-success">
+                                Aman
+                            </span>
+
+                        @else
+
+                            <span class="badge bg-danger">
+                                Menipis
+                            </span>
+
+                        @endif
+
+                    </td>
+
+                    <td>
+
+                        <a href="{{ route('inventory.stok.show', $row->id) }}"
+                           class="btn btn-info btn-sm">
+                            Show
+                        </a>
+
+                        <a href="{{ route('inventory.stok.edit', $row->id) }}"
+                           class="btn btn-warning btn-sm">
+                            Edit
+                        </a>
+
+                        <form action="{{ route('inventory.stok.destroy', $row->id) }}"
+                              method="POST"
+                              style="display:inline-block;">
+
+                            @csrf
+                            @method('DELETE')
+
+                            <button type="submit"
+                                    onclick="return confirm('Yakin hapus data?')"
+                                    class="btn btn-danger btn-sm">
+                                Delete
+                            </button>
+
+                        </form>
+
+                    </td>
+
+                </tr>
+
+                @empty
+
+                <tr>
+
+                    <td colspan="6" class="text-center">
+                        Data stok kosong
+                    </td>
+
+                </tr>
+
+                @endforelse
+
+            </tbody>
+
+        </table>
 
     </div>
-</section>
+
+</div>
+
 @endsection

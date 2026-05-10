@@ -1,73 +1,122 @@
 @extends('layouts.appmanager')
 
-@section('title', 'Monitoring Pembelian')
+@section('title', 'Data Pembelian')
 
 @section('content')
-<div class="content-wrapper">
 
-    <section class="content-header">
-        <div class="container-fluid">
-            <h1 class="fw-bold">Monitoring Pembelian</h1>
-            <small class="text-muted">Pantau data pembelian bahan baku</small>
-        </div>
-    </section>
+<div class="card">
 
-    <section class="content">
-        <div class="container-fluid">
+    <div class="card-header d-flex justify-content-between">
 
-            <div class="card shadow-sm">
-                <div class="card-header bg-warning text-dark">
-                    <h3 class="card-title">
-                        <i class="fas fa-shopping-cart"></i> Data Pembelian
-                    </h3>
-                </div>
+        <h3 class="card-title">
+            Data Pembelian
+        </h3>
 
-                <div class="card-body table-responsive">
+        <a href="{{ route('inventory.pembelian.create') }}"
+            class="btn btn-primary btn-sm">
 
-                    <table class="table table-bordered table-striped">
-                        <thead class="bg-light">
-                            <tr>
-                                <th width="50">No</th>
-                                <th>Kode Pembelian</th>
-                                <th>Supplier</th>
-                                <th>User</th>
-                                <th>Total</th>
-                                <th>Tanggal</th>
-                                <th width="100">Aksi</th>
-                            </tr>
-                        </thead>
+            <i class="fas fa-plus"></i>
+            Tambah
 
-                        <tbody>
-                            @forelse($data as $row)
-                                <tr>
-                                    <td>{{ $loop->iteration }}</td>
-                                    <td>{{ $row->kodepembelian ?? '-' }}</td>
-                                    <td>{{ $row->supplier->namasupplier ?? '-' }}</td>
-                                    <td>{{ $row->user->name ?? '-' }}</td>
-                                    <td>Rp {{ number_format($row->total,0,',','.') }}</td>
-                                    <td>{{ $row->tanggalpembelian }}</td>
-                                    <td>
-                                        <a href="{{ url('inventory/pembelian/show/'.$row->id) }}" class="btn btn-info btn-sm">
-                                            <i class="fas fa-eye"></i>
-                                        </a>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="7" class="text-center text-muted">
-                                        Tidak ada data pembelian
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
+        </a>
 
-                    </table>
+    </div>
 
-                </div>
+    <div class="card-body">
+
+        @if(session('success'))
+
+            <div class="alert alert-success">
+                {{ session('success') }}
             </div>
 
-        </div>
-    </section>
+        @endif
+
+        <table class="table table-bordered table-striped">
+
+            <thead>
+
+                <tr>
+
+                    <th>No</th>
+                    <th>Tanggal</th>
+                    <th>Total</th>
+                    <th width="220">Aksi</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                @forelse($data as $no => $row)
+
+                    <tr>
+
+                        <td>{{ $no + 1 }}</td>
+
+                        <td>
+                            {{ $row->tanggalpembelian }}
+                        </td>
+
+                        <td>
+                            Rp {{ number_format($row->total,0,',','.') }}
+                        </td>
+
+                        <td>
+
+                            <a href="{{ route('inventory.pembelian.show',$row->id) }}"
+                                class="btn btn-info btn-sm">
+
+                                <i class="fas fa-eye"></i>
+
+                            </a>
+
+                            <a href="{{ route('inventory.pembelian.edit',$row->id) }}"
+                                class="btn btn-warning btn-sm">
+
+                                <i class="fas fa-edit"></i>
+
+                            </a>
+
+                            <form action="{{ route('inventory.pembelian.destroy',$row->id) }}"
+                                method="POST"
+                                class="d-inline">
+
+                                @csrf
+                                @method('DELETE')
+
+                                <button class="btn btn-danger btn-sm"
+                                    onclick="return confirm('Yakin hapus data?')">
+
+                                    <i class="fas fa-trash"></i>
+
+                                </button>
+
+                            </form>
+
+                        </td>
+
+                    </tr>
+
+                @empty
+
+                    <tr>
+
+                        <td colspan="4" class="text-center">
+                            Data pembelian kosong
+                        </td>
+
+                    </tr>
+
+                @endforelse
+
+            </tbody>
+
+        </table>
+
+    </div>
 
 </div>
+
 @endsection

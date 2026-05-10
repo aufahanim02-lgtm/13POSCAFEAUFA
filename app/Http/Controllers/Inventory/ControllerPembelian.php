@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Auth;
 
 use App\Models\ModelPembelian;
 use App\Models\ModelDetailPembelian;
+use App\Models\ModelSupplier;
+use App\Models\ModelBahanBaku;
 
 class ControllerPembelian extends Controller
 {
@@ -24,38 +26,100 @@ class ControllerPembelian extends Controller
 
     public function index()
     {
-        $data = ModelPembelian::orderBy('id', 'desc')->get();
-        return view($this->viewPath('index'), compact('data'));
+        $data = ModelPembelian::latest()->get();
+
+        return view(
+            $this->viewPath('index'),
+            compact('data')
+        );
     }
 
     public function create()
     {
-        if (Auth::user()->role == 'manager') {
-            return redirect()->back()->with('error', 'Manager tidak punya izin membuat pembelian.');
-        }
+        $supplier = ModelSupplier::all();
+        $bahanbaku = ModelBahanBaku::all();
 
-        return view($this->viewPath('create'));
+        return view(
+            $this->viewPath('create'),
+            compact('supplier', 'bahanbaku')
+        );
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'supplierid' => 'required',
+            'tanggalpembelian' => 'required',
+            'total' => 'required|numeric'
+        ]);
+
+        $pembelian = ModelPembelian::create([
+            'supplierid' => $request->supplierid,
+            'tanggalpembelian' => $request->tanggalpembelian,
+            'total' => $request->total,
+        ]);
+
+        return redirect()
+            ->route('inventory.pembelian.index')
+            ->with('success', 'Pembelian berhasil ditambahkan.');
     }
 
     public function show($id)
     {
         $pembelian = ModelPembelian::findOrFail($id);
 
-        $detail = ModelDetailPembelian::where('pembelianid', $id)->get();
+        $detail = ModelDetailPembelian::where(
+            'pembelianid',
+            $id
+        )->get();
 
-        return view($this->viewPath('show'), compact('pembelian', 'detail'));
+        return view(
+            $this->viewPath('show'),
+            compact('pembelian', 'detail')
+        );
     }
 
     public function edit($id)
     {
-        if (Auth::user()->role == 'manager') {
-            return redirect()->back()->with('error', 'Manager tidak punya izin edit pembelian.');
-        }
+        $pembelian = ModelPembelian::findOrFail($id);
+
+        $supplier = ModelSupplier::all();
+
+        return view(
+            $this->viewPath('edit'),
+            compact('pembelian', 'supplier')
+        );
+    }
+
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'supplierid' => 'required',
+            'tanggalpembelian' => 'required',
+            'total' => 'required|numeric'
+        ]);
 
         $pembelian = ModelPembelian::findOrFail($id);
 
-        $detail = ModelDetailPembelian::where('pembelianid', $id)->get();
+        $pembelian->update([
+            'supplierid' => $request->supplierid,
+            'tanggalpembelian' => $request->tanggalpembelian,
+            'total' => $request->total,
+        ]);
 
-        return view($this->viewPath('edit'), compact('pembelian', 'detail'));
+        return redirect()
+            ->route('inventory.pembelian.index')
+            ->with('success', 'Pembelian berhasil diupdate.');
+    }
+
+    public function destroy($id)
+    {
+        $pembelian = ModelPembelian::findOrFail($id);
+
+        $pembelian->delete();
+
+        return redirect()
+            ->route('inventory.pembelian.index')
+            ->with('success', 'Pembelian berhasil dihapus.');
     }
 }

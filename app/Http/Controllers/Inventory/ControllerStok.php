@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Inventory;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+
 use App\Models\ModelStok;
+use App\Models\ModelBahanBaku;
 
 class ControllerStok extends Controller
 {
@@ -22,34 +24,99 @@ class ControllerStok extends Controller
 
     public function index()
     {
-        $data = ModelStok::with('bahanbaku')->orderBy('id', 'desc')->get();
-        return view($this->viewPath('index'), compact('data'));
+        $data = ModelStok::with('bahanbaku')
+            ->orderBy('id', 'desc')
+            ->get();
+
+        return view(
+            $this->viewPath('index'),
+            compact('data')
+        );
     }
 
     public function create()
     {
-        // jika manager tidak boleh create, kamu bisa kasih error
-        if (Auth::user()->role == 'manager') {
-            return redirect()->back()->with('error', 'Manager tidak punya izin menambah stok.');
-        }
+        $bahanbaku = ModelBahanBaku::all();
 
-        return view($this->viewPath('create'));
+        return view(
+            $this->viewPath('create'),
+            compact('bahanbaku')
+        );
     }
 
-    public function edit($id)
+    public function store(Request $request)
     {
-        // jika manager tidak boleh edit, aktifkan ini
-        if (Auth::user()->role == 'manager') {
-            return redirect()->back()->with('error', 'Manager tidak punya izin edit stok.');
-        }
+        $request->validate([
+            'bahanbakuid' => 'required',
+            'stoktersedia' => 'required|numeric',
+            'stokminimal' => 'required|numeric',
+            'status' => 'required',
+        ]);
 
-        $data = ModelStok::findOrFail($id);
-        return view($this->viewPath('edit'), compact('data'));
+        ModelStok::create([
+            'bahanbakuid' => $request->bahanbakuid,
+            'stoktersedia' => $request->stoktersedia,
+            'stokminimal' => $request->stokminimal,
+            'status' => $request->status,
+        ]);
+
+        return redirect()
+            ->route('inventory.stok.index')
+            ->with('success', 'Data stok berhasil ditambahkan.');
     }
 
     public function show($id)
     {
         $data = ModelStok::with('bahanbaku')->findOrFail($id);
-        return view($this->viewPath('show'), compact('data'));
+
+        return view(
+            $this->viewPath('show'),
+            compact('data')
+        );
+    }
+
+    public function edit($id)
+    {
+        $data = ModelStok::findOrFail($id);
+        $bahanbaku = ModelBahanBaku::all();
+
+        return view(
+            $this->viewPath('edit'),
+            compact('data', 'bahanbaku')
+        );
+    }
+
+    public function update(Request $request, $id)
+    {
+        $data = ModelStok::findOrFail($id);
+
+        $request->validate([
+            'bahanbakuid' => 'required',
+            'stoktersedia' => 'required|numeric',
+            'stokminimal' => 'required|numeric',
+            'status' => 'required',
+        ]);
+
+        $data->update([
+            'bahanbakuid' => $request->bahanbakuid,
+            'stoktersedia' => $request->stoktersedia,
+            'stokminimal' => $request->stokminimal,
+            'status' => $request->status,
+        ]);
+
+        return redirect()
+            ->route('inventory.stok.index')
+            ->with('success', 'Data stok berhasil diupdate.');
+    }
+
+    public function destroy($id)
+    {
+        $data = ModelStok::findOrFail($id);
+
+        $data->delete();
+
+        return redirect()
+            ->route('inventory.stok.index')
+            ->with('success', 'Data stok berhasil dihapus.');
     }
 }
