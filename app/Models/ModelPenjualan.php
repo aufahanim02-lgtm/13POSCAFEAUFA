@@ -3,71 +3,87 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\ModelPelanggan;
+use App\Models\ModelUser;
+use App\Models\ModelMeja;
+use App\Models\ModelShift;
+use App\Models\ModelPromo;
+use App\Models\ModelPajak;
+use App\Models\ModelDetailPenjualan;
+use App\Models\ModelPembayaran;
 
 class ModelPenjualan extends Model
 {
     protected $table = 'penjualan';
 
-    protected $fillable = [
-        'kodeinvoice',
-        'userid',
-        'shiftid',
-        'mejaid',
-        'promoid',
-        'pajakid',
-        'subtotal',
-        'diskon',
-        'pajak',
-        'total',
-        'status',
-        'tanggalpenjualan'
-    ];
+   protected $fillable = [
+    'kodeinvoice',
+    'userid',
+    'pelangganid',
+    'shiftid',
+    'mejaid',
+    'promoid',
+    'pajakid',
+    'subtotal',
+    'diskon',
+    'pajak',
+    'total',
+    'sumberpesanan',
+    'statuspesanan',
+    'statuspembayaran',
 
-    /*
-    |--------------------------------------------------------------------------
-    | RELATIONSHIP
-    |--------------------------------------------------------------------------
-    */
+    // 🔥 PAYMENT SYSTEM FIX
+  'payment_gateway',
+    'qris_reference',
+    'statuspembayaran',
+    'statuspesanan',
 
-    // USER / KASIR
+    'status',
+    'tanggalpenjualan'
+];
+
+    public function pelanggan()
+    {
+        return $this->belongsTo(ModelPelanggan::class, 'pelangganid');
+    }
+
+    public function kasir()
+    {
+        return $this->belongsTo(ModelUser::class, 'userid');
+    }
+
     public function user()
     {
-        return $this->belongsTo(ModelUser::class, 'userid', 'id');
+        return $this->belongsTo(ModelUser::class, 'userid');
     }
 
-    // SHIFT
-    public function shift()
-    {
-        return $this->belongsTo(ModelShift::class, 'shiftid', 'id');
-    }
-
-    // MEJA
     public function meja()
     {
-        return $this->belongsTo(ModelMeja::class, 'mejaid', 'id');
+        return $this->belongsTo(ModelMeja::class, 'mejaid');
     }
 
-    // PROMO
+    public function shift()
+    {
+        return $this->belongsTo(ModelShift::class, 'shiftid');
+    }
+
     public function promo()
     {
-        return $this->belongsTo(ModelPromo::class, 'promoid', 'id');
+        return $this->belongsTo(ModelPromo::class, 'promoid');
     }
 
-    // PAJAK
-    public function pajak()
+    public function pajakData()
     {
-        return $this->belongsTo(ModelPajak::class, 'pajakid', 'id');
+        return $this->belongsTo(ModelPajak::class, 'pajakid');
     }
 
-    // DETAIL PENJUALAN
-    public function detailpenjualan()
+    public function detail()
     {
-        return $this->hasMany(ModelDetailPenjualan::class, 'penjualanid', 'id');
+        return $this->hasMany(ModelDetailPenjualan::class, 'penjualanid');
     }
 
-    // PEMBAYARAN
     public function pembayaran()
     {
-        return $this->hasOne(ModelPembayaran::class, 'penjualanid', 'id');
+        return $this->hasOne(ModelPembayaran::class, 'penjualanid');
     }
 }

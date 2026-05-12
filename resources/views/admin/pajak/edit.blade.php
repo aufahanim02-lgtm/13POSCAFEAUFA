@@ -30,12 +30,12 @@
                 </div>
 
                 <div class="mb-3">
-                    <label>Persen Pajak</label>
+                    <label>persentase Pajak</label>
 
                     <input type="number"
-                           name="persen"
+                           name="persentase"
                            class="form-control"
-                           value="{{ $data->persen }}"
+                           value="{{ $data->persentase }}"
                            required>
                 </div>
 

@@ -18,12 +18,6 @@
 
                 @csrf
 
-                <div class="mb-3">
-                    <label>Kode Promo</label>
-                    <input type="text"
-                           name="kodepromo"
-                           class="form-control">
-                </div>
 
                 <div class="mb-3">
                     <label>Nama Promo</label>

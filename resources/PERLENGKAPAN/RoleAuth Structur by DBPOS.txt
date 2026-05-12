@@ -1,25 +1,33 @@
-BREAKDOWN STRUKTUR ROUTE CAFEPOS BY DATABASE => CAFEPOS (Sistem Kasir Cafe/Restoran + Inventory + Laporan)
+BREAKDOWN STRUKTUR ROUTE CAFEPOS BY DATABASE => CAFEPOS (Sistem Kasir Cafe/Restoran + Pelanggan + Inventory + Laporan)
 
-Controllers/Auth/ControllerAuthUser -> middleware/RoleMiddleware(owner)   -> /loginowner
-Controllers/Auth/ControllerAuthUser -> middleware/RoleMiddleware(manager) -> /loginmanager
-Controllers/Auth/ControllerAuthUser -> middleware/RoleMiddleware(kasir)   -> /loginkasir
+Controllers/Auth/ControllerAuthUser       -> middleware/RoleMiddleware(owner)                  -> /loginowner
+Controllers/Auth/ControllerAuthUser       -> middleware/RoleMiddleware(manager)                -> /loginmanager
+Controllers/Auth/ControllerAuthUser       -> middleware/RoleMiddleware(kasir)                  -> /loginkasir
+
+Controllers/Auth/ControllerAuthPelanggan  -> middleware/PelangganMiddleware(pelanggan)         -> /loginpelanggan
+Controllers/Auth/ControllerAuthPelanggan  -> middleware/PelangganMiddleware(pelanggan)         -> /registerpelanggan
 
 [Middleware RoleMiddleware (owner + manager + kasir)]
 └───*dashboard division
-    ├──/dashboardowner (dashboard khusus owner)
-    ├──/dashboardmanager (dashboard khusus manager)
-    └──/dashboardkasir (dashboard khusus kasir)
+    ├──/dashboardowner (totalpenjualan,totalpendapatan,totalproduk,totalpelanggan,laporan,statistik)
+    ├──/dashboardmanager (monitoringstok,monitoringpenjualan,laporan,aktivitaspegawai)
+    └──/dashboardkasir (pesananmasuk,transaksihariini,pembayaran,antrian,shiftaktif)
+
+[Middleware PelangganMiddleware (pelanggan)]
+└───*dashboard pelanggan division
+    └──/dashboardpelanggan (totalpesanan,statuspesanan,riwayattransaksi,pointmember,promoaktif)
 
 └───*auth division
     └──/loginhistory (id,userid,ipaddress,useragent,loginat,logoutat,status)
 
 └───*master division
     ├──/user (id,name,username,email,password,role(owner,manager,kasir),foto,isactive)
+    ├──/pelanggan (id,name,username,email,nohp,password,foto,point,levelmember(silver,gold,platinum),status(aktif,nonaktif),remembertoken)
     ├──/kategori (id,namakategori,deskripsi)
-    ├──/produk (id,kategoriid,kodeproduk,namaproduk,hargajual,satuan,foto,status(aktif,nonaktif))
+    ├──/produk (id,kategoriid,kodeproduk,namaproduk,deskripsi,hargajual,stokproduk,satuan,foto,status(aktif,nonaktif))
     ├──/meja (id,nomormeja,kapasitas,status(kosong,terisi))
     ├──/supplier (id,namasupplier,nohp,alamat)
-    ├──/metodepembayaran (id,namametode,jenis(cash,noncash),status(aktif,nonaktif))
+    ├──/metodepembayaran (id,namametode,jenis(cash,noncash),qrcode,status(aktif,nonaktif))
     ├──/promo (id,namapromo,jenis(persen,fixed),nilaidiskon,minimalbelanja,tanggalmulai,tanggalselesai,status(aktif,nonaktif))
     └──/pajak (id,namapajak,persen,status(aktif,nonaktif))
 
@@ -31,8 +39,16 @@ Controllers/Auth/ControllerAuthUser -> middleware/RoleMiddleware(kasir)   -> /lo
     ├──/pembelian (id,kodepembelian,supplierid,userid,total,tanggalpembelian)
     └──/detailpembelian (id,pembelianid,bahanbakuid,qty,harga,subtotal)
 
+└───*pelanggan division
+    ├──/menu (id,produkid,kategoriid,statusaktif)
+    ├──/keranjang (id,pelangganid,produkid,qty,harga,subtotal)
+    ├──/checkout (id,pelangganid,kodecheckout,subtotal,diskon,pajak,total,statuscheckout)
+    ├──/pesananpelanggan (id,pelangganid,penjualanid,statuspesanan(menunggu,diproses,siapdiambil,selesai,dibatalkan),statuspembayaran(belumbayar,lunas),tanggalpesan)
+    ├──/wishlist (id,pelangganid,produkid)
+    └──/ulasan (id,pelangganid,produkid,rating,komentar,tanggal)
+
 └───*transaksi division (POS)
-    ├──/penjualan (id,kodeinvoice,userid,shiftid,mejaid,promoid,pajakid,subtotal,diskon,pajak,total,status(pending,paid),tanggalpenjualan)
+    ├──/penjualan (id,kodeinvoice,userid,pelangganid,shiftid,mejaid,promoid,pajakid,subtotal,diskon,pajak,total,sumberpesanan(kasir,pelanggan),statuspesanan(menunggu,diproses,siapdiambil,selesai,dibatalkan),statuspembayaran(belumbayar,lunas),status(pending,paid),tanggalpenjualan)
     ├──/detailpenjualan (id,penjualanid,produkid,qty,harga,subtotal)
     ├──/pembayaran (id,penjualanid,metodepembayaranid,jumlahbayar,kembalian,tanggalbayar,buktibayar,status(paid,unpaid))
     └──/cetakstruk (id,penjualanid,strukfile,tanggalcetak)

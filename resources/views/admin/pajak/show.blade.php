@@ -22,8 +22,8 @@
                 </tr>
 
                 <tr>
-                    <th>Persen</th>
-                    <td>{{ $data->persen }}%</td>
+                    <th>persentase</th>
+                    <td>{{ $data->persentase }}%</td>
                 </tr>
 
                 <tr>

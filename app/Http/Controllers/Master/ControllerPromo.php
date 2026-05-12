@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Master;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-
 use App\Models\ModelPromo;
 
 class ControllerPromo extends Controller
@@ -24,25 +23,24 @@ class ControllerPromo extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'kodepromo' => 'required|unique:promo,kodepromo',
-            'namapromo' => 'required',
-            'jenis' => 'required',
-            'nilaidiskon' => 'required|numeric',
+            'namapromo'      => 'required',
+            'jenis'          => 'required|in:persen,fixed',
+            'nilaidiskon'    => 'required|numeric',
             'minimalbelanja' => 'nullable|numeric',
-            'tanggalmulai' => 'required',
-            'tanggalselesai' => 'required',
-            'status' => 'required',
+            'tanggalmulai'   => 'required|date',
+            'tanggalselesai' => 'required|date',
+            'status'         => 'required|in:aktif,nonaktif',
         ]);
 
+
         ModelPromo::create([
-            'kodepromo' => $request->kodepromo,
-            'namapromo' => $request->namapromo,
-            'jenis' => $request->jenis,
-            'nilaidiskon' => $request->nilaidiskon,
+            'namapromo'      => $request->namapromo,
+            'jenis'          => $request->jenis,
+            'nilaidiskon'    => $request->nilaidiskon,
             'minimalbelanja' => $request->minimalbelanja,
-            'tanggalmulai' => $request->tanggalmulai,
+            'tanggalmulai'   => $request->tanggalmulai,
             'tanggalselesai' => $request->tanggalselesai,
-            'status' => $request->status,
+            'status'         => $request->status,
         ]);
 
         return redirect()
@@ -69,25 +67,23 @@ class ControllerPromo extends Controller
         $data = ModelPromo::findOrFail($id);
 
         $request->validate([
-            'kodepromo' => 'required|unique:promo,kodepromo,' . $id,
-            'namapromo' => 'required',
-            'jenis' => 'required',
-            'nilaidiskon' => 'required|numeric',
+            'namapromo'      => 'required',
+            'jenis'          => 'required',
+            'nilaidiskon'    => 'required|numeric',
             'minimalbelanja' => 'nullable|numeric',
-            'tanggalmulai' => 'required',
-            'tanggalselesai' => 'required',
-            'status' => 'required',
+            'tanggalmulai'   => 'required|date',
+            'tanggalselesai' => 'required|date',
+            'status'         => 'required',
         ]);
 
-        $data->update([
-            'kodepromo' => $request->kodepromo,
-            'namapromo' => $request->namapromo,
-            'jenis' => $request->jenis,
-            'nilaidiskon' => $request->nilaidiskon,
-            'minimalbelanja' => $request->minimalbelanja,
-            'tanggalmulai' => $request->tanggalmulai,
-            'tanggalselesai' => $request->tanggalselesai,
-            'status' => $request->status,
+        $request->validate([
+            'namapromo'      => 'required',
+            'jenis'          => 'required|in:persen,fixed',
+            'nilaidiskon'    => 'required|numeric',
+            'minimalbelanja' => 'nullable|numeric',
+            'tanggalmulai'   => 'required|date',
+            'tanggalselesai' => 'required|date',
+            'status'         => 'required|in:aktif,nonaktif',
         ]);
 
         return redirect()

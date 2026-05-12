@@ -179,7 +179,7 @@
                                     </button>
                                 </form>
 
-                                <a href="{{ route('kasir.pembayaran') }}" class="btn btn-success rounded-pill px-4">
+                                <a href="{{ route('kasir.pembayaran.index') }}" class="btn btn-success rounded-pill px-4">
                                     <i class="fas fa-credit-card"></i> Bayar
                                 </a>
                             </div>

@@ -33,11 +33,7 @@ class ControllerRiwayatKasir extends Controller
 
         // SEARCH INVOICE
         if ($request->search) {
-            $query->where(
-                'kodeinvoice',
-                'like',
-                '%' . $request->search . '%'
-            );
+            $query->where('kodeinvoice', 'like', '%' . $request->search . '%');
         }
 
         $data = $query->paginate(10);
@@ -56,7 +52,7 @@ class ControllerRiwayatKasir extends Controller
                 'user',
                 'meja',
                 'promo',
-                'pajak',
+                'pajakData',
                 'pembayaran.metode'
             ])
             ->where('userid', Auth::id())
@@ -71,14 +67,7 @@ class ControllerRiwayatKasir extends Controller
             ->where('penjualanid', $penjualan->id)
             ->first();
 
-        return view(
-            'kasir.riwayat.show',
-            compact(
-                'penjualan',
-                'detail',
-                'pembayaran'
-            )
-        );
+        return view('kasir.riwayat.show', compact('penjualan', 'detail', 'pembayaran'));
     }
 
     /*
@@ -102,19 +91,12 @@ class ControllerRiwayatKasir extends Controller
 
         // SEARCH INVOICE
         if ($request->search) {
-            $query->where(
-                'kodeinvoice',
-                'like',
-                '%' . $request->search . '%'
-            );
+            $query->where('kodeinvoice', 'like', '%' . $request->search . '%');
         }
 
         $data = $query->paginate(10);
 
-        return view(
-            'admin.riwayat.index',
-            compact('data')
-        );
+        return view('admin.riwayat.index', compact('data'));
     }
 
     /*
@@ -125,18 +107,15 @@ class ControllerRiwayatKasir extends Controller
     public function adminShow($id)
     {
         $data = ModelPenjualan::with([
-                'detailpenjualan.produk',
+                'detail.produk',
                 'user',
                 'meja',
                 'promo',
-                'pajak',
+                'pajakData',
                 'pembayaran.metode'
             ])
             ->findOrFail($id);
 
-        return view(
-            'admin.riwayat.show',
-            compact('data')
-        );
+        return view('admin.riwayat.show', compact('data'));
     }
 }

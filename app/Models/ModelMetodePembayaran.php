@@ -11,23 +11,12 @@ class ModelMetodePembayaran extends Model
     protected $fillable = [
         'namametode',
         'jenis',
-        'status',
         'qrcode',
+        'status'
     ];
 
-    /*
-    |--------------------------------------------------------------------------
-    | RELATIONSHIP
-    |--------------------------------------------------------------------------
-    */
-
-    // SATU METODE BISA DIGUNAKAN BANYAK PEMBAYARAN
     public function pembayaran()
     {
-        return $this->hasMany(
-            ModelPembayaran::class,
-            'metodepembayaranid',
-            'id'
-        );
+        return $this->hasMany(ModelPembayaran::class, 'metodepembayaranid', 'id');
     }
 }

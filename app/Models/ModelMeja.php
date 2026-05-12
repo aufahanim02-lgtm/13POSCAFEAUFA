@@ -13,4 +13,9 @@ class ModelMeja extends Model
         'kapasitas',
         'status'
     ];
+
+    public function penjualan()
+    {
+        return $this->hasMany(ModelPenjualan::class, 'mejaid');
+    }
 }

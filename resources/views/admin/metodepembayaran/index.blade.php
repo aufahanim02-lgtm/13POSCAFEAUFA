@@ -11,7 +11,7 @@
         <h4>Metode Pembayaran</h4>
 
         <a href="{{ route('master.metodepembayaran.create') }}"
-           class="btn btn-primary">
+            class="btn btn-primary">
 
             + Tambah
 
@@ -21,9 +21,9 @@
 
     @if(session('success'))
 
-        <div class="alert alert-success">
-            {{ session('success') }}
-        </div>
+    <div class="alert alert-success">
+        {{ session('success') }}
+    </div>
 
     @endif
 
@@ -56,16 +56,17 @@
 
                         <td>
 
-                            @if($row->jenis == 'transfer' && $row->qrcode)
+                            @if($row->qrcode)
 
-                                <img src="{{ asset('storage/' . $row->qrcode) }}"
-                                     width="100">
+                            <img src="{{ asset('storage/' . $row->qrcode) }}"
+                                width="100"
+                                class="img-thumbnail">
 
                             @else
 
-                                <span class="text-muted">
-                                    -
-                                </span>
+                            <span class="text-muted">
+                                -
+                            </span>
 
                             @endif
 
@@ -79,15 +80,15 @@
 
                             @if($row->status == 'aktif')
 
-                                <span class="badge bg-success">
-                                    Aktif
-                                </span>
+                            <span class="badge bg-success">
+                                Aktif
+                            </span>
 
                             @else
 
-                                <span class="badge bg-danger">
-                                    Nonaktif
-                                </span>
+                            <span class="badge bg-danger">
+                                Nonaktif
+                            </span>
 
                             @endif
 
@@ -96,22 +97,22 @@
                         <td>
 
                             <a href="{{ route('master.metodepembayaran.edit', $row->id) }}"
-                               class="btn btn-warning btn-sm">
+                                class="btn btn-warning btn-sm">
 
                                 Edit
 
                             </a>
 
                             <form action="{{ route('master.metodepembayaran.destroy', $row->id) }}"
-                                  method="POST"
-                                  class="d-inline">
+                                method="POST"
+                                class="d-inline">
 
                                 @csrf
                                 @method('DELETE')
 
                                 <button type="submit"
-                                        class="btn btn-danger btn-sm"
-                                        onclick="return confirm('Yakin hapus data?')">
+                                    class="btn btn-danger btn-sm"
+                                    onclick="return confirm('Yakin hapus data?')">
 
                                     Hapus
 

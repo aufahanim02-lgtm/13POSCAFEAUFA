@@ -13,10 +13,17 @@ class ModelDetailPenjualan extends Model
         'produkid',
         'qty',
         'harga',
-        'subtotal'
+        'subtotal',
+        'statusitem'
     ];
+
+    public function penjualan()
+    {
+        return $this->belongsTo(ModelPenjualan::class, 'penjualanid');
+    }
+
     public function produk()
     {
-        return $this->belongsTo(ModelProduk::class, 'produkid', 'id');
+        return $this->belongsTo(ModelProduk::class, 'produkid');
     }
 }

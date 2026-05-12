@@ -29,7 +29,6 @@
                 <thead>
                     <tr>
                         <th>No</th>
-                        <th>Kode</th>
                         <th>Nama Promo</th>
                         <th>Jenis</th>
                         <th>Diskon</th>
@@ -46,8 +45,6 @@
                     <tr>
 
                         <td>{{ $loop->iteration }}</td>
-
-                        <td>{{ $item->kodepromo }}</td>
 
                         <td>{{ $item->namapromo }}</td>
 

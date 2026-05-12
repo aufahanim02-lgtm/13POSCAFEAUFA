@@ -18,29 +18,13 @@ class ModelPembayaran extends Model
         'status'
     ];
 
-    /*
-    |--------------------------------------------------------------------------
-    | RELATIONSHIP
-    |--------------------------------------------------------------------------
-    */
-
-    // PENJUALAN
     public function penjualan()
     {
-        return $this->belongsTo(
-            ModelPenjualan::class,
-            'penjualanid',
-            'id'
-        );
+        return $this->belongsTo(ModelPenjualan::class, 'penjualanid');
     }
 
-    // METODE PEMBAYARAN
     public function metode()
     {
-        return $this->belongsTo(
-            ModelMetodePembayaran::class,
-            'metodepembayaranid',
-            'id'
-        );
+        return $this->belongsTo(ModelMetodePembayaran::class, 'metodepembayaranid');
     }
 }

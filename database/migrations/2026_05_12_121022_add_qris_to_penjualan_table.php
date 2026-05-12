@@ -6,23 +6,27 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    /**
+     * Run the migrations.
+     */
     public function up(): void
     {
         Schema::table('penjualan', function (Blueprint $table) {
-            $table->unsignedBigInteger('shiftid')->nullable()->after('userid');
-
-            $table->foreign('shiftid')
-                ->references('id')
-                ->on('shift')
-                ->onDelete('set null');
+            $table->string('qris_reference')->nullable()->after('status');
+            $table->enum('payment_gateway', ['cash', 'qris'])
+                  ->default('cash')
+                  ->after('qris_reference');
         });
     }
 
+    /**
+     * Reverse the migrations.
+     */
     public function down(): void
     {
         Schema::table('penjualan', function (Blueprint $table) {
-            $table->dropForeign(['shiftid']);
-            $table->dropColumn('shiftid');
+            $table->dropColumn('qris_reference');
+            $table->dropColumn('payment_gateway');
         });
     }
 };

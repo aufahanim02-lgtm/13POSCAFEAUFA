@@ -3,7 +3,6 @@
 @section('title', 'Dashboard Kasir')
 
 @section('content')
-<div class="content-wrapper">
 
     {{-- HEADER --}}
     <section class="content-header pb-2">
@@ -83,7 +82,7 @@
                         <div class="icon">
                             <i class="fas fa-money-bill-wave"></i>
                         </div>
-                        <a href="{{ route('kasir.pembayaran') }}" class="small-box-footer text-dark">
+                        <a href="{{ route('kasir.pembayaran.index') }}" class="small-box-footer text-dark">
                             Pembayaran <i class="fas fa-arrow-circle-right"></i>
                         </a>
                     </div>
@@ -182,7 +181,7 @@
                                     <i class="fas fa-cash-register"></i> Mulai POS
                                 </a>
 
-                                <a href="{{ route('kasir.pembayaran') }}" class="btn btn-warning btn-sm px-4 rounded-pill text-white">
+                                <a href="{{ route('kasir.pembayaran.index') }}" class="btn btn-warning btn-sm px-4 rounded-pill text-white">
                                     <i class="fas fa-money-bill-wave"></i> Pembayaran
                                 </a>
 
@@ -269,7 +268,7 @@
                                 </div>
 
                                 <div class="col-md-4 col-12">
-                                    <a href="{{ route('kasir.pembayaran') }}" class="btn btn-warning btn-lg btn-block rounded-pill shadow-sm text-white">
+                                    <a href="{{ route('kasir.pembayaran.index') }}" class="btn btn-warning btn-lg btn-block rounded-pill shadow-sm text-white">
                                         <i class="fas fa-money-bill-wave"></i> Pembayaran
                                     </a>
                                 </div>
@@ -290,5 +289,4 @@
         </div>
     </section>
 
-</div>
 @endsection

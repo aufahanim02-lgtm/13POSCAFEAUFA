@@ -5,22 +5,33 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Carbon\Carbon;
 
-class NamaSeederCafePosRaihan extends Seeder
+class namaseedercafeposraihan extends Seeder
 {
     public function run(): void
     {
         DB::statement('SET FOREIGN_KEY_CHECKS=0;');
 
-        // TRUNCATE SEMUA TABLE
-        DB::table('kontak')->truncate();
-        DB::table('tentang')->truncate();
-        DB::table('promolanding')->truncate();
-        DB::table('menu')->truncate();
-        DB::table('home')->truncate();
-
+        // kosongkan semua tabel dulu (aman buat migrate:fresh --seed)
+        DB::table('loginhistory')->truncate();
+        DB::table('wishlist')->truncate();
+        DB::table('keranjang')->truncate();
+        DB::table('ulasan')->truncate();
+        DB::table('checkout')->truncate();
+        DB::table('pesananpelanggan')->truncate();
+        DB::table('cetakstruk')->truncate();
+        DB::table('pembayaran')->truncate();
+        DB::table('detailpenjualan')->truncate();
+        DB::table('penjualan')->truncate();
+        DB::table('shift')->truncate();
+        DB::table('detailpembelian')->truncate();
+        DB::table('pembelian')->truncate();
+        DB::table('stokkeluar')->truncate();
+        DB::table('stokmasuk')->truncate();
+        DB::table('stok')->truncate();
+        DB::table('bahanbaku')->truncate();
         DB::table('zonakasir')->truncate();
-
         DB::table('laporankeuntungan')->truncate();
         DB::table('laporanshift')->truncate();
         DB::table('laporankasir')->truncate();
@@ -28,48 +39,37 @@ class NamaSeederCafePosRaihan extends Seeder
         DB::table('laporanbulanan')->truncate();
         DB::table('laporanharian')->truncate();
         DB::table('laporan')->truncate();
-
-        DB::table('shift')->truncate();
-
-        DB::table('cetakstruk')->truncate();
-        DB::table('pembayaran')->truncate();
-        DB::table('detailpenjualan')->truncate();
-        DB::table('penjualan')->truncate();
-
-        DB::table('detailpembelian')->truncate();
-        DB::table('pembelian')->truncate();
-
-        DB::table('stokkeluar')->truncate();
-        DB::table('stokmasuk')->truncate();
-        DB::table('stok')->truncate();
-        DB::table('bahanbaku')->truncate();
-
-        DB::table('pajak')->truncate();
-        DB::table('promo')->truncate();
-        DB::table('metodepembayaran')->truncate();
-        DB::table('supplier')->truncate();
-        DB::table('meja')->truncate();
+        DB::table('menulanding')->truncate();
+        DB::table('promolanding')->truncate();
+        DB::table('home')->truncate();
+        DB::table('tentang')->truncate();
+        DB::table('kontak')->truncate();
         DB::table('produk')->truncate();
         DB::table('kategori')->truncate();
-
-        DB::table('loginhistory')->truncate();
+        DB::table('meja')->truncate();
+        DB::table('supplier')->truncate();
+        DB::table('metodepembayaran')->truncate();
+        DB::table('promo')->truncate();
+        DB::table('pajak')->truncate();
+        DB::table('pelanggan')->truncate();
         DB::table('user')->truncate();
 
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
         /*
         |--------------------------------------------------------------------------
-        | USER
+        | USER (OWNER, MANAGER, KASIR)
         |--------------------------------------------------------------------------
         */
         $ownerId = DB::table('user')->insertGetId([
             'name' => 'Owner Cafe',
             'username' => 'owner',
             'email' => 'owner@cafepos.com',
-            'password' => Hash::make('123456'),
+            'nohp' => '081111111111',
+            'password' => Hash::make('owner123'),
             'role' => 'owner',
             'foto' => null,
-            'isactive' => 'active',
+            'isactive' => 'aktif',
             'created_at' => now(),
             'updated_at' => now(),
         ]);
@@ -78,10 +78,11 @@ class NamaSeederCafePosRaihan extends Seeder
             'name' => 'Manager Cafe',
             'username' => 'manager',
             'email' => 'manager@cafepos.com',
-            'password' => Hash::make('123456'),
+            'nohp' => '082222222222',
+            'password' => Hash::make('manager123'),
             'role' => 'manager',
             'foto' => null,
-            'isactive' => 'active',
+            'isactive' => 'aktif',
             'created_at' => now(),
             'updated_at' => now(),
         ]);
@@ -90,10 +91,30 @@ class NamaSeederCafePosRaihan extends Seeder
             'name' => 'Kasir Cafe',
             'username' => 'kasir',
             'email' => 'kasir@cafepos.com',
-            'password' => Hash::make('123456'),
+            'nohp' => '083333333333',
+            'password' => Hash::make('kasir123'),
             'role' => 'kasir',
             'foto' => null,
-            'isactive' => 'active',
+            'isactive' => 'aktif',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        /*
+        |--------------------------------------------------------------------------
+        | PELANGGAN
+        |--------------------------------------------------------------------------
+        */
+        $pelangganId = DB::table('pelanggan')->insertGetId([
+            'name' => 'Pelanggan Demo',
+            'username' => 'pelanggan',
+            'email' => 'pelanggan@cafepos.com',
+            'nohp' => '085555555555',
+            'password' => Hash::make('pelanggan123'),
+            'foto' => null,
+            'point' => 0,
+            'levelmember' => 'silver',
+            'status' => 'aktif',
             'created_at' => now(),
             'updated_at' => now(),
         ]);
@@ -103,23 +124,23 @@ class NamaSeederCafePosRaihan extends Seeder
         | KATEGORI
         |--------------------------------------------------------------------------
         */
-        $kategoriMinumanId = DB::table('kategori')->insertGetId([
-            'namakategori' => 'Minuman',
-            'deskripsi' => 'Kategori minuman dingin dan panas',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
-        $kategoriMakananId = DB::table('kategori')->insertGetId([
+        $kategoriMakanan = DB::table('kategori')->insertGetId([
             'namakategori' => 'Makanan',
-            'deskripsi' => 'Kategori makanan berat dan ringan',
+            'deskripsi' => 'Menu makanan utama',
             'created_at' => now(),
             'updated_at' => now(),
         ]);
 
-        $kategoriSnackId = DB::table('kategori')->insertGetId([
+        $kategoriMinuman = DB::table('kategori')->insertGetId([
+            'namakategori' => 'Minuman',
+            'deskripsi' => 'Menu minuman segar',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $kategoriSnack = DB::table('kategori')->insertGetId([
             'namakategori' => 'Snack',
-            'deskripsi' => 'Kategori cemilan',
+            'deskripsi' => 'Cemilan dan makanan ringan',
             'created_at' => now(),
             'updated_at' => now(),
         ]);
@@ -129,48 +150,56 @@ class NamaSeederCafePosRaihan extends Seeder
         | PRODUK
         |--------------------------------------------------------------------------
         */
-        $produkEsTehId = DB::table('produk')->insertGetId([
-            'kategoriid' => $kategoriMinumanId,
-            'kodeproduk' => 'PRD001',
+        $produk1 = DB::table('produk')->insertGetId([
+            'kategoriid' => $kategoriMinuman,
+            'kodeproduk' => 'PRD-001',
             'namaproduk' => 'Es Teh Manis',
-            'hargajual' => 5000,
-            'satuan' => 'Gelas',
-            'foto' => null,
-            'status' => 'aktif',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
-        $produkKopiId = DB::table('produk')->insertGetId([
-            'kategoriid' => $kategoriMinumanId,
-            'kodeproduk' => 'PRD002',
-            'namaproduk' => 'Kopi Hitam',
+            'deskripsi' => 'Minuman teh manis dingin',
             'hargajual' => 8000,
-            'satuan' => 'Cangkir',
+            'stokproduk' => 100,
+            'satuan' => 'gelas',
             'foto' => null,
             'status' => 'aktif',
             'created_at' => now(),
             'updated_at' => now(),
         ]);
 
-        $produkNasgorId = DB::table('produk')->insertGetId([
-            'kategoriid' => $kategoriMakananId,
-            'kodeproduk' => 'PRD003',
-            'namaproduk' => 'Nasi Goreng',
-            'hargajual' => 15000,
-            'satuan' => 'Porsi',
-            'foto' => null,
-            'status' => 'aktif',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
-        $produkKentangId = DB::table('produk')->insertGetId([
-            'kategoriid' => $kategoriSnackId,
-            'kodeproduk' => 'PRD004',
-            'namaproduk' => 'Kentang Goreng',
+        $produk2 = DB::table('produk')->insertGetId([
+            'kategoriid' => $kategoriMinuman,
+            'kodeproduk' => 'PRD-002',
+            'namaproduk' => 'Kopi Hitam',
+            'deskripsi' => 'Kopi hitam panas',
             'hargajual' => 12000,
-            'satuan' => 'Porsi',
+            'stokproduk' => 100,
+            'satuan' => 'gelas',
+            'foto' => null,
+            'status' => 'aktif',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $produk3 = DB::table('produk')->insertGetId([
+            'kategoriid' => $kategoriMakanan,
+            'kodeproduk' => 'PRD-003',
+            'namaproduk' => 'Nasi Goreng',
+            'deskripsi' => 'Nasi goreng spesial',
+            'hargajual' => 18000,
+            'stokproduk' => 50,
+            'satuan' => 'porsi',
+            'foto' => null,
+            'status' => 'aktif',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $produk4 = DB::table('produk')->insertGetId([
+            'kategoriid' => $kategoriSnack,
+            'kodeproduk' => 'PRD-004',
+            'namaproduk' => 'Kentang Goreng',
+            'deskripsi' => 'Kentang goreng renyah',
+            'hargajual' => 15000,
+            'stokproduk' => 50,
+            'satuan' => 'porsi',
             'foto' => null,
             'status' => 'aktif',
             'created_at' => now(),
@@ -182,21 +211,15 @@ class NamaSeederCafePosRaihan extends Seeder
         | MEJA
         |--------------------------------------------------------------------------
         */
-        $meja1Id = DB::table('meja')->insertGetId([
-            'nomormeja' => 'M01',
-            'kapasitas' => 4,
-            'status' => 'kosong',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
-        $meja2Id = DB::table('meja')->insertGetId([
-            'nomormeja' => 'M02',
-            'kapasitas' => 2,
-            'status' => 'kosong',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+        for ($i = 1; $i <= 10; $i++) {
+            DB::table('meja')->insert([
+                'nomormeja' => 'M' . $i,
+                'kapasitas' => 4,
+                'status' => 'kosong',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
 
         /*
         |--------------------------------------------------------------------------
@@ -204,9 +227,9 @@ class NamaSeederCafePosRaihan extends Seeder
         |--------------------------------------------------------------------------
         */
         $supplierId = DB::table('supplier')->insertGetId([
-            'namasupplier' => 'Supplier Utama',
+            'namasupplier' => 'Supplier Utama Cafe',
             'nohp' => '081234567890',
-            'alamat' => 'Jl. Supplier No.1',
+            'alamat' => 'Medan, Sumatera Utara',
             'created_at' => now(),
             'updated_at' => now(),
         ]);
@@ -216,12 +239,23 @@ class NamaSeederCafePosRaihan extends Seeder
         | METODE PEMBAYARAN
         |--------------------------------------------------------------------------
         */
-        $metodeTunaiId = DB::table('metodepembayaran')->insertGetId([
-            'namametode' => 'Tunai',
-            'jenis' => 'cash',
-            'status' => 'aktif',
-            'created_at' => now(),
-            'updated_at' => now(),
+        DB::table('metodepembayaran')->insert([
+            [
+                'namametode' => 'Cash',
+                'jenis' => 'cash',
+                'qrcode' => null,
+                'status' => 'aktif',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'namametode' => 'QRIS',
+                'jenis' => 'noncash',
+                'qrcode' => null,
+                'status' => 'aktif',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
         ]);
 
         /*
@@ -230,8 +264,8 @@ class NamaSeederCafePosRaihan extends Seeder
         |--------------------------------------------------------------------------
         */
         $pajakId = DB::table('pajak')->insertGetId([
-            'namapajak' => 'PPN 11%',
-            'persen' => 11,
+            'namapajak' => 'PPN',
+            'persen' => 10,
             'status' => 'aktif',
             'created_at' => now(),
             'updated_at' => now(),
@@ -243,10 +277,10 @@ class NamaSeederCafePosRaihan extends Seeder
         |--------------------------------------------------------------------------
         */
         $promoId = DB::table('promo')->insertGetId([
-            'namapromo' => 'Diskon 10%',
+            'namapromo' => 'Promo Grand Opening',
             'jenis' => 'persen',
             'nilaidiskon' => 10,
-            'minimalbelanja' => 20000,
+            'minimalbelanja' => 50000,
             'tanggalmulai' => now()->toDateString(),
             'tanggalselesai' => now()->addDays(30)->toDateString(),
             'status' => 'aktif',
@@ -256,35 +290,35 @@ class NamaSeederCafePosRaihan extends Seeder
 
         /*
         |--------------------------------------------------------------------------
-        | BAHANBAKU
+        | BAHAN BAKU
         |--------------------------------------------------------------------------
         */
-        $bahanGulaId = DB::table('bahanbaku')->insertGetId([
-            'kodebahan' => 'BB001',
-            'namabahan' => 'Gula',
+        $bahan1 = DB::table('bahanbaku')->insertGetId([
+            'kodebahan' => 'BB-001',
+            'namabahan' => 'Beras',
             'stok' => 50,
-            'satuan' => 'Kg',
+            'satuan' => 'kg',
             'hargabeli' => 12000,
             'created_at' => now(),
             'updated_at' => now(),
         ]);
 
-        $bahanKopiId = DB::table('bahanbaku')->insertGetId([
-            'kodebahan' => 'BB002',
-            'namabahan' => 'Kopi Bubuk',
+        $bahan2 = DB::table('bahanbaku')->insertGetId([
+            'kodebahan' => 'BB-002',
+            'namabahan' => 'Teh',
             'stok' => 20,
-            'satuan' => 'Kg',
-            'hargabeli' => 80000,
+            'satuan' => 'pak',
+            'hargabeli' => 15000,
             'created_at' => now(),
             'updated_at' => now(),
         ]);
 
-        $bahanBerasId = DB::table('bahanbaku')->insertGetId([
-            'kodebahan' => 'BB003',
-            'namabahan' => 'Beras',
-            'stok' => 30,
-            'satuan' => 'Kg',
-            'hargabeli' => 15000,
+        $bahan3 = DB::table('bahanbaku')->insertGetId([
+            'kodebahan' => 'BB-003',
+            'namabahan' => 'Kopi Bubuk',
+            'stok' => 15,
+            'satuan' => 'pak',
+            'hargabeli' => 30000,
             'created_at' => now(),
             'updated_at' => now(),
         ]);
@@ -296,7 +330,7 @@ class NamaSeederCafePosRaihan extends Seeder
         */
         DB::table('stok')->insert([
             [
-                'bahanbakuid' => $bahanGulaId,
+                'bahanbakuid' => $bahan1,
                 'stoktersedia' => 50,
                 'stokminimal' => 10,
                 'status' => 'aman',
@@ -304,7 +338,7 @@ class NamaSeederCafePosRaihan extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'bahanbakuid' => $bahanKopiId,
+                'bahanbakuid' => $bahan2,
                 'stoktersedia' => 20,
                 'stokminimal' => 5,
                 'status' => 'aman',
@@ -312,291 +346,66 @@ class NamaSeederCafePosRaihan extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'bahanbakuid' => $bahanBerasId,
-                'stoktersedia' => 30,
-                'stokminimal' => 10,
+                'bahanbakuid' => $bahan3,
+                'stoktersedia' => 15,
+                'stokminimal' => 5,
                 'status' => 'aman',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
         ]);
+
         /*
-|--------------------------------------------------------------------------
-| PEMBELIAN
-|--------------------------------------------------------------------------
-*/
-        $pembelianId = DB::table('pembelian')->insertGetId([
-            'kodepembelian' => 'PB001',
-            'supplierid' => $supplierId,
-            'userid' => $managerId, // manager yang input pembelian
-            'total' => 500000,
-            'tanggalpembelian' => now()->subDays(2)->toDateString(),
+        |--------------------------------------------------------------------------
+        | LANDING PAGE DATA
+        |--------------------------------------------------------------------------
+        */
+        DB::table('home')->insert([
+            'title' => 'Selamat Datang di CAFEPOS',
+            'content' => 'CAFEPOS adalah sistem kasir cafe modern untuk pelanggan dan kasir.',
+            'statusaktif' => 'aktif',
             'created_at' => now(),
             'updated_at' => now(),
         ]);
 
-        /*
-|--------------------------------------------------------------------------
-| DETAIL PEMBELIAN
-|--------------------------------------------------------------------------
-*/
-        DB::table('detailpembelian')->insert([
-            [
-                'pembelianid' => $pembelianId,
-                'bahanbakuid' => $bahanGulaId,
-                'qty' => 20,
-                'harga' => 12000,
-                'subtotal' => 240000,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'pembelianid' => $pembelianId,
-                'bahanbakuid' => $bahanKopiId,
-                'qty' => 2,
-                'harga' => 80000,
-                'subtotal' => 160000,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'pembelianid' => $pembelianId,
-                'bahanbakuid' => $bahanBerasId,
-                'qty' => 10,
-                'harga' => 15000,
-                'subtotal' => 150000,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-        ]);
-
-        /*
-|--------------------------------------------------------------------------
-| STOK MASUK 
-|--------------------------------------------------------------------------
-*/
-        DB::table('stokmasuk')->insert([
-            [
-                'bahanbakuid' => $bahanGulaId,
-                'jumlah' => 20,
-                'tanggalmasuk' => now()->subDays(2)->toDateString(),
-                'keterangan' => 'Pembelian PB001 dari Supplier Utama',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'bahanbakuid' => $bahanKopiId,
-                'jumlah' => 2,
-                'tanggalmasuk' => now()->subDays(2)->toDateString(),
-                'keterangan' => 'Pembelian PB001 dari Supplier Utama',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'bahanbakuid' => $bahanBerasId,
-                'jumlah' => 10,
-                'tanggalmasuk' => now()->subDays(2)->toDateString(),
-                'keterangan' => 'Pembelian PB001 dari Supplier Utama',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-        ]);
-
-        /*
-        |--------------------------------------------------------------------------
-        | SHIFT
-        |--------------------------------------------------------------------------
-        */
-        $shiftId = DB::table('shift')->insertGetId([
-            'userid' => $kasirId,
-            'shiftmulai' => now()->subHours(5),
-            'shiftselesai' => null,
-            'saldoawal' => 200000,
-            'saldoakhir' => null,
-            'totaltransaksi' => 0,
-            'status' => 'open',
+        DB::table('tentang')->insert([
+            'title' => 'Tentang CAFEPOS',
+            'content' => 'CAFEPOS adalah aplikasi POS cafe dengan fitur lengkap untuk owner, kasir, manager, dan pelanggan.',
+            'statusaktif' => 'aktif',
             'created_at' => now(),
             'updated_at' => now(),
         ]);
 
-        /*
-        |--------------------------------------------------------------------------
-        | PENJUALAN
-        |--------------------------------------------------------------------------
-        */
-        $penjualanId = DB::table('penjualan')->insertGetId([
-            'kodeinvoice' => 'INV001',
-            'userid' => $kasirId,
-            'mejaid' => $meja1Id,
+        DB::table('kontak')->insert([
+            'nama' => 'Admin CAFEPOS',
+            'email' => 'admin@cafepos.com',
+            'subjek' => 'Kontak Awal',
+            'pesan' => 'Silahkan hubungi kami melalui email atau datang langsung ke cafe.',
+            'tanggal' => now()->toDateString(),
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        DB::table('menulanding')->insert([
+            [
+                'produkid' => $produk1,
+                'kategoriid' => $kategoriMinuman,
+                'statusaktif' => 'aktif',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'produkid' => $produk3,
+                'kategoriid' => $kategoriMakanan,
+                'statusaktif' => 'aktif',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+        ]);
+
+        DB::table('promolanding')->insert([
             'promoid' => $promoId,
-            'pajakid' => $pajakId,
-            'subtotal' => 25000,
-            'diskon' => 2500,
-            'pajak' => 2475,
-            'total' => 24975,
-            'status' => 'paid',
-            'tanggalpenjualan' => now(),
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
-        /*
-        |--------------------------------------------------------------------------
-        | DETAIL PENJUALAN
-        |--------------------------------------------------------------------------
-        */
-        DB::table('detailpenjualan')->insert([
-            [
-                'penjualanid' => $penjualanId,
-                'produkid' => $produkEsTehId,
-                'qty' => 2,
-                'harga' => 5000,
-                'subtotal' => 10000,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'penjualanid' => $penjualanId,
-                'produkid' => $produkNasgorId,
-                'qty' => 1,
-                'harga' => 15000,
-                'subtotal' => 15000,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-        ]);
-
-        /*
-        |--------------------------------------------------------------------------
-        | PEMBAYARAN
-        |--------------------------------------------------------------------------
-        */
-        DB::table('pembayaran')->insert([
-            'penjualanid' => $penjualanId,
-            'metodepembayaranid' => $metodeTunaiId,
-            'jumlahbayar' => 30000,
-            'kembalian' => 5025,
-            'tanggalbayar' => now(),
-            'buktibayar' => null,
-            'status' => 'paid',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
-        /*
-        |--------------------------------------------------------------------------
-        | CETAK STRUK
-        |--------------------------------------------------------------------------
-        */
-        DB::table('cetakstruk')->insert([
-            'penjualanid' => $penjualanId,
-            'strukfile' => 'struk_INV001.pdf',
-            'tanggalcetak' => now(),
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
-        /*
-        |--------------------------------------------------------------------------
-        | LAPORAN MASTER
-        |--------------------------------------------------------------------------
-        */
-        DB::table('laporan')->insert([
-            'userid' => $ownerId,
-            'jenislaporan' => 'laporan harian',
-            'periodeawal' => now()->toDateString(),
-            'periodeakhir' => now()->toDateString(),
-            'totaldata' => 1,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
-        /*
-        |--------------------------------------------------------------------------
-        | LAPORAN HARIAN
-        |--------------------------------------------------------------------------
-        */
-        DB::table('laporanharian')->insert([
-            'userid' => $ownerId,
-            'tanggal' => now()->toDateString(),
-            'totaltransaksi' => 1,
-            'totalpendapatan' => 24975,
-            'totaldiskon' => 2500,
-            'totalpajak' => 2475,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
-        /*
-        |--------------------------------------------------------------------------
-        | LAPORAN BULANAN
-        |--------------------------------------------------------------------------
-        */
-        DB::table('laporanbulanan')->insert([
-            'userid' => $ownerId,
-            'bulan' => now()->format('m'),
-            'tahun' => now()->format('Y'),
-            'totaltransaksi' => 1,
-            'totalpendapatan' => 24975,
-            'totaldiskon' => 2500,
-            'totalpajak' => 2475,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
-        /*
-        |--------------------------------------------------------------------------
-        | LAPORAN PRODUK
-        |--------------------------------------------------------------------------
-        */
-        DB::table('laporanproduk')->insert([
-            'userid' => $ownerId,
-            'produkid' => $produkEsTehId,
-            'totalterjual' => 2,
-            'totalpendapatan' => 10000,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
-        /*
-        |--------------------------------------------------------------------------
-        | LAPORAN KASIR
-        |--------------------------------------------------------------------------
-        */
-        DB::table('laporankasir')->insert([
-            'userid' => $ownerId,
-            'kasirid' => $kasirId,
-            'totaltransaksi' => 1,
-            'totalpendapatan' => 24975,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
-        /*
-        |--------------------------------------------------------------------------
-        | LAPORAN SHIFT
-        |--------------------------------------------------------------------------
-        */
-        DB::table('laporanshift')->insert([
-            'userid' => $ownerId,
-            'shiftid' => $shiftId,
-            'totaltransaksi' => 1,
-            'totalpendapatan' => 24975,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
-        /*
-        |--------------------------------------------------------------------------
-        | LAPORAN KEUNTUNGAN
-        |--------------------------------------------------------------------------
-        */
-        DB::table('laporankeuntungan')->insert([
-            'userid' => $ownerId,
-            'tanggal' => now()->toDateString(),
-            'totalpemasukan' => 24975,
-            'totalpengeluaran' => 5000,
-            'keuntungan' => 19975,
+            'statusaktif' => 'aktif',
             'created_at' => now(),
             'updated_at' => now(),
         ]);
@@ -609,35 +418,31 @@ class NamaSeederCafePosRaihan extends Seeder
         DB::table('zonakasir')->insert([
             'userid' => $kasirId,
             'statusaktif' => 'aktif',
-            'catatan' => 'Kasir aktif untuk transaksi',
+            'catatan' => 'Kasir aktif untuk transaksi hari ini.',
             'created_at' => now(),
             'updated_at' => now(),
         ]);
 
         /*
         |--------------------------------------------------------------------------
-        | LANDING HOME
+        | SHIFT
         |--------------------------------------------------------------------------
         */
-        DB::table('home')->insert([
-            'title' => 'CAFEPOS - Aplikasi Kasir Cafe Modern',
-            'content' => 'Kelola transaksi, stok bahan baku, laporan penjualan, dan shift kasir dengan cepat dan profesional.',
-            'statusaktif' => 'aktif',
+        DB::table('shift')->insert([
+            'userid' => $kasirId,
+            'shiftmulai' => now(),
+            'shiftselesai' => null,
+            'saldoawal' => 0,
+            'saldoakhir' => 0,
+            'totaltransaksi' => 0,
+            'status' => 'open',
             'created_at' => now(),
             'updated_at' => now(),
         ]);
+        }
 
-        /*
-        |--------------------------------------------------------------------------
-        | TENTANG
-        |--------------------------------------------------------------------------
-        */
-        DB::table('tentang')->insert([
-            'title' => 'Tentang CAFEPOS',
-            'content' => 'CAFEPOS adalah aplikasi kasir cafe yang dibuat untuk membantu bisnis cafe dan restoran modern.',
-            'statusaktif' => 'aktif',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+        
+
+
     }
-}
+

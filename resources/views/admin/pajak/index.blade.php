@@ -30,7 +30,7 @@
                     <tr>
                         <th width="5%">No</th>
                         <th>Nama Pajak</th>
-                        <th>Persen</th>
+                        <th>persentase</th>
                         <th>Status</th>
                         <th width="25%">Aksi</th>
                     </tr>
@@ -46,7 +46,7 @@
 
                         <td>{{ $item->namapajak }}</td>
 
-                        <td>{{ $item->persen }}%</td>
+                        <td>{{ $item->persentase }}%</td>
 
                         <td>
                             @if($item->status == 'aktif')

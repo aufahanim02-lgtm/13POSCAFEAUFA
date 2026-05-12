@@ -15,12 +15,6 @@
         <div class="card-body">
 
             <table class="table table-bordered">
-
-                <tr>
-                    <th width="30%">Kode Promo</th>
-                    <td>{{ $data->kodepromo }}</td>
-                </tr>
-
                 <tr>
                     <th>Nama Promo</th>
                     <td>{{ $data->namapromo }}</td>
