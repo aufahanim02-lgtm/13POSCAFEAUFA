@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers\Transaksi;
 
 use App\Http\Controllers\Controller;
@@ -41,6 +42,7 @@ class ControllerPenjualan extends Controller
         $subtotal = 0;
 
         foreach ($cart as $item) {
+
             $subtotal += $item['subtotal'];
         }
 
@@ -73,10 +75,10 @@ class ControllerPenjualan extends Controller
             $cart[$produk->id]['subtotal'] =
                 $cart[$produk->id]['qty'] *
                 $cart[$produk->id]['harga'];
-
         } else {
 
             $cart[$produk->id] = [
+
                 'produkid'   => $produk->id,
                 'namaproduk' => $produk->namaproduk,
                 'harga'      => $produk->hargajual,
@@ -128,7 +130,7 @@ class ControllerPenjualan extends Controller
 
         return redirect()
             ->route('kasir.pos')
-            ->with('success', 'Transaksi berhasil direset');
+            ->with('success', 'Keranjang berhasil direset');
     }
 
     /*
@@ -147,67 +149,71 @@ class ControllerPenjualan extends Controller
                 ->with('error', 'Keranjang masih kosong');
         }
 
-        // SUBTOTAL
         $subtotal = 0;
 
         foreach ($cart as $item) {
+
             $subtotal += $item['subtotal'];
         }
-
-        // METODE PEMBAYARAN
-        $metode = ModelMetodePembayaran::where('status', 'aktif')->get();
-
-        // MEJA
-        $meja = ModelMeja::where('status', 'kosong')
-            ->orderBy('nomormeja')
-            ->get();
 
         // PROMO
         $promo = ModelPromo::where('status', 'aktif')->first();
 
-        // PAJAK
-        $pajak = ModelPajak::where('status', 'aktif')->first();
-
-        // DISKON
         $diskon = 0;
 
         if ($promo) {
 
-            if ($promo->tipediskon == 'persen') {
+            if ($promo->tipediskon == 'persentase') {
 
-                $diskon = ($subtotal * $promo->nilaidiskon) / 100;
-
+                $diskon =
+                    ($subtotal * $promo->nilaidiskon) / 100;
             } else {
 
                 $diskon = $promo->nilaidiskon;
             }
         }
 
-        // SUBTOTAL SETELAH DISKON
+        // SETELAH DISKON
         $subtotalSetelahDiskon = $subtotal - $diskon;
 
         // PAJAK
-        $totalPajak = 0;
+        $dataPajak = ModelPajak::where('status', 'aktif')->first();
 
-        if ($pajak) {
-            $totalPajak =
-                ($subtotalSetelahDiskon * $pajak->persentase) / 100;
+        $nominalPajak = 0;
+
+        if ($dataPajak) {
+
+            $nominalPajak =
+                ($subtotalSetelahDiskon * $dataPajak->persentase) / 100;
         }
 
-        // TOTAL AKHIR
-        $totalAkhir = $subtotalSetelahDiskon + $totalPajak;
+        // TOTAL
+        $totalAkhir = $subtotalSetelahDiskon + $nominalPajak;
+
+        // METODE
+        $metode = ModelMetodePembayaran::where(
+            'status',
+            'aktif'
+        )->get();
+
+        // MEJA
+        $meja = ModelMeja::where(
+            'status',
+            'kosong'
+        )->orderBy('nomormeja')->get();
 
         return view('kasir.pos.pembayaran', compact(
+
             'cart',
             'subtotal',
             'diskon',
             'subtotalSetelahDiskon',
-            'totalPajak',
+            'nominalPajak',
             'totalAkhir',
             'metode',
             'meja',
             'promo',
-            'pajak'
+            'dataPajak'
         ));
     }
 
@@ -228,13 +234,17 @@ class ControllerPenjualan extends Controller
         }
 
         $request->validate([
+
             'metodepembayaranid' => 'required',
             'jumlahbayar'        => 'required|numeric|min:0',
             'mejaid'             => 'nullable'
         ]);
 
-        // SHIFT AKTIF
-        $shiftAktif = ModelShift::where('userid', Auth::id())
+        // SHIFT
+        $shiftAktif = ModelShift::where(
+            'userid',
+            Auth::id()
+        )
             ->where('status', 'open')
             ->latest()
             ->first();
@@ -250,6 +260,7 @@ class ControllerPenjualan extends Controller
         $subtotal = 0;
 
         foreach ($cart as $item) {
+
             $subtotal += $item['subtotal'];
         }
 
@@ -260,10 +271,10 @@ class ControllerPenjualan extends Controller
 
         if ($promo) {
 
-            if ($promo->tipediskon == 'persen') {
+            if ($promo->tipediskon == 'persentase') {
 
-                $diskon = ($subtotal * $promo->nilaidiskon) / 100;
-
+                $diskon =
+                    ($subtotal * $promo->nilaidiskon) / 100;
             } else {
 
                 $diskon = $promo->nilaidiskon;
@@ -274,20 +285,23 @@ class ControllerPenjualan extends Controller
         $subtotalSetelahDiskon = $subtotal - $diskon;
 
         // PAJAK
-        $pajakData = ModelPajak::where('status', 'aktif')->first();
+        $dataPajak = ModelPajak::where(
+            'status',
+            'aktif'
+        )->first();
 
-        $totalPajak = 0;
+        $nominalPajak = 0;
 
-        if ($pajakData) {
+        if ($dataPajak) {
 
-            $totalPajak =
-                ($subtotalSetelahDiskon * $pajakData->persentase) / 100;
+            $nominalPajak =
+                ($subtotalSetelahDiskon * $dataPajak->persentase) / 100;
         }
 
-        // TOTAL AKHIR
-        $total = $subtotalSetelahDiskon + $totalPajak;
+        // TOTAL
+        $total = $subtotalSetelahDiskon + $nominalPajak;
 
-        // PEMBAYARAN
+        // BAYAR
         $jumlahbayar = $request->jumlahbayar;
 
         $kembalian = $jumlahbayar - $total;
@@ -303,15 +317,58 @@ class ControllerPenjualan extends Controller
 
         try {
 
+
+
             /*
-            |--------------------------------------------------------------------------
-            | SIMPAN PENJUALAN
-            |--------------------------------------------------------------------------
-            */
+|--------------------------------------------------------------------------
+| METODE PEMBAYARAN
+|--------------------------------------------------------------------------
+*/
+
+            $metodePembayaran = ModelMetodePembayaran::findOrFail(
+                $request->metodepembayaranid
+            );
+
+            /*
+|--------------------------------------------------------------------------
+| PAYMENT GATEWAY
+|--------------------------------------------------------------------------
+*/
+
+            $paymentGateway = 'cash';
+
+            $qrisImage = null;
+
+            $qrisReference = null;
+
+            if ($metodePembayaran->jenis == 'noncash') {
+
+                $paymentGateway = 'qris';
+
+                $qrisImage = str_replace(
+                    'public/storage/',
+                    '',
+                    $metodePembayaran->qrcode
+                );
+
+                $qrisReference = 'QR-' . time();
+            }
+
+            /*
+|--------------------------------------------------------------------------
+| PENJUALAN
+|--------------------------------------------------------------------------
+*/
 
             $penjualan = ModelPenjualan::create([
 
-                'kodeinvoice' => 'INV-' . date('YmdHis') . '-' . rand(100, 999),
+                'kodeinvoice' =>
+                'INV-' .
+                    date('Ymd') .
+                    '-' .
+                    strtoupper(uniqid()),
+
+                'pelangganid' => 2,
 
                 'userid' => Auth::id(),
 
@@ -321,21 +378,37 @@ class ControllerPenjualan extends Controller
 
                 'promoid' => $promo?->id,
 
-                'pajakid' => $pajakData?->id,
+                'pajakid' => $dataPajak?->id,
 
                 'subtotal' => $subtotal,
 
                 'diskon' => $diskon,
 
-                'pajak' => $totalPajak,
+                'pajak' => (float) $nominalPajak,
 
                 'total' => $total,
 
-                'status' => 'paid',
+                'sumberpesanan' => 'kasir',
+
+                'statuspesanan' => 'menunggu',
+
+                'statuspembayaran' => 'belumbayar',
+
+                /*
+    |--------------------------------------------------------------------------
+    | FIX PAYMENT
+    |--------------------------------------------------------------------------
+    */
+                'payment_gateway' => $paymentGateway,
+
+                'qris_reference' => $qrisReference,
+
+                'qris_image' => $qrisImage,
+
+                'status' => 'pending',
 
                 'tanggalpenjualan' => now()
             ]);
-
             /*
             |--------------------------------------------------------------------------
             | DETAIL PENJUALAN
@@ -368,7 +441,8 @@ class ControllerPenjualan extends Controller
 
                 'penjualanid' => $penjualan->id,
 
-                'metodepembayaranid' => $request->metodepembayaranid,
+                'metodepembayaranid' =>
+                $request->metodepembayaranid,
 
                 'jumlahbayar' => $jumlahbayar,
 
@@ -376,310 +450,8 @@ class ControllerPenjualan extends Controller
 
                 'tanggalbayar' => now(),
 
-                'buktibayar' => null,
-
                 'status' => 'paid'
             ]);
-
-            /*
-            |--------------------------------------------------------------------------
-            | TANGGAL
-            |--------------------------------------------------------------------------
-            */
-
-            $tanggal = now()->toDateString();
-
-            $bulan = now()->format('m');
-
-            $tahun = now()->format('Y');
-
-            /*
-            |--------------------------------------------------------------------------
-            | LAPORAN HARIAN
-            |--------------------------------------------------------------------------
-            */
-
-            $lapHarian = ModelLaporanHarian::where('tanggal', $tanggal)
-                ->first();
-
-            if ($lapHarian) {
-
-                $lapHarian->update([
-
-                    'totaltransaksi' =>
-                        $lapHarian->totaltransaksi + 1,
-
-                    'totalpendapatan' =>
-                        $lapHarian->totalpendapatan + $total,
-
-                    'totaldiskon' =>
-                        $lapHarian->totaldiskon + $diskon,
-
-                    'totalpajak' =>
-                        $lapHarian->totalpajak + $totalPajak
-                ]);
-
-            } else {
-
-                ModelLaporanHarian::create([
-
-                    'userid' => Auth::id(),
-
-                    'tanggal' => $tanggal,
-
-                    'totaltransaksi' => 1,
-
-                    'totalpendapatan' => $total,
-
-                    'totaldiskon' => $diskon,
-
-                    'totalpajak' => $totalPajak
-                ]);
-            }
-
-            /*
-            |--------------------------------------------------------------------------
-            | LAPORAN BULANAN
-            |--------------------------------------------------------------------------
-            */
-
-            $lapBulanan = ModelLaporanBulanan::where('bulan', $bulan)
-                ->where('tahun', $tahun)
-                ->first();
-
-            if ($lapBulanan) {
-
-                $lapBulanan->update([
-
-                    'totaltransaksi' =>
-                        $lapBulanan->totaltransaksi + 1,
-
-                    'totalpendapatan' =>
-                        $lapBulanan->totalpendapatan + $total,
-
-                    'totaldiskon' =>
-                        $lapBulanan->totaldiskon + $diskon,
-
-                    'totalpajak' =>
-                        $lapBulanan->totalpajak + $totalPajak
-                ]);
-
-            } else {
-
-                ModelLaporanBulanan::create([
-
-                    'userid' => Auth::id(),
-
-                    'bulan' => $bulan,
-
-                    'tahun' => $tahun,
-
-                    'totaltransaksi' => 1,
-
-                    'totalpendapatan' => $total,
-
-                    'totaldiskon' => $diskon,
-
-                    'totalpajak' => $totalPajak
-                ]);
-            }
-
-            /*
-            |--------------------------------------------------------------------------
-            | LAPORAN KASIR
-            |--------------------------------------------------------------------------
-            */
-
-            $lapKasir = ModelLaporanKasir::where('kasirid', Auth::id())
-                ->where('tanggal', $tanggal)
-                ->first();
-
-            if ($lapKasir) {
-
-                $lapKasir->update([
-
-                    'totaltransaksi' =>
-                        $lapKasir->totaltransaksi + 1,
-
-                    'totalpendapatan' =>
-                        $lapKasir->totalpendapatan + $total
-                ]);
-
-            } else {
-
-                ModelLaporanKasir::create([
-
-                    'userid' => Auth::id(),
-
-                    'kasirid' => Auth::id(),
-
-                    'tanggal' => $tanggal,
-
-                    'totaltransaksi' => 1,
-
-                    'totalpendapatan' => $total
-                ]);
-            }
-
-            /*
-            |--------------------------------------------------------------------------
-            | LAPORAN SHIFT
-            |--------------------------------------------------------------------------
-            */
-
-            $lapShift = ModelLaporanShift::where(
-                    'shiftid',
-                    $shiftAktif->id
-                )
-                ->where('tanggal', $tanggal)
-                ->first();
-
-            if ($lapShift) {
-
-                $lapShift->update([
-
-                    'totaltransaksi' =>
-                        $lapShift->totaltransaksi + 1,
-
-                    'totalpendapatan' =>
-                        $lapShift->totalpendapatan + $total
-                ]);
-
-            } else {
-
-                ModelLaporanShift::create([
-
-                    'userid' => Auth::id(),
-
-                    'shiftid' => $shiftAktif->id,
-
-                    'tanggal' => $tanggal,
-
-                    'totaltransaksi' => 1,
-
-                    'totalpendapatan' => $total
-                ]);
-            }
-
-            /*
-            |--------------------------------------------------------------------------
-            | LAPORAN PRODUK
-            |--------------------------------------------------------------------------
-            */
-
-            foreach ($cart as $item) {
-
-                $lapProduk = ModelLaporanProduk::where(
-                        'produkid',
-                        $item['produkid']
-                    )
-                    ->first();
-
-                if ($lapProduk) {
-
-                    $lapProduk->update([
-
-                        'totalterjual' =>
-                            $lapProduk->totalterjual + $item['qty'],
-
-                        'totalpendapatan' =>
-                            $lapProduk->totalpendapatan + $item['subtotal']
-                    ]);
-
-                } else {
-
-                    ModelLaporanProduk::create([
-
-                        'userid' => Auth::id(),
-
-                        'produkid' => $item['produkid'],
-
-                        'totalterjual' => $item['qty'],
-
-                        'totalpendapatan' => $item['subtotal']
-                    ]);
-                }
-            }
-
-            /*
-            |--------------------------------------------------------------------------
-            | LAPORAN KEUNTUNGAN
-            |--------------------------------------------------------------------------
-            */
-
-            $lapKeuntungan = ModelLaporanKeuntungan::where(
-                    'tanggal',
-                    $tanggal
-                )
-                ->first();
-
-            if ($lapKeuntungan) {
-
-                $pemasukanBaru =
-                    $lapKeuntungan->totalpemasukan + $total;
-
-                $lapKeuntungan->update([
-
-                    'totalpemasukan' => $pemasukanBaru,
-
-                    'keuntungan' =>
-                        $pemasukanBaru -
-                        $lapKeuntungan->totalpengeluaran
-                ]);
-
-            } else {
-
-                ModelLaporanKeuntungan::create([
-
-                    'userid' => Auth::id(),
-
-                    'tanggal' => $tanggal,
-
-                    'totalpemasukan' => $total,
-
-                    'totalpengeluaran' => 0,
-
-                    'keuntungan' => $total
-                ]);
-            }
-
-            /*
-            |--------------------------------------------------------------------------
-            | LAPORAN UMUM
-            |--------------------------------------------------------------------------
-            */
-
-            $laporan = ModelLaporan::where(
-                    'jenislaporan',
-                    'penjualan'
-                )
-                ->where('periodeawal', $tanggal)
-                ->where('periodeakhir', $tanggal)
-                ->first();
-
-            if ($laporan) {
-
-                $laporan->update([
-
-                    'totaldata' =>
-                        $laporan->totaldata + 1
-                ]);
-
-            } else {
-
-                ModelLaporan::create([
-
-                    'userid' => Auth::id(),
-
-                    'jenislaporan' => 'penjualan',
-
-                    'periodeawal' => $tanggal,
-
-                    'periodeakhir' => $tanggal,
-
-                    'totaldata' => 1
-                ]);
-            }
 
             /*
             |--------------------------------------------------------------------------
@@ -710,8 +482,8 @@ class ControllerPenjualan extends Controller
             DB::commit();
 
             return redirect()
-                ->route('kasir.sukses', $penjualan->id);
-
+                ->route('kasir.sukses', $penjualan->id)
+                ->with('success', 'Transaksi berhasil');
         } catch (\Exception $e) {
 
             DB::rollBack();
@@ -738,15 +510,21 @@ class ControllerPenjualan extends Controller
 
             return redirect()
                 ->route('kasir.pos')
-                ->with('error', 'Data penjualan tidak ditemukan!');
+                ->with(
+                    'error',
+                    'Data penjualan tidak ditemukan'
+                );
         }
 
-        return view('kasir.pos.sukses', compact('penjualan'));
+        return view(
+            'kasir.pos.sukses',
+            compact('penjualan')
+        );
     }
 
     /*
     |--------------------------------------------------------------------------
-    | HALAMAN STRUK
+    | STRUK
     |--------------------------------------------------------------------------
     */
     public function struk($id)
@@ -764,10 +542,9 @@ class ControllerPenjualan extends Controller
             ->get();
 
         $pembayaran = ModelPembayaran::where(
-                'penjualanid',
-                $penjualan->id
-            )
-            ->first();
+            'penjualanid',
+            $penjualan->id
+        )->first();
 
         return view('kasir.pos.struk', compact(
             'penjualan',

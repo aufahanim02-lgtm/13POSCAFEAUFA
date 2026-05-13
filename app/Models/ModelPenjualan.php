@@ -3,53 +3,47 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Models\ModelPelanggan;
-use App\Models\ModelUser;
-use App\Models\ModelMeja;
-use App\Models\ModelShift;
-use App\Models\ModelPromo;
-use App\Models\ModelPajak;
-use App\Models\ModelDetailPenjualan;
-use App\Models\ModelPembayaran;
 
 class ModelPenjualan extends Model
 {
     protected $table = 'penjualan';
 
-   protected $fillable = [
-    'kodeinvoice',
-    'userid',
-    'pelangganid',
-    'shiftid',
-    'mejaid',
-    'promoid',
-    'pajakid',
-    'subtotal',
-    'diskon',
-    'pajak',
-    'total',
-    'sumberpesanan',
-    'statuspesanan',
-    'statuspembayaran',
+    protected $fillable = [
 
-    // 🔥 PAYMENT SYSTEM FIX
-  'payment_gateway',
-    'qris_reference',
-    'statuspembayaran',
-    'statuspesanan',
+        'kodeinvoice',
+        'userid',
+        'pelangganid',
+        'shiftid',
+        'mejaid',
+        'promoid',
+        'pajakid',
 
-    'status',
-    'tanggalpenjualan'
-];
+        'subtotal',
+        'diskon',
+        'pajak',
+        'total',
+
+        'sumberpesanan',
+        'statuspesanan',
+        'statuspembayaran',
+
+        'payment_gateway',
+        'qris_reference',
+        'qris_image',
+
+        'status',
+        'tanggalpenjualan'
+    ];
+
+    /*
+    |--------------------------------------------------------------------------
+    | RELASI
+    |--------------------------------------------------------------------------
+    */
 
     public function pelanggan()
     {
         return $this->belongsTo(ModelPelanggan::class, 'pelangganid');
-    }
-
-    public function kasir()
-    {
-        return $this->belongsTo(ModelUser::class, 'userid');
     }
 
     public function user()

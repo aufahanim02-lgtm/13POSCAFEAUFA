@@ -72,9 +72,9 @@
             </div>
 
             <div class="col-lg-6 text-center" data-aos="fade-left">
-                <img src="{{ asset('foto/banner/cafe.jpeg') }}"
-                     class="img-fluid rounded-4 shadow-lg"
-                     alt="CAFEPOS ">
+                <img src="{{ asset('storage/banner/cafe.jpeg') }}"
+                    class="img-fluid rounded-4 shadow-lg"
+                    alt="CAFEPOS">
             </div>
 
         </div>
@@ -177,9 +177,9 @@
         <div class="row align-items-center g-5">
 
             <div class="col-lg-6" data-aos="fade-right">
-                <img src="{{ asset('foto/banner/hanla.JPEG') }}"
-                     class="img-fluid rounded-4 shadow-lg"
-                     alt="CAFEPOS Preview">
+                <img src="{{ asset('storage/banner/hanla.jpeg') }}"
+                    class="img-fluid rounded-4 shadow-lg"
+                    alt="CAFEPOS Preview">
             </div>
 
             <div class="col-lg-6" data-aos="fade-left">

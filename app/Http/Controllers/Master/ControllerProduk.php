@@ -11,6 +11,12 @@ use App\Models\ModelKategori;
 
 class ControllerProduk extends Controller
 {
+    /*
+    |--------------------------------------------------------------------------
+    | INDEX
+    |--------------------------------------------------------------------------
+    */
+
     public function index()
     {
         $data = ModelProduk::with('kategori')
@@ -20,6 +26,12 @@ class ControllerProduk extends Controller
         return view('admin.produk.index', compact('data'));
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | CREATE
+    |--------------------------------------------------------------------------
+    */
+
     public function create()
     {
         $kategori = ModelKategori::all();
@@ -27,29 +39,55 @@ class ControllerProduk extends Controller
         return view('admin.produk.create', compact('kategori'));
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | STORE
+    |--------------------------------------------------------------------------
+    */
+
     public function store(Request $request)
     {
         $request->validate([
             'kategoriid' => 'required',
             'kodeproduk' => 'required|unique:produk,kodeproduk',
             'namaproduk' => 'required',
+            'deskripsi' => 'nullable',
             'hargajual' => 'required|numeric',
+            'stok' => 'required|numeric',
+            'stokproduk' => 'required|numeric',
             'satuan' => 'required',
             'foto' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-            'status' => 'required|in:aktif,nonaktif'
+            'status' => 'required|in:aktif,nonaktif',
         ]);
 
         $fotoPath = null;
 
+        /*
+        |--------------------------------------------------------------------------
+        | Upload Foto
+        |--------------------------------------------------------------------------
+        */
+
         if ($request->hasFile('foto')) {
-            $fotoPath = $request->file('foto')->store('produk', 'public');
+
+            $fotoPath = $request->file('foto')
+                ->store('produk', 'public');
         }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Simpan Produk
+        |--------------------------------------------------------------------------
+        */
 
         ModelProduk::create([
             'kategoriid' => $request->kategoriid,
             'kodeproduk' => $request->kodeproduk,
             'namaproduk' => $request->namaproduk,
+            'deskripsi' => $request->deskripsi,
             'hargajual' => $request->hargajual,
+            'stok' => $request->stok,
+            'stokproduk' => $request->stokproduk,
             'satuan' => $request->satuan,
             'foto' => $fotoPath,
             'status' => $request->status,
@@ -60,6 +98,12 @@ class ControllerProduk extends Controller
             ->with('success', 'Produk berhasil ditambahkan!');
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | SHOW
+    |--------------------------------------------------------------------------
+    */
+
     public function show($id)
     {
         $data = ModelProduk::with('kategori')
@@ -68,13 +112,26 @@ class ControllerProduk extends Controller
         return view('admin.produk.show', compact('data'));
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | EDIT
+    |--------------------------------------------------------------------------
+    */
+
     public function edit($id)
     {
         $data = ModelProduk::findOrFail($id);
+
         $kategori = ModelKategori::all();
 
         return view('admin.produk.edit', compact('data', 'kategori'));
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | UPDATE
+    |--------------------------------------------------------------------------
+    */
 
     public function update(Request $request, $id)
     {
@@ -84,31 +141,56 @@ class ControllerProduk extends Controller
             'kategoriid' => 'required',
             'kodeproduk' => 'required|unique:produk,kodeproduk,' . $data->id,
             'namaproduk' => 'required',
+            'deskripsi' => 'nullable',
             'hargajual' => 'required|numeric',
+            'stok' => 'required|numeric',
+            'stokproduk' => 'required|numeric',
             'satuan' => 'required',
             'foto' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
             'status' => 'required|in:aktif,nonaktif',
         ]);
 
+        /*
+        |--------------------------------------------------------------------------
+        | Data Update
+        |--------------------------------------------------------------------------
+        */
+
         $updateData = [
             'kategoriid' => $request->kategoriid,
             'kodeproduk' => $request->kodeproduk,
             'namaproduk' => $request->namaproduk,
+            'deskripsi' => $request->deskripsi,
             'hargajual' => $request->hargajual,
+            'stok' => $request->stok,
+            'stokproduk' => $request->stokproduk,
             'satuan' => $request->satuan,
             'status' => $request->status,
         ];
 
-        // upload foto baru
+        /*
+        |--------------------------------------------------------------------------
+        | Upload Foto Baru
+        |--------------------------------------------------------------------------
+        */
+
         if ($request->hasFile('foto')) {
 
             // hapus foto lama
             if ($data->foto && Storage::disk('public')->exists($data->foto)) {
+
                 Storage::disk('public')->delete($data->foto);
             }
 
-            $updateData['foto'] = $request->file('foto')->store('produk', 'public');
+            $updateData['foto'] = $request->file('foto')
+                ->store('produk', 'public');
         }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Update Produk
+        |--------------------------------------------------------------------------
+        */
 
         $data->update($updateData);
 
@@ -117,14 +199,32 @@ class ControllerProduk extends Controller
             ->with('success', 'Produk berhasil diupdate!');
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | DESTROY
+    |--------------------------------------------------------------------------
+    */
+
     public function destroy($id)
     {
         $data = ModelProduk::findOrFail($id);
 
-        // hapus foto produk jika ada
+        /*
+        |--------------------------------------------------------------------------
+        | Hapus Foto
+        |--------------------------------------------------------------------------
+        */
+
         if ($data->foto && Storage::disk('public')->exists($data->foto)) {
+
             Storage::disk('public')->delete($data->foto);
         }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Hapus Produk
+        |--------------------------------------------------------------------------
+        */
 
         $data->delete();
 

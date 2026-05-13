@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
 use App\Models\ModelProduk;
-use App\Models\ModelKategori;
 
 class ControllerMenuPelanggan extends Controller
 {
@@ -16,10 +15,12 @@ class ControllerMenuPelanggan extends Controller
 
         $produk = ModelProduk::with('kategori')
             ->where('status', 'aktif')
+
             ->when($q, function ($query) use ($q) {
                 $query->where('namaproduk', 'like', "%$q%")
                       ->orWhere('kodeproduk', 'like', "%$q%");
             })
+
             ->orderBy('id', 'desc')
             ->get();
 
@@ -28,7 +29,9 @@ class ControllerMenuPelanggan extends Controller
 
     public function detail($id)
     {
-        $produk = ModelProduk::with('kategori')->findOrFail($id);
+        $produk = ModelProduk::with('kategori')
+            ->where('status', 'aktif')
+            ->findOrFail($id);
 
         return view('pelanggan.menu.detail', compact('produk'));
     }

@@ -12,7 +12,10 @@ class ModelProduk extends Model
         'kategoriid',
         'kodeproduk',
         'namaproduk',
+        'deskripsi',
         'hargajual',
+        'stok',
+        'stokproduk',
         'satuan',
         'foto',
         'status'
@@ -23,6 +26,7 @@ class ModelProduk extends Model
     | RELATIONSHIP
     |--------------------------------------------------------------------------
     */
+
     public function kategori()
     {
         return $this->belongsTo(ModelKategori::class, 'kategoriid', 'id');

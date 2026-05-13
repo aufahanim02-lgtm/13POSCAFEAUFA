@@ -2,7 +2,6 @@
 @section('title', 'Dashboard Manager')
 
 @section('content')
-<div class="content-wrapper">
 
     <!-- HEADER -->
     <section class="content-header">
