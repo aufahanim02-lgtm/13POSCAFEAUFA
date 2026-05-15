@@ -3,7 +3,7 @@ APKBESAR/
 ├── app/
 │   ├── Http/
 │   │   ├── Controllers/
-│   │   │
+│   │   │   |
 │   │   │   ├── Auth/
 │   │   │   │   ├── ControllerAuthLoginHistory.php
 │   │   │   │   ├── ControllerAuthPelanggan.php
@@ -132,40 +132,40 @@ APKBESAR/
 ├── public/
 │
 ├── resources/
-│   └── views/
-│       │
-│       ├── auth/
-│       │   ├── login.blade.php
-│       │   ├── loginpelanggan.blade.php
-│       │   ├── pilihlogin.blade.php
-│       │   └── registerpelanggan.blade.php
-│       │
-│       ├── layouts/
-│       │   ├── admin/
-│       │   │   ├── footer.blade.php
-│       │   │   ├── navbar.blade.php
-│       │   │   └── sidebar.blade.php
-│       │   │
-│       │   ├── guest/
-│       │   │   ├── footer.blade.php
-│       │   │   └── navbar.blade.php
-│       │   │
-│       │   ├── kasir/
-│       │   │   ├── footer.blade.php
-│       │   │   ├── navbar.blade.php
-│       │   │   └── sidebar.blade.php
-│       │   │
-│       │   ├── manager/
-│       │   │   ├── footer.blade.php
-│       │   │   ├── navbar.blade.php
-│       │   │   └── sidebar.blade.php
-│       │   │
-│       │   ├── appadmin.blade.php
-│       │   ├── appguest.blade.php
-│       │   ├── appkasir.blade.php
-│       │   ├── appmanager.blade.php
-│       │   └── apppelanggan.blade.php
-│       │
+│   ├── views/
+│   |   │
+│   |   ├── auth/
+│   |   │   ├── login.blade.php
+│   |   │   ├── loginpelanggan.blade.php
+│   |   │   ├── pilihlogin.blade.php
+│   |   │   └── registerpelanggan.blade.php
+│   |   │
+│   |   ├── layouts/
+│   |   │   ├── admin/
+│   |   │   │   ├── footer.blade.php
+│   |   │   │   ├── navbar.blade.php
+│   |   │   │   └── sidebar.blade.php
+│   |   │   │
+│   |   │   ├── guest/
+│   |   │   │   ├── footer.blade.php
+│   |   │   │   └── navbar.blade.php
+│   |   │   │
+│   |   │   ├── kasir/
+│   |   │   │   ├── footer.blade.php
+│   |   │   │   ├── navbar.blade.php
+│   |   │   │   └── sidebar.blade.php
+│   |   │   │
+│   |   │   ├── manager/
+│   |   │   │   ├── footer.blade.php
+│   |   │   │   ├── navbar.blade.php
+│   |   │   │   └── sidebar.blade.php
+│   |   │   │
+│   |   │   ├── appadmin.blade.php
+│   |   │   ├── appguest.blade.php
+│   |   │   ├── appkasir.blade.php
+│   |   │   ├── appmanager.blade.php
+│   |   │   └── apppelanggan.blade.php
+│   |   │
 │   │   ├── admin/
 │   │   │   ├── dashboard/
 │   │   │   │   └── dashboardadmin.blade.php
@@ -253,78 +253,79 @@ APKBESAR/
 │   │   │   │   ├── create.blade.php
 │   │   │   │   ├── edit.blade.php
 │   │   │   │   └── show.blade.php
-│       ├── kasir/
-│       │   ├── dashboard/
-│       │   │   └── dashboardkasir.blade.php
-│       │   │
-│       │   ├── pembayaran/
-│       │   │   ├── bayar.blade.php
-│       │   │   └── index.blade.php
-│       │   │
-│       │   ├── pembayaranpelanggan/
-│       │   │   ├── form.blade.php
-│       │   │   └── index.blade.php
-│       │   │
-│       │   ├── pesananmasak/
-│       │   │   ├── index.blade.php
-│       │   │   └── show.blade.php
-│       │   │
-│       │   ├── pos/
-│       │   │   ├── index.blade.php
-│       │   │   ├── pembayaran.blade.php
-│       │   │   ├── showstruk.blade.php
-│       │   │   ├── struk.blade.php
-│       │   │   ├── strukprint.blade.php
-│       │   │   └── sukses.blade.php
-│       │   │
-│       │   ├── riwayat/
-│       │   │   ├── index.blade.php
-│       │   │   └── show.blade.php
-│       │   │
-│       │   └── shift/
-│       │       ├── bukashift.blade.php
-│       │       ├── index.blade.php
-│       │       └── tutupshift.blade.php
-│       │   
-│       ├── landing/
-│       │    ├── home.blade.php
-│       │    ├── kontak.blade.php
-│       │    ├── menu.blade.php
-│       │    ├── promo.blade.php
-│       │    └── tentang.blade.php
-│       │
-│       ├── manager/
-│       │   ├── dashboard/
-│       │   │   └── dashboardmanager.blade.php
-│       │   │
-│       │   ├── inventory/
-│       │   │   ├── bahanbaku/
-│       │   │   │   ├── create.blade.php
-│       │   │   │   ├── edit.blade.php
-│       │   │   │   ├── index.blade.php
-│       │   │   │   └── show.blade.php
-│       │   │   │
-│       │   │   ├── pembelian/
-│       │   │   │   ├── create.blade.php
-│       │   │   │   ├── edit.blade.php
-│       │   │   │   ├── index.blade.php
-│       │   │   │   └── show.blade.php
-│       │   │   ├── stok/
-│       │   │   │   ├── create.blade.php
-│       │   │   │   ├── edit.blade.php
-│       │   │   │   ├── index.blade.php
-│       │   │   │   └── show.blade.php
-│       │   │   ├── stokkeluar/
-│       │   │   │   ├── create.blade.php
-│       │   │   │   ├── edit.blade.php
-│       │   │   │   ├── index.blade.php
-│       │   │   │   └── show.blade.php
-│       │   │   └── stokmasuk/
-│       │   │       ├── create.blade.php
-│       │   │       ├── edit.blade.php
-│       │   │       ├── index.blade.php
-│       │   │       └── show.blade.php
-│       │   │
+│   |   ├── kasir/
+│   |   │   ├── dashboard/
+│   |   │   │   └── dashboardkasir.blade.php
+│   |   │   │
+│   |   │   ├── pembayaran/
+│   |   │   │   ├── bayar.blade.php
+│   |   │   │   └── index.blade.php
+│   |   │   │
+│   |   │   ├── pembayaranpelanggan/
+│   |   │   │   ├── form.blade.php
+│   │   │   │   ├── qris.blade.php
+│   |   │   │   └── index.blade.php
+│   |   │   │
+│   |   │   ├── pesananmasak/
+│   |   │   │   ├── index.blade.php
+│   |   │   │   └── show.blade.php
+│   |   │   │
+│   |   │   ├── pos/
+│   |   │   │   ├── index.blade.php
+│   |   │   │   ├── pembayaran.blade.php
+│   |   │   │   ├── showstruk.blade.php
+│   |   │   │   ├── struk.blade.php
+│   |   │   │   ├── strukprint.blade.php
+│   |   │   │   └── sukses.blade.php
+│   |   │   │
+│   |   │   ├── riwayat/
+│   |   │   │   ├── index.blade.php
+│   |   │   │   └── show.blade.php
+│   |   │   │
+│   |   │   └── shift/
+│   |   │       ├── bukashift.blade.php
+│   |   │       ├── index.blade.php
+│   |   │       └── tutupshift.blade.php
+│   |   │   
+│   |   ├── landing/
+│   |   │    ├── home.blade.php
+│   |   │    ├── kontak.blade.php
+│   |   │    ├── menu.blade.php
+│   |   │    ├── promo.blade.php
+│   |   │    └── tentang.blade.php
+│   |   │
+│   |   ├── manager/
+│   |   │   ├── dashboard/
+│   |   │   │   └── dashboardmanager.blade.php
+│   |   │   │
+│   |   │   ├── inventory/
+│   |   │   │   ├── bahanbaku/
+│   |   │   │   │   ├── create.blade.php
+│   |   │   │   │   ├── edit.blade.php
+│   |   │   │   │   ├── index.blade.php
+│   |   │   │   │   └── show.blade.php
+│   |   │   │   │
+│   |   │   │   ├── pembelian/
+│   |   │   │   │   ├── create.blade.php
+│   |   │   │   │   ├── edit.blade.php
+│   |   │   │   │   ├── index.blade.php
+│   |   │   │   │   └── show.blade.php
+│   |   │   │   ├── stok/
+│   |   │   │   │   ├── create.blade.php
+│   |   │   │   │   ├── edit.blade.php
+│   |   │   │   │   ├── index.blade.php
+│   |   │   │   │   └── show.blade.php
+│   |   │   │   ├── stokkeluar/
+│   |   │   │   │   ├── create.blade.php
+│   |   │   │   │   ├── edit.blade.php
+│   |   │   │   │   ├── index.blade.php
+│   |   │   │   │   └── show.blade.php
+│   |   │   │   └── stokmasuk/
+│   |   │   │       ├── create.blade.php
+│   |   │   │       ├── edit.blade.php
+│   |   │   │       ├── index.blade.php
+│   |   │   │       └── show.blade.php
+│   |   │   │
 │   │   │   ├── laporan/
 │   │   │   │   ├── harian/
 │   │   │   │   │   ├── index.blade.php
@@ -360,18 +361,31 @@ APKBESAR/
 │   │   │   │   ├── create.blade.php
 │   │   │   │   ├── edit.blade.php
 │   │   │   │   └── show.blade.php
-│       │   │
-│       │   └── pelanggan/
-│       │       ├── checkout/
-│       │       ├── dashboard/
-│       │       ├── keranjang/
-│       │       ├── menu/
-│       │       ├── pesanan/
-│       │       ├── profil/
-│       │       ├── qris/
-│       │       ├── ulasan/
-│       │       └── wishlist/
-│
+│   |   │   │
+│   |   │   └── pelanggan/
+│   |   │   |   ├── checkout/
+│   │   │   │   │   └── index.blade.php
+│   |   │   |   ├── dashboard/
+│   │   │   │   │   └── dashboardpelanggan.blade.php
+│   |   │   |   ├── keranjang/
+│   │   │   │   │   ├── checkout.blade.php
+│   │   │   |   │   └── index.blade.php
+│   |   │   |   ├── menu/
+│   │   │   │   │   ├── detail.blade.php
+│   │   │   │   │   └── index.blade.php
+│   |   │   |   ├── pesanan/
+│   │   │   │   │   ├── index.blade.php
+│   │   │   │   │   ├── detail.blade.php
+│   │   │   │   │   └── qris.blade.php
+│   |   │   |   ├── profil/
+│   │   │   │   │   ├── index.blade.php
+│   │   │   │   │   └── edit.blade.php
+│   |   │   |   ├── ulasan/
+│   │   │   │   │   ├── index.blade.php
+│   │   │   │   │   └── from.blade.php
+│   |   │   |   └── wishlist/
+│   │   │   │      └── index.blade.php
+│   |   |   |
 ├── routes/
 │   ├── web.php
 │   └── console.php
