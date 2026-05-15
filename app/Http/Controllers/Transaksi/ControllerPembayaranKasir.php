@@ -20,67 +20,142 @@ class ControllerPembayaranKasir extends Controller
     */
     public function index()
     {
-        $data = ModelPenjualan::with(['meja', 'pelanggan'])
+        $data = ModelPenjualan::with([
+            'meja',
+            'pelanggan'
+        ])
             ->where('sumberpesanan', 'pelanggan')
             ->where('statuspembayaran', 'belumbayar')
             ->orderBy('id', 'desc')
             ->get();
 
-        return view('kasir.pembayaranpelanggan.index', compact('data'));
+        return view(
+            'kasir.pembayaranpelanggan.index',
+            compact('data')
+        );
     }
 
     /*
     |--------------------------------------------------------------------------
-    | FORM PEMBAYARAN PESANAN PELANGGAN
+    | FORM PEMBAYARAN
     |--------------------------------------------------------------------------
     */
     public function form($id)
     {
-        $pesanan = ModelPenjualan::with(['detail.produk', 'meja', 'pelanggan'])
+        $pesanan = ModelPenjualan::with([
+            'detail.produk',
+            'meja',
+            'pelanggan'
+        ])
             ->where('id', $id)
             ->where('sumberpesanan', 'pelanggan')
             ->firstOrFail();
 
         if ($pesanan->statuspembayaran == 'lunas') {
+
             return redirect()
                 ->route('kasir.pembayaranpelanggan.index')
-                ->with('error', 'Pesanan ini sudah lunas.');
+                ->with(
+                    'error',
+                    'Pesanan ini sudah lunas.'
+                );
         }
 
-        $metode = ModelMetodePembayaran::where('status', 'aktif')->get();
+        $metode = ModelMetodePembayaran::where(
+            'status',
+            'aktif'
+        )->get();
 
-        return view('kasir.pembayaranpelanggan.form', compact('pesanan', 'metode'));
+        return view(
+            'kasir.pembayaranpelanggan.form',
+            compact(
+                'pesanan',
+                'metode'
+            )
+        );
     }
 
     /*
     |--------------------------------------------------------------------------
-    | PROSES PEMBAYARAN PESANAN PELANGGAN
+    | PROSES PEMBAYARAN
     |--------------------------------------------------------------------------
     */
     public function proses(Request $request, $id)
     {
         $request->validate([
-            'metodepembayaranid' => 'required|exists:metodepembayaran,id',
-            'jumlahbayar'        => 'required|numeric|min:0',
+
+            'metodepembayaranid' =>
+            'required|exists:metodepembayaran,id',
+
+            'jumlahbayar' =>
+            'nullable|numeric|min:0',
         ]);
 
-        $pesanan = ModelPenjualan::with(['detail.produk', 'meja', 'pelanggan'])
+        $pesanan = ModelPenjualan::with([
+            'detail.produk',
+            'meja',
+            'pelanggan'
+        ])
             ->where('id', $id)
             ->where('sumberpesanan', 'pelanggan')
             ->firstOrFail();
 
         if ($pesanan->statuspembayaran == 'lunas') {
+
             return redirect()
                 ->route('kasir.pembayaranpelanggan.index')
-                ->with('error', 'Pesanan ini sudah lunas.');
+                ->with(
+                    'error',
+                    'Pesanan ini sudah lunas.'
+                );
         }
 
+        $metode = ModelMetodePembayaran::findOrFail(
+            $request->metodepembayaranid
+        );
+
+        /*
+        |--------------------------------------------------------------------------
+        | JIKA QRIS / NONCASH
+        |--------------------------------------------------------------------------
+        */
+        if ($metode->jenis == 'noncash') {
+
+            $pesanan->update([
+
+                'userid' =>
+                Auth::id(),
+
+                'payment_gateway' =>
+                'qris',
+
+                'statuspembayaran' =>
+                'belumbayar',
+            ]);
+
+            return redirect()->route(
+                'kasir.pembayaranpelanggan.qris',
+                $pesanan->id
+            );
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | PEMBAYARAN CASH
+        |--------------------------------------------------------------------------
+        */
         $total = $pesanan->total;
+
         $jumlahbayar = $request->jumlahbayar;
+
         $kembalian = $jumlahbayar - $total;
 
         if ($kembalian < 0) {
-            return back()->with('error', 'Uang pembayaran kurang.');
+
+            return back()->with(
+                'error',
+                'Uang pembayaran kurang.'
+            );
         }
 
         DB::beginTransaction();
@@ -88,32 +163,181 @@ class ControllerPembayaranKasir extends Controller
         try {
 
             ModelPembayaran::create([
-                'penjualanid'        => $pesanan->id,
-                'metodepembayaranid' => $request->metodepembayaranid,
-                'jumlahbayar'        => $jumlahbayar,
-                'kembalian'          => $kembalian,
-                'tanggalbayar'       => now(),
-                'buktibayar'         => null,
-                'status'             => 'paid',
+
+                'penjualanid' =>
+                $pesanan->id,
+
+                'metodepembayaranid' =>
+                $request->metodepembayaranid,
+
+                'jumlahbayar' =>
+                $jumlahbayar,
+
+                'kembalian' =>
+                $kembalian,
+
+                'tanggalbayar' =>
+                now(),
+
+                'buktibayar' =>
+                null,
+
+                'status' =>
+                'paid',
             ]);
 
             $pesanan->update([
-                'userid'            => Auth::id(),
-                'statuspembayaran'  => 'lunas',
-                'payment_gateway'   => 'cash',
-                'status'            => 'paid',
+
+                'userid' =>
+                Auth::id(),
+
+                'payment_gateway' =>
+                'cash',
+
+                'statuspembayaran' =>
+                'lunas',
+            ]);
+
+            DB::commit();
+
+            return redirect()
+                ->route(
+                    'kasir.pembayaranpelanggan.index'
+                )
+                ->with(
+                    'success',
+                    'Pembayaran berhasil. Kembalian: Rp ' .
+                        number_format(
+                            $kembalian,
+                            0,
+                            ',',
+                            '.'
+                        )
+                );
+
+        } catch (\Throwable $e) {
+
+            DB::rollBack();
+
+            return back()->with(
+                'error',
+                'Gagal memproses pembayaran: ' .
+                    $e->getMessage()
+            );
+        }
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | HALAMAN QRIS KASIR
+    |--------------------------------------------------------------------------
+    */
+    public function qris($id)
+    {
+        $pesanan = ModelPenjualan::with([
+            'detail.produk',
+            'meja',
+            'pelanggan'
+        ])->findOrFail($id);
+
+        if ($pesanan->payment_gateway != 'qris') {
+
+            return redirect()
+                ->route('kasir.pembayaranpelanggan.index')
+                ->with(
+                    'error',
+                    'Pesanan ini bukan pembayaran QRIS.'
+                );
+        }
+
+        $qrisCode = 'QRIS-' . $pesanan->kodeinvoice;
+
+        return view(
+            'kasir.pembayaranpelanggan.qris',
+            compact(
+                'pesanan',
+                'qrisCode'
+            )
+        );
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | KONFIRMASI QRIS
+    |--------------------------------------------------------------------------
+    */
+    public function konfirmasiQris($id)
+    {
+        DB::beginTransaction();
+
+        try {
+
+            $pesanan = ModelPenjualan::findOrFail($id);
+
+            if ($pesanan->statuspembayaran == 'lunas') {
+
+                return back()->with(
+                    'error',
+                    'Pesanan sudah lunas.'
+                );
+            }
+
+            $metode = ModelMetodePembayaran::where(
+                'jenis',
+                'noncash'
+            )->first();
+
+            ModelPembayaran::create([
+
+                'penjualanid' =>
+                $pesanan->id,
+
+                'metodepembayaranid' =>
+                $metode->id ?? 1,
+
+                'jumlahbayar' =>
+                $pesanan->total,
+
+                'kembalian' =>
+                0,
+
+                'tanggalbayar' =>
+                now(),
+
+                'buktibayar' =>
+                null,
+
+                'status' =>
+                'paid',
+            ]);
+
+            $pesanan->update([
+
+                'statuspembayaran' =>
+                'lunas',
+
+                'payment_gateway' =>
+                'qris',
             ]);
 
             DB::commit();
 
             return redirect()
                 ->route('kasir.pembayaranpelanggan.index')
-                ->with('success', 'Pembayaran berhasil. Kembalian: Rp ' . number_format($kembalian, 0, ',', '.'));
+                ->with(
+                    'success',
+                    'Pembayaran QRIS berhasil dikonfirmasi.'
+                );
 
         } catch (\Throwable $e) {
 
             DB::rollBack();
-            return back()->with('error', 'Gagal memproses pembayaran: ' . $e->getMessage());
+
+            return back()->with(
+                'error',
+                'Gagal konfirmasi QRIS: ' .
+                    $e->getMessage()
+            );
         }
     }
 }

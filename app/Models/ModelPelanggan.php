@@ -12,7 +12,7 @@ class ModelPelanggan extends Authenticatable
     protected $table = 'pelanggan';
 
     protected $fillable = [
-        'name',          // ✅ FIX: dari "nama" -> "name"
+        'name',
         'username',
         'email',
         'nohp',
@@ -20,12 +20,20 @@ class ModelPelanggan extends Authenticatable
         'foto',
         'point',
         'levelmember',
-        'status'
+        'status',
+        'remember_token'
     ];
 
     protected $hidden = [
         'password',
         'remember_token'
     ];
-}
 
+    protected $casts = [
+        'point' => 'integer',
+    ];
+    public function penjualan()
+    {
+        return $this->hasMany(\App\Models\ModelPenjualan::class, 'pelangganid');
+    }
+}

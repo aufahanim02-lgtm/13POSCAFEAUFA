@@ -1,132 +1,97 @@
 @extends('layouts.apppelanggan')
 
-@section('title', 'Ulasan Saya')
+@section('title', 'Ulasan Pesanan')
 
 @section('content')
-@php
-    use Carbon\Carbon;
-@endphp
-
 <div class="container py-4">
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h3 class="fw-bold mb-1">⭐ Ulasan Saya</h3>
-            <p class="text-muted mb-0">Daftar ulasan yang sudah kamu berikan ke produk.</p>
-        </div>
-
-        <a href="{{ route('pelanggan.menu.index') }}" class="btn btn-primary rounded-3 px-4">
-            <i class="fa-solid fa-utensils me-2"></i> Cari Menu
-        </a>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="fw-bold mb-0">Ulasan Pesanan</h3>
+        <span class="badge bg-primary">Review per Invoice</span>
     </div>
 
-    {{-- ALERT SUCCESS --}}
+    {{-- ALERT --}}
     @if(session('success'))
-        <div class="alert alert-success shadow-sm">
-            <b>Berhasil!</b> {{ session('success') }}
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <strong>Berhasil!</strong> {{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     @endif
 
-    {{-- ALERT ERROR --}}
     @if(session('error'))
-        <div class="alert alert-danger shadow-sm">
-            <b>Gagal!</b> {{ session('error') }}
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <strong>Gagal!</strong> {{ session('error') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     @endif
 
-    <div class="card shadow-sm border-0 rounded-4">
-        <div class="card-body p-4">
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-white fw-bold">
+            Daftar Invoice Selesai
+        </div>
 
-            @if(isset($ulasan) && $ulasan->count() > 0)
+        <div class="card-body">
+
+            @if($data->count() == 0)
+                <div class="alert alert-warning mb-0">
+                    Belum ada pesanan selesai yang bisa kamu ulas.
+                </div>
+            @else
 
                 <div class="table-responsive">
-                    <table class="table table-hover align-middle">
-                        <thead class="table-light">
+                    <table class="table table-striped table-hover align-middle">
+                        <thead class="table-dark">
                             <tr>
-                                <th style="width:240px;">Produk</th>
-                                <th style="width:120px;">Rating</th>
-                                <th>Komentar</th>
-                                <th style="width:180px;">Tanggal</th>
+                                <th>#</th>
+                                <th>Kode Invoice</th>
+                                <th>Tanggal</th>
+                                <th>Jumlah Item</th>
+                                <th>Status Pesanan</th>
+                                <th>Status Pembayaran</th>
+                                <th width="180">Aksi</th>
                             </tr>
                         </thead>
-
                         <tbody>
-                            @foreach($ulasan as $row)
+                            @foreach($data as $item)
                                 <tr>
+                                    <td>{{ $loop->iteration }}</td>
 
-                                    {{-- PRODUK --}}
-                                    <td>
-                                        <div class="fw-bold text-dark">
-                                            {{ $row->produk->namaproduk ?? '-' }}
-                                        </div>
-                                        <small class="text-muted">
-                                            ID Produk: {{ $row->produkid }}
-                                        </small>
+                                    <td class="fw-bold text-primary">
+                                        {{ $item->kodeinvoice }}
                                     </td>
 
-                                    {{-- RATING --}}
                                     <td>
-                                        @if($row->rating == 5)
-                                            <span class="badge bg-success px-3 py-2">⭐⭐⭐⭐⭐ (5)</span>
-                                        @elseif($row->rating == 4)
-                                            <span class="badge bg-primary px-3 py-2">⭐⭐⭐⭐ (4)</span>
-                                        @elseif($row->rating == 3)
-                                            <span class="badge bg-warning text-dark px-3 py-2">⭐⭐⭐ (3)</span>
-                                        @elseif($row->rating == 2)
-                                            <span class="badge bg-danger px-3 py-2">⭐⭐ (2)</span>
-                                        @else
-                                            <span class="badge bg-dark px-3 py-2">⭐ (1)</span>
-                                        @endif
+                                        {{ $item->tanggalpenjualan ? \Carbon\Carbon::parse($item->tanggalpenjualan)->format('d-m-Y H:i') : '-' }}
                                     </td>
 
-                                    {{-- KOMENTAR --}}
                                     <td>
-                                        @if($row->komentar)
-                                            <span class="text-dark">{{ $row->komentar }}</span>
-                                        @else
-                                            <span class="text-muted fst-italic">Tidak ada komentar</span>
-                                        @endif
+                                        {{ $item->detail->count() }} Produk
                                     </td>
 
-                                    {{-- TANGGAL --}}
                                     <td>
-                                        @if($row->tanggal)
-                                            <span class="fw-semibold">
-                                                {{ Carbon::parse($row->tanggal)->format('d-m-Y') }}
-                                            </span>
-                                            <br>
-                                            <small class="text-muted">
-                                                {{ Carbon::parse($row->tanggal)->format('H:i') }}
-                                            </small>
-                                        @else
-                                            <span class="text-muted">-</span>
-                                        @endif
+                                        <span class="badge bg-success">
+                                            {{ strtoupper($item->statuspesanan) }}
+                                        </span>
                                     </td>
 
+                                    <td>
+                                        <span class="badge bg-primary">
+                                            {{ strtoupper($item->statuspembayaran) }}
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        <a href="{{ route('pelanggan.ulasan.form', $item->id) }}"
+                                           class="btn btn-sm btn-warning">
+                                            <i class="bi bi-star-fill"></i> Beri Ulasan
+                                        </a>
+                                    </td>
                                 </tr>
                             @endforeach
                         </tbody>
-
                     </table>
                 </div>
 
-            @else
-                <div class="text-center py-5">
-                    <img src="https://cdn-icons-png.flaticon.com/512/4076/4076508.png"
-                         width="120"
-                         class="mb-3"
-                         alt="Kosong">
-
-                    <h5 class="fw-bold">Belum ada ulasan</h5>
-                    <p class="text-muted mb-0">
-                        Ulasan akan muncul setelah kamu menyelesaikan pesanan dan memberikan rating.
-                    </p>
-
-                    <a href="{{ route('pelanggan.menu.index') }}"
-                       class="btn btn-success mt-3 px-4 rounded-3">
-                        <i class="fa-solid fa-burger me-2"></i> Pesan Menu Sekarang
-                    </a>
-                </div>
             @endif
 
         </div>

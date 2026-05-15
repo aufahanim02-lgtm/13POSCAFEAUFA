@@ -3,9 +3,9 @@
 use Illuminate\Support\Facades\Route;
 
 /*
-|-------------------------------------------------------------------------- 
+|--------------------------------------------------------------------------
 | CONTROLLERS (BY FITUR)
-|-------------------------------------------------------------------------- 
+|--------------------------------------------------------------------------
 */
 
 // LANDING
@@ -31,6 +31,8 @@ use App\Http\Controllers\Master\ControllerSupplier;
 use App\Http\Controllers\Master\ControllerMetodePembayaran;
 use App\Http\Controllers\Master\ControllerPromo;
 use App\Http\Controllers\Master\ControllerPajak;
+use App\Http\Controllers\Master\ControllerUlasanOwner;
+use App\Http\Controllers\Master\ControllerPelangganAdmin;
 
 // INVENTORY
 use App\Http\Controllers\Inventory\ControllerBahanBaku;
@@ -70,9 +72,9 @@ use App\Http\Controllers\ZonaKasir\ControllerZonaKasir;
 
 
 /*
-|-------------------------------------------------------------------------- 
+|--------------------------------------------------------------------------
 | LANDING PAGE (PUBLIC)
-|-------------------------------------------------------------------------- 
+|--------------------------------------------------------------------------
 */
 
 Route::get('/', [ControllerLanding::class, 'home'])->name('landing.home');
@@ -84,25 +86,24 @@ Route::post('/kontak', [ControllerLanding::class, 'storeKontak'])->name('landing
 
 
 /*
-|-------------------------------------------------------------------------- 
+|--------------------------------------------------------------------------
 | AUTH USER (ADMIN / OWNER / MANAGER / KASIR)
-|-------------------------------------------------------------------------- 
+|--------------------------------------------------------------------------
 */
-
 Route::get('/login', [ControllerAuthUser::class, 'login'])->name('auth.login');
 Route::post('/login', [ControllerAuthUser::class, 'loginProses'])->name('auth.loginproses');
 Route::get('/logout', [ControllerAuthUser::class, 'logout'])->name('auth.logout');
+
 Route::get('/pilih-login', function () {
     return view('auth.pilihlogin');
 })->name('auth.pilihlogin');
 
 
 /*
-|-------------------------------------------------------------------------- 
+|--------------------------------------------------------------------------
 | AUTH PELANGGAN
-|-------------------------------------------------------------------------- 
+|--------------------------------------------------------------------------
 */
-
 Route::get('/loginpelanggan', [ControllerAuthPelanggan::class, 'login'])->name('pelanggan.login');
 Route::post('/loginpelanggan', [ControllerAuthPelanggan::class, 'loginProses'])->name('pelanggan.login.proses');
 
@@ -113,17 +114,16 @@ Route::get('/logoutpelanggan', [ControllerAuthPelanggan::class, 'logout'])->name
 
 
 /*
-|-------------------------------------------------------------------------- 
+|--------------------------------------------------------------------------
 | AUTHENTICATED USER ROUTES (ADMIN / OWNER / MANAGER / KASIR)
-|-------------------------------------------------------------------------- 
+|--------------------------------------------------------------------------
 */
-
 Route::middleware(['auth'])->group(function () {
 
     /*
-    |-------------------------------------------------------------------------- 
+    |--------------------------------------------------------------------------
     | DASHBOARD
-    |-------------------------------------------------------------------------- 
+    |--------------------------------------------------------------------------
     */
     Route::middleware(['role:owner'])->group(function () {
         Route::get('/dashboardowner', [ControllerDashboardOwner::class, 'index'])->name('dashboard.owner');
@@ -139,9 +139,9 @@ Route::middleware(['auth'])->group(function () {
 
 
     /*
-    |-------------------------------------------------------------------------- 
+    |--------------------------------------------------------------------------
     | LOGIN HISTORY (OWNER ONLY)
-    |-------------------------------------------------------------------------- 
+    |--------------------------------------------------------------------------
     */
     Route::middleware(['role:owner'])->group(function () {
         Route::get('/loginhistory', [ControllerAuthLoginHistory::class, 'index'])->name('loginhistory.index');
@@ -151,9 +151,9 @@ Route::middleware(['auth'])->group(function () {
 
 
     /*
-    |-------------------------------------------------------------------------- 
+    |--------------------------------------------------------------------------
     | MASTER DATA (OWNER ONLY)
-    |-------------------------------------------------------------------------- 
+    |--------------------------------------------------------------------------
     */
     Route::prefix('master')->middleware(['role:owner'])->group(function () {
 
@@ -227,13 +227,61 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/pajak/{id}/edit', [ControllerPajak::class, 'edit'])->name('master.pajak.edit');
         Route::put('/pajak/{id}', [ControllerPajak::class, 'update'])->name('master.pajak.update');
         Route::delete('/pajak/{id}', [ControllerPajak::class, 'destroy'])->name('master.pajak.destroy');
+
+        // ULASAN
+        Route::get('/ulasan', [ControllerUlasanOwner::class, 'index'])->name('admin.ulasan.index');
+        Route::get('/ulasan/{id}', [ControllerUlasanOwner::class, 'show'])->name('admin.ulasan.show');
+        Route::delete('/ulasan/{id}', [ControllerUlasanOwner::class, 'destroy'])->name('admin.ulasan.destroy');
+
+        // RESEP PRODUK
+        Route::get('/resep', [\App\Http\Controllers\Master\ControllerResep::class, 'index'])
+            ->name('master.resep.index');
+
+        Route::get('/resep/{produkid}', [\App\Http\Controllers\Master\ControllerResep::class, 'show'])
+            ->name('master.resep.show');
+
+        Route::post('/resep/{produkid}', [\App\Http\Controllers\Master\ControllerResep::class, 'store'])
+            ->name('master.resep.store');
+
+        Route::get('/resep/edit/{id}', [\App\Http\Controllers\Master\ControllerResep::class, 'edit'])
+            ->name('master.resep.edit');
+
+        Route::put('/resep/update/{id}', [\App\Http\Controllers\Master\ControllerResep::class, 'update'])
+            ->name('master.resep.update');
+
+        Route::delete('/resep/delete/{id}', [\App\Http\Controllers\Master\ControllerResep::class, 'destroy'])
+            ->name('master.resep.destroy');
     });
 
 
     /*
-    |-------------------------------------------------------------------------- 
+    |--------------------------------------------------------------------------
+    | ADMIN PELANGGAN (OWNER + MANAGER)
+    |--------------------------------------------------------------------------
+    */
+    Route::prefix('admin')->middleware(['role:owner,manager'])->group(function () {
+
+        Route::get('/pelanggan', [ControllerPelangganAdmin::class, 'index'])
+            ->name('admin.pelanggan.index');
+
+        Route::get('/pelanggan/{id}', [ControllerPelangganAdmin::class, 'show'])
+            ->name('admin.pelanggan.show');
+
+        Route::post('/pelanggan/{id}/blokir', [ControllerPelangganAdmin::class, 'blokir'])
+            ->name('admin.pelanggan.blokir');
+
+        Route::post('/pelanggan/{id}/aktifkan', [ControllerPelangganAdmin::class, 'aktifkan'])
+            ->name('admin.pelanggan.aktifkan');
+
+        Route::delete('/pelanggan/{id}', [ControllerPelangganAdmin::class, 'destroy'])
+            ->name('admin.pelanggan.destroy');
+    });
+
+
+    /*
+    |--------------------------------------------------------------------------
     | INVENTORY (OWNER + MANAGER)
-    |-------------------------------------------------------------------------- 
+    |--------------------------------------------------------------------------
     */
     Route::prefix('inventory')->middleware(['role:owner,manager'])->group(function () {
 
@@ -280,9 +328,9 @@ Route::middleware(['auth'])->group(function () {
 
 
     /*
-    |-------------------------------------------------------------------------- 
+    |--------------------------------------------------------------------------
     | RIWAYAT TRANSAKSI (OWNER + MANAGER)
-    |-------------------------------------------------------------------------- 
+    |--------------------------------------------------------------------------
     */
     Route::prefix('transaksi')->middleware(['role:owner,manager'])->group(function () {
         Route::get('/riwayat', [ControllerRiwayatKasir::class, 'adminIndex'])->name('transaksi.riwayat.index');
@@ -291,9 +339,9 @@ Route::middleware(['auth'])->group(function () {
 
 
     /*
-    |-------------------------------------------------------------------------- 
+    |--------------------------------------------------------------------------
     | TRANSAKSI KASIR
-    |-------------------------------------------------------------------------- 
+    |--------------------------------------------------------------------------
     */
     Route::prefix('kasir')->middleware(['role:kasir'])->group(function () {
 
@@ -316,12 +364,7 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/pesananmasuk/{id}/batalkan', [ControllerPesananMasukKasir::class, 'batalkan'])
             ->name('kasir.pesananmasuk.batalkan');
 
-
-        /*
-|--------------------------------------------------------------------------
-| PEMBAYARAN PESANAN PELANGGAN (FINAL FIX)
-|--------------------------------------------------------------------------
-*/
+        // PEMBAYARAN PESANAN PELANGGAN
         Route::get('/pembayaranpelanggan', [ControllerPembayaranKasir::class, 'index'])
             ->name('kasir.pembayaranpelanggan.index');
 
@@ -330,6 +373,12 @@ Route::middleware(['auth'])->group(function () {
 
         Route::post('/pembayaranpelanggan/{id}', [ControllerPembayaranKasir::class, 'proses'])
             ->name('kasir.pembayaranpelanggan.proses');
+
+        Route::get('/pembayaranpelanggan/qris/{id}', [ControllerPembayaranKasir::class, 'qris'])
+            ->name('kasir.pembayaranpelanggan.qris');
+
+        Route::post('/pembayaranpelanggan/qris/{id}/konfirmasi', [ControllerPembayaranKasir::class, 'konfirmasiQris'])
+            ->name('kasir.pembayaranpelanggan.qris.konfirmasi');
 
 
         // POS MANUAL
@@ -343,17 +392,14 @@ Route::middleware(['auth'])->group(function () {
 
         Route::get('/sukses/{id}', [ControllerPenjualan::class, 'sukses'])->name('kasir.sukses');
 
-
         // RIWAYAT
         Route::get('/riwayat', [ControllerRiwayatKasir::class, 'index'])->name('kasir.riwayat.index');
         Route::get('/riwayat/{id}', [ControllerRiwayatKasir::class, 'show'])->name('kasir.riwayat.show');
-
 
         // CETAK STRUK
         Route::get('/cetakstruk', [ControllerCetakStruk::class, 'index'])->name('kasir.cetakstruk.index');
         Route::get('/cetakstruk/print/{id}', [ControllerCetakStruk::class, 'print'])->name('kasir.cetakstruk.print');
         Route::get('/cetakstruk/{id}', [ControllerCetakStruk::class, 'show'])->name('kasir.cetakstruk.show');
-
 
         // SHIFT
         Route::get('/shift', [ControllerShift::class, 'index'])->name('kasir.shift.index');
@@ -365,9 +411,79 @@ Route::middleware(['auth'])->group(function () {
 
 
     /*
-    |-------------------------------------------------------------------------- 
+|--------------------------------------------------------------------------
+| MASTER KHUSUS OWNER + MANAGER
+|--------------------------------------------------------------------------
+*/
+    Route::prefix('manager')->middleware(['role:owner,manager'])->group(function () {
+
+        /*
+    |--------------------------------------------------------------------------
+    | MEJA
+    |--------------------------------------------------------------------------
+    */
+        Route::get('/meja', [ControllerMeja::class, 'index'])
+            ->name('manager.meja.index');
+
+        Route::get('/meja/create', [ControllerMeja::class, 'create'])
+            ->name('manager.meja.create');
+
+        Route::post('/meja', [ControllerMeja::class, 'store'])
+            ->name('manager.meja.store');
+
+        Route::get('/meja/{id}', [ControllerMeja::class, 'show'])
+            ->name('manager.meja.show');
+
+        Route::get('/meja/{id}/edit', [ControllerMeja::class, 'edit'])
+            ->name('manager.meja.edit');
+
+        Route::put('/meja/{id}', [ControllerMeja::class, 'update'])
+            ->name('manager.meja.update');
+
+        Route::delete('/meja/{id}', [ControllerMeja::class, 'destroy'])
+            ->name('manager.meja.destroy');
+
+
+        /*
+    |--------------------------------------------------------------------------
+    | DATA PELANGGAN
+    |--------------------------------------------------------------------------
+    */
+        Route::get('/pelanggan', [ControllerPelangganAdmin::class, 'index'])
+            ->name('manager.pelanggan.index');
+
+        Route::get('/pelanggan/{id}', [ControllerPelangganAdmin::class, 'show'])
+            ->name('manager.pelanggan.show');
+
+        Route::post('/pelanggan/{id}/blokir', [ControllerPelangganAdmin::class, 'blokir'])
+            ->name('manager.pelanggan.blokir');
+
+        Route::post('/pelanggan/{id}/aktifkan', [ControllerPelangganAdmin::class, 'aktifkan'])
+            ->name('manager.pelanggan.aktifkan');
+
+        Route::delete('/pelanggan/{id}', [ControllerPelangganAdmin::class, 'destroy'])
+            ->name('manager.pelanggan.destroy');
+
+
+        /*
+    |--------------------------------------------------------------------------
+    | ULASAN
+    |--------------------------------------------------------------------------
+    */
+        Route::get('/ulasan', [ControllerUlasanOwner::class, 'index'])
+            ->name('manager.ulasan.index');
+
+        Route::get('/ulasan/{id}', [ControllerUlasanOwner::class, 'show'])
+            ->name('manager.ulasan.show');
+
+        Route::delete('/ulasan/{id}', [ControllerUlasanOwner::class, 'destroy'])
+            ->name('manager.ulasan.destroy');
+    });
+
+    /*
+    |--------------------------------------------------------------------------
     | LAPORAN (OWNER + MANAGER)
-    |-------------------------------------------------------------------------- 
+    |--------------------------------------------------------------------------
     */
     Route::prefix('laporan')->middleware(['role:owner,manager'])->group(function () {
 
@@ -394,9 +510,9 @@ Route::middleware(['auth'])->group(function () {
 
 
     /*
-    |-------------------------------------------------------------------------- 
+    |--------------------------------------------------------------------------
     | ZONA KASIR (OWNER ONLY)
-    |-------------------------------------------------------------------------- 
+    |--------------------------------------------------------------------------
     */
     Route::prefix('zonakasir')->middleware(['role:owner'])->group(function () {
         Route::get('/', [ControllerZonaKasir::class, 'index'])->name('zonakasir.index');
@@ -407,94 +523,56 @@ Route::middleware(['auth'])->group(function () {
 
 
 /*
-|-------------------------------------------------------------------------- 
+|--------------------------------------------------------------------------
 | PELANGGAN ROUTES (LOGIN PELANGGAN)
-|-------------------------------------------------------------------------- 
+|--------------------------------------------------------------------------
 */
-
 Route::prefix('pelanggan')
     ->middleware(['pelanggan'])
     ->name('pelanggan.')
     ->group(function () {
 
         // DASHBOARD
-        Route::get('/dashboard', [ControllerDashboardPelanggan::class, 'index'])
-            ->name('dashboard');
+        Route::get('/dashboard', [ControllerDashboardPelanggan::class, 'index'])->name('dashboard');
 
-        // PROFIL
         // PROFIL
         Route::get('/profil', [ControllerProfilPelanggan::class, 'index'])->name('profil.index');
         Route::get('/profil/edit', [ControllerProfilPelanggan::class, 'edit'])->name('profil.edit');
         Route::put('/profil/update', [ControllerProfilPelanggan::class, 'update'])->name('profil.update');
 
         // MENU
-        Route::get('/menu', [ControllerMenuPelanggan::class, 'index'])
-            ->name('menu.index');
-
-        Route::get('/menu/{id}', [ControllerMenuPelanggan::class, 'detail'])
-            ->name('menu.detail');
+        Route::get('/menu', [ControllerMenuPelanggan::class, 'index'])->name('menu.index');
+        Route::get('/menu/{id}', [ControllerMenuPelanggan::class, 'detail'])->name('menu.detail');
 
         // KERANJANG
-        Route::get('/keranjang', [ControllerKeranjang::class, 'index'])
-            ->name('keranjang.index');
-
-        Route::post('/keranjang/tambah/{id}', [ControllerKeranjang::class, 'tambah'])
-            ->name('keranjang.tambah');
-
-        Route::delete('/keranjang/hapus/{id}', [ControllerKeranjang::class, 'hapus'])
-            ->name('keranjang.hapus');
+        Route::get('/keranjang', [ControllerKeranjang::class, 'index'])->name('keranjang.index');
+        Route::post('/keranjang/tambah/{id}', [ControllerKeranjang::class, 'tambah'])->name('keranjang.tambah');
+        Route::delete('/keranjang/hapus/{id}', [ControllerKeranjang::class, 'hapus'])->name('keranjang.hapus');
 
         // CHECKOUT
-        Route::get('/checkout', [ControllerCheckout::class, 'index'])
-            ->name('checkout.index');
+        Route::get('/checkout', [ControllerCheckout::class, 'index'])->name('checkout.index');
+        Route::post('/checkout/proses', [ControllerCheckout::class, 'proses'])->name('checkout.proses');
 
-        Route::post('/checkout/proses', [ControllerCheckout::class, 'proses'])
-            ->name('checkout.proses');
+        // PESANAN
+        Route::prefix('pesanan')->name('pesanan.')->group(function () {
 
-        /*
-        |-------------------------------------------------------------------------- 
-        | PESANAN (FIX ROUTE NAME)
-        |-------------------------------------------------------------------------- 
-        */
-        Route::prefix('pesanan')
-            ->name('pesanan.')
-            ->group(function () {
+            Route::get('/', [ControllerPesananPelanggan::class, 'index'])->name('index');
+            Route::get('/{id}', [ControllerPesananPelanggan::class, 'detail'])->name('detail');
 
-                Route::get('/', [ControllerPesananPelanggan::class, 'index'])
-                    ->name('index');
+            Route::post('/bayar/kasir/{id}', [ControllerPesananPelanggan::class, 'bayarKasir'])->name('bayar.kasir');
+            Route::post('/bayar/qris/{id}', [ControllerPesananPelanggan::class, 'bayarQris'])->name('bayar.qris');
 
-                Route::get('/{id}', [ControllerPesananPelanggan::class, 'detail'])
-                    ->name('detail');
-
-                Route::post('/bayar/kasir/{id}', [ControllerPesananPelanggan::class, 'bayarKasir'])
-                    ->name('bayar.kasir');
-
-                Route::post('/bayar/qris/{id}', [ControllerPesananPelanggan::class, 'bayarQris'])
-                    ->name('bayar.qris');
-
-                Route::get('/qris/{id}', [ControllerPesananPelanggan::class, 'qrisPage'])
-                    ->name('qris.page');
-
-                Route::post('/qris/konfirmasi/{id}', [ControllerPesananPelanggan::class, 'qrisKonfirmasi'])
-                    ->name('qris.konfirmasi');
-            });
-
-
+            Route::get('/qris/{id}', [ControllerPesananPelanggan::class, 'qrisPage'])->name('qris.page');
+            Route::post('/qris/konfirmasi/{id}', [ControllerPesananPelanggan::class, 'qrisKonfirmasi'])->name('qris.konfirmasi');
+        });
 
         // WISHLIST
-        Route::get('/wishlist', [ControllerWishlist::class, 'index'])
-            ->name('wishlist.index');
+        Route::get('/wishlist', [ControllerWishlist::class, 'index'])->name('wishlist.index');
+        Route::post('/wishlist/tambah/{id}', [ControllerWishlist::class, 'tambah'])->name('wishlist.tambah');
+        Route::delete('/wishlist/hapus/{id}', [ControllerWishlist::class, 'hapus'])->name('wishlist.hapus');
 
-        Route::post('/wishlist/tambah/{id}', [ControllerWishlist::class, 'tambah'])
-            ->name('wishlist.tambah');
-
-        Route::delete('/wishlist/hapus/{id}', [ControllerWishlist::class, 'hapus'])
-            ->name('wishlist.hapus');
-
-        // ULASAN
-        Route::get('/ulasan', [ControllerUlasan::class, 'index'])
-            ->name('ulasan.index');
-
-        Route::post('/ulasan/store', [ControllerUlasan::class, 'store'])
-            ->name('ulasan.store');
+        // ULASAN (REVIEW PER INVOICE)
+        Route::get('/ulasan', [ControllerUlasan::class, 'index'])->name('ulasan.index');
+        Route::get('/ulasan/{penjualanid}/form', [ControllerUlasan::class, 'form'])->name('ulasan.form');
+        Route::post('/ulasan/{penjualanid}/store', [ControllerUlasan::class, 'store'])->name('ulasan.store');
     });

@@ -4,352 +4,509 @@
 
 @section('content')
 
+<style>
+    .dashboard-header {
+        background: linear-gradient(135deg, #111827, #1f2937);
+        border-radius: 20px;
+        padding: 30px;
+        color: white;
+        position: relative;
+        overflow: hidden;
+        margin-bottom: 25px;
+    }
+
+    .dashboard-header::before {
+        content: '';
+        position: absolute;
+        right: -50px;
+        top: -50px;
+        width: 200px;
+        height: 200px;
+        background: rgba(255,255,255,0.05);
+        border-radius: 50%;
+    }
+
+    .dashboard-header h1 {
+        font-weight: 700;
+        font-size: 32px;
+    }
+
+    .dashboard-header p {
+        opacity: .9;
+        margin-bottom: 0;
+    }
+
+    .modern-card {
+        border: none;
+        border-radius: 18px;
+        overflow: hidden;
+        transition: all .3s ease;
+        background: #fff;
+    }
+
+    .modern-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 25px rgba(0,0,0,0.08);
+    }
+
+    .stat-card {
+        position: relative;
+        padding: 25px;
+        color: white;
+        min-height: 160px;
+    }
+
+    .stat-card .icon {
+        position: absolute;
+        right: 20px;
+        bottom: 15px;
+        font-size: 55px;
+        opacity: .2;
+    }
+
+    .stat-card h3 {
+        font-size: 34px;
+        font-weight: 700;
+    }
+
+    .stat-card p {
+        margin-bottom: 15px;
+        font-size: 15px;
+        opacity: .95;
+    }
+
+    .bg-gradient-info {
+        background: linear-gradient(135deg, #06b6d4, #2563eb);
+    }
+
+    .bg-gradient-success {
+        background: linear-gradient(135deg, #10b981, #059669);
+    }
+
+    .bg-gradient-warning {
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+    }
+
+    .bg-gradient-danger {
+        background: linear-gradient(135deg, #ef4444, #dc2626);
+    }
+
+    .dashboard-btn {
+        border-radius: 12px;
+        padding: 12px;
+        font-weight: 600;
+        transition: .3s;
+    }
+
+    .dashboard-btn:hover {
+        transform: scale(1.03);
+    }
+
+    .table-modern th {
+        border-top: none;
+        background: #f8fafc;
+    }
+
+    .quick-menu {
+        transition: .3s;
+        border-radius: 16px;
+    }
+
+    .quick-menu:hover {
+        transform: translateY(-4px);
+    }
+
+    .quick-menu i {
+        font-size: 28px;
+        margin-bottom: 10px;
+    }
+
+    .section-title {
+        font-weight: 700;
+        color: #111827;
+    }
+
+    .glass-badge {
+        background: rgba(255,255,255,0.15);
+        padding: 10px 16px;
+        border-radius: 12px;
+        backdrop-filter: blur(10px);
+    }
+</style>
+
+<div class="container-fluid">
+
     {{-- HEADER --}}
-    <section class="content-header">
-        <div class="container-fluid">
-            <div class="row mb-3 align-items-center">
+    <div class="dashboard-header shadow">
 
-                <div class="col-sm-6">
-                    <h1 class="fw-bold mb-0">
-                        Dashboard Owner
-                    </h1>
-                    <small class="text-muted">
-                        Selamat datang kembali, <b>{{ Auth::user()->name ?? 'Owner' }}</b> 👋
-                    </small>
-                </div>
+        <div class="d-flex justify-content-between align-items-center flex-wrap">
 
-                <div class="col-sm-6 text-right mt-2 mt-sm-0">
-                    <span class="badge badge-light p-2 shadow-sm">
-                        <i class="fas fa-calendar-alt"></i>
-                        {{ now()->format('d M Y') }}
-                    </span>
+            <div>
+                <h1>
+                    <i class="fas fa-chart-pie mr-2"></i>
+                    Dashboard Owner
+                </h1>
+
+                <p>
+                    Selamat datang kembali,
+                    <b>{{ Auth::user()->name ?? 'Owner' }}</b>
+                    👋
+                </p>
+            </div>
+
+            <div class="glass-badge mt-3 mt-md-0">
+                <i class="fas fa-calendar-alt mr-1"></i>
+                {{ now()->format('d F Y') }}
+            </div>
+
+        </div>
+
+    </div>
+
+
+    {{-- STATISTIK --}}
+    <div class="row">
+
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="modern-card stat-card bg-gradient-info shadow-sm">
+
+                <h3>{{ $totalProduk ?? 0 }}</h3>
+                <p>Total Produk</p>
+
+                <a href="{{ route('master.produk.index') }}"
+                   class="btn btn-light btn-sm dashboard-btn">
+                    Kelola Produk
+                </a>
+
+                <div class="icon">
+                    <i class="fas fa-box"></i>
                 </div>
 
             </div>
         </div>
-    </section>
 
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="modern-card stat-card bg-gradient-success shadow-sm">
 
-    {{-- MAIN CONTENT --}}
-    <section class="content">
-        <div class="container-fluid">
+                <h3>{{ $totalKategori ?? 0 }}</h3>
+                <p>Total Kategori</p>
 
-            {{-- STAT BOX --}}
-            <div class="row">
+                <a href="{{ route('master.kategori.index') }}"
+                   class="btn btn-light btn-sm dashboard-btn">
+                    Kelola Kategori
+                </a>
 
-                <div class="col-lg-3 col-6">
-                    <div class="small-box bg-info shadow-sm">
-                        <div class="inner">
-                            <h3 class="mb-0">{{ $totalProduk ?? 0 }}</h3>
-                            <p class="mb-0">Total Produk</p>
-                        </div>
-                        <div class="icon">
-                            <i class="fas fa-box"></i>
-                        </div>
-                        <a href="{{ route('master.produk.index') }}" class="small-box-footer">
-                            Kelola Produk <i class="fas fa-arrow-circle-right"></i>
-                        </a>
-                    </div>
-                </div>
-
-                <div class="col-lg-3 col-6">
-                    <div class="small-box bg-success shadow-sm">
-                        <div class="inner">
-                            <h3 class="mb-0">{{ $totalKategori ?? 0 }}</h3>
-                            <p class="mb-0">Total Kategori</p>
-                        </div>
-                        <div class="icon">
-                            <i class="fas fa-list"></i>
-                        </div>
-                        <a href="{{ route('master.kategori.index') }}" class="small-box-footer">
-                            Kelola Kategori <i class="fas fa-arrow-circle-right"></i>
-                        </a>
-                    </div>
-                </div>
-
-                <div class="col-lg-3 col-6">
-                    <div class="small-box bg-warning shadow-sm">
-                        <div class="inner">
-                            <h3 class="mb-0">{{ $totalMeja ?? 0 }}</h3>
-                            <p class="mb-0">Total Meja</p>
-                        </div>
-                        <div class="icon">
-                            <i class="fas fa-chair"></i>
-                        </div>
-                        <a href="{{ route('master.meja.index') }}" class="small-box-footer">
-                            Kelola Meja <i class="fas fa-arrow-circle-right"></i>
-                        </a>
-                    </div>
-                </div>
-
-                <div class="col-lg-3 col-6">
-                    <div class="small-box bg-danger shadow-sm">
-                        <div class="inner">
-                            <h3 class="mb-0">{{ $totalUser ?? 0 }}</h3>
-                            <p class="mb-0">Total User</p>
-                        </div>
-                        <div class="icon">
-                            <i class="fas fa-users"></i>
-                        </div>
-                        <a href="{{ route('master.user.index') }}" class="small-box-footer">
-                            Kelola User <i class="fas fa-arrow-circle-right"></i>
-                        </a>
-                    </div>
+                <div class="icon">
+                    <i class="fas fa-layer-group"></i>
                 </div>
 
             </div>
+        </div>
 
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="modern-card stat-card bg-gradient-warning shadow-sm">
 
-            {{-- RINGKASAN + SHIFT --}}
-            <div class="row">
+                <h3>{{ $totalMeja ?? 0 }}</h3>
+                <p>Total Meja</p>
 
-                {{-- RINGKASAN PENJUALAN --}}
-                <div class="col-md-6">
-                    <div class="card card-outline card-primary shadow-sm">
-                        <div class="card-header">
-                            <h3 class="card-title fw-bold mb-0">
-                                <i class="fas fa-chart-line mr-1"></i>
-                                Ringkasan Penjualan Hari Ini
-                            </h3>
-                        </div>
+                <a href="{{ route('master.meja.index') }}"
+                   class="btn btn-light btn-sm dashboard-btn">
+                    Kelola Meja
+                </a>
 
-                        <div class="card-body p-0">
-                            <table class="table table-striped mb-0">
-                                <tbody>
-                                    <tr>
-                                        <th style="width: 60%">Total Transaksi</th>
-                                        <td class="text-right fw-bold">
-                                            {{ $transaksiHariIni ?? 0 }}
-                                        </td>
-                                    </tr>
-
-                                    <tr>
-                                        <th>Total Pendapatan</th>
-                                        <td class="text-right text-success fw-bold">
-                                            Rp {{ number_format($pendapatanHariIni ?? 0, 0, ',', '.') }}
-                                        </td>
-                                    </tr>
-
-                                    <tr>
-                                        <th>Total Diskon</th>
-                                        <td class="text-right text-warning fw-bold">
-                                            Rp {{ number_format($diskonHariIni ?? 0, 0, ',', '.') }}
-                                        </td>
-                                    </tr>
-
-                                    <tr>
-                                        <th>Total Pajak</th>
-                                        <td class="text-right text-info fw-bold">
-                                            Rp {{ number_format($pajakHariIni ?? 0, 0, ',', '.') }}
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <div class="card-footer text-muted text-sm">
-                            Data otomatis dihitung berdasarkan transaksi hari ini.
-                        </div>
-                    </div>
-                </div>
-
-
-                {{-- SHIFT AKTIF --}}
-                <div class="col-md-6">
-                    <div class="card card-outline card-success shadow-sm">
-                        <div class="card-header">
-                            <h3 class="card-title fw-bold mb-0">
-                                <i class="fas fa-user-clock mr-1"></i>
-                                Shift Aktif
-                            </h3>
-                        </div>
-
-                        <div class="card-body">
-                            @if(isset($shiftAktif) && $shiftAktif)
-
-                                <div class="d-flex justify-content-between mb-2">
-                                    <span class="text-muted">Kasir</span>
-                                    <span class="fw-bold">{{ $shiftAktif->user->name ?? '-' }}</span>
-                                </div>
-
-                                <div class="d-flex justify-content-between mb-2">
-                                    <span class="text-muted">Mulai</span>
-                                    <span class="fw-bold">{{ $shiftAktif->shiftmulai ?? '-' }}</span>
-                                </div>
-
-                                <div class="d-flex justify-content-between mb-3">
-                                    <span class="text-muted">Saldo Awal</span>
-                                    <span class="fw-bold text-success">
-                                        Rp {{ number_format($shiftAktif->saldoawal ?? 0, 0, ',', '.') }}
-                                    </span>
-                                </div>
-
-                                <span class="badge badge-success px-3 py-2">
-                                    <i class="fas fa-check-circle"></i> SHIFT OPEN
-                                </span>
-
-                            @else
-                                <div class="text-muted">
-                                    <i class="fas fa-info-circle"></i>
-                                    Tidak ada shift aktif saat ini.
-                                </div>
-                            @endif
-                        </div>
-
-                        <div class="card-footer text-muted text-sm">
-                            Shift hanya aktif jika kasir membuka shift.
-                        </div>
-                    </div>
+                <div class="icon">
+                    <i class="fas fa-chair"></i>
                 </div>
 
             </div>
+        </div>
 
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="modern-card stat-card bg-gradient-danger shadow-sm">
 
-            {{-- LAPORAN TERBARU --}}
-            <div class="row">
-                <div class="col-12">
-                    <div class="card card-outline card-primary shadow-sm">
-                        <div class="card-header">
-                            <h3 class="card-title fw-bold mb-0">
-                                <i class="fas fa-file-alt mr-1"></i>
-                                5 Laporan Terbaru
-                            </h3>
-                        </div>
+                <h3>{{ $totalUser ?? 0 }}</h3>
+                <p>Total User</p>
 
-                        <div class="card-body p-0">
-                            <div class="table-responsive">
-                                <table class="table table-hover table-striped mb-0">
-                                    <thead class="bg-light">
-                                        <tr>
-                                            <th style="width: 5%">#</th>
-                                            <th style="width: 20%">Jenis</th>
-                                            <th style="width: 30%">Tanggal</th>
-                                            <th style="width: 25%">Total</th>
-                                            <th style="width: 20%" class="text-center">Aksi</th>
-                                        </tr>
-                                    </thead>
+                <a href="{{ route('master.user.index') }}"
+                   class="btn btn-light btn-sm dashboard-btn">
+                    Kelola User
+                </a>
 
-                                    <tbody>
-                                        @if(isset($laporanTerbaru) && count($laporanTerbaru) > 0)
-                                            @foreach($laporanTerbaru as $item)
-                                                <tr>
-                                                    <td>{{ $loop->iteration }}</td>
-
-                                                    <td>
-                                                        <span class="badge badge-info px-2 py-1">
-                                                            {{ $item['jenis'] }}
-                                                        </span>
-                                                    </td>
-
-                                                    <td>
-                                                        <i class="fas fa-calendar text-muted"></i>
-                                                        {{ $item['tanggal'] }}
-                                                    </td>
-
-                                                    <td class="fw-bold text-success">
-                                                        Rp {{ number_format($item['total'] ?? 0, 0, ',', '.') }}
-                                                    </td>
-
-                                                    <td class="text-center">
-                                                        <a href="{{ $item['route'] }}" class="btn btn-sm btn-outline-primary">
-                                                            <i class="fas fa-eye"></i> Detail
-                                                        </a>
-                                                    </td>
-                                                </tr>
-                                            @endforeach
-                                        @else
-                                            <tr>
-                                                <td colspan="5" class="text-center text-muted py-4">
-                                                    <i class="fas fa-folder-open"></i>
-                                                    Belum ada laporan terbaru.
-                                                </td>
-                                            </tr>
-                                        @endif
-                                    </tbody>
-
-                                </table>
-                            </div>
-                        </div>
-
-                        <div class="card-footer text-right">
-                            <a href="{{ route('laporan.index') }}" class="btn btn-primary btn-sm">
-                                <i class="fas fa-folder"></i> Lihat Semua Laporan
-                            </a>
-                        </div>
-                    </div>
+                <div class="icon">
+                    <i class="fas fa-users"></i>
                 </div>
+
             </div>
+        </div>
+
+    </div>
 
 
-            {{-- QUICK ACCESS --}}
-            <div class="row">
-                <div class="col-12">
-                    <div class="card card-outline card-secondary shadow-sm">
-                        <div class="card-header">
-                            <h3 class="card-title fw-bold mb-0">
-                                <i class="fas fa-link mr-1"></i>
-                                Quick Access
-                            </h3>
-                        </div>
+    {{-- RINGKASAN --}}
+    <div class="row">
 
-                        <div class="card-body">
-                            <div class="row text-center">
+        {{-- PENJUALAN --}}
+        <div class="col-lg-6 mb-4">
 
-                                <div class="col-md-2 col-6 mb-3">
-                                    <a href="{{ route('master.produk.index') }}" class="btn btn-info btn-block shadow-sm">
-                                        <i class="fas fa-box fa-lg mb-1"></i><br>
-                                        <span class="text-sm fw-bold">Produk</span>
-                                    </a>
-                                </div>
+            <div class="card modern-card shadow-sm h-100">
 
-                                <div class="col-md-2 col-6 mb-3">
-                                    <a href="{{ route('master.kategori.index') }}" class="btn btn-success btn-block shadow-sm">
-                                        <i class="fas fa-list fa-lg mb-1"></i><br>
-                                        <span class="text-sm fw-bold">Kategori</span>
-                                    </a>
-                                </div>
-
-                                <div class="col-md-2 col-6 mb-3">
-                                    <a href="{{ route('master.meja.index') }}" class="btn btn-warning btn-block shadow-sm">
-                                        <i class="fas fa-chair fa-lg mb-1"></i><br>
-                                        <span class="text-sm fw-bold">Meja</span>
-                                    </a>
-                                </div>
-
-                                <div class="col-md-2 col-6 mb-3">
-                                    <a href="{{ route('master.user.index') }}" class="btn btn-danger btn-block shadow-sm">
-                                        <i class="fas fa-users fa-lg mb-1"></i><br>
-                                        <span class="text-sm fw-bold">User</span>
-                                    </a>
-                                </div>
-
-                                <div class="col-md-2 col-6 mb-3">
-                                    <a href="{{ route('laporan.index') }}" class="btn btn-primary btn-block shadow-sm">
-                                        <i class="fas fa-file-alt fa-lg mb-1"></i><br>
-                                        <span class="text-sm fw-bold">Laporan</span>
-                                    </a>
-                                </div>
-
-                                <div class="col-md-2 col-6 mb-3">
-                                    <a href="{{ route('loginhistory.index') }}" class="btn btn-secondary btn-block shadow-sm">
-                                        <i class="fas fa-history fa-lg mb-1"></i><br>
-                                        <span class="text-sm fw-bold">History</span>
-                                    </a>
-                                </div>
-
-                            </div>
-                        </div>
-
-                        <div class="card-footer text-muted text-sm">
-                            Shortcut menu untuk akses cepat fitur utama.
-                        </div>
-                    </div>
+                <div class="card-header bg-white border-0 pt-4">
+                    <h5 class="section-title mb-0">
+                        <i class="fas fa-chart-line text-primary mr-2"></i>
+                        Ringkasan Penjualan Hari Ini
+                    </h5>
                 </div>
-            </div>
 
+                <div class="card-body">
+
+                    <div class="d-flex justify-content-between mb-4">
+                        <span>Total Transaksi</span>
+                        <b>{{ $transaksiHariIni ?? 0 }}</b>
+                    </div>
+
+                    <div class="d-flex justify-content-between mb-4">
+                        <span>Total Pendapatan</span>
+                        <b class="text-success">
+                            Rp {{ number_format($pendapatanHariIni ?? 0, 0, ',', '.') }}
+                        </b>
+                    </div>
+
+                    <div class="d-flex justify-content-between mb-4">
+                        <span>Total Diskon</span>
+                        <b class="text-warning">
+                            Rp {{ number_format($diskonHariIni ?? 0, 0, ',', '.') }}
+                        </b>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <span>Total Pajak</span>
+                        <b class="text-info">
+                            Rp {{ number_format($pajakHariIni ?? 0, 0, ',', '.') }}
+                        </b>
+                    </div>
+
+                </div>
+
+            </div>
 
         </div>
-    </section>
+
+
+        {{-- SHIFT --}}
+        <div class="col-lg-6 mb-4">
+
+            <div class="card modern-card shadow-sm h-100">
+
+                <div class="card-header bg-white border-0 pt-4">
+                    <h5 class="section-title mb-0">
+                        <i class="fas fa-user-clock text-success mr-2"></i>
+                        Shift Aktif
+                    </h5>
+                </div>
+
+                <div class="card-body">
+
+                    @if(isset($shiftAktif) && $shiftAktif)
+
+                        <div class="mb-3">
+                            <small class="text-muted">Kasir</small>
+                            <h5>{{ $shiftAktif->user->name ?? '-' }}</h5>
+                        </div>
+
+                        <div class="mb-3">
+                            <small class="text-muted">Jam Mulai</small>
+                            <h6>{{ $shiftAktif->shiftmulai ?? '-' }}</h6>
+                        </div>
+
+                        <div class="mb-4">
+                            <small class="text-muted">Saldo Awal</small>
+                            <h4 class="text-success">
+                                Rp {{ number_format($shiftAktif->saldoawal ?? 0, 0, ',', '.') }}
+                            </h4>
+                        </div>
+
+                        <span class="badge badge-success p-2">
+                            <i class="fas fa-check-circle"></i>
+                            SHIFT OPEN
+                        </span>
+
+                    @else
+
+                        <div class="text-center py-5 text-muted">
+                            <i class="fas fa-user-slash fa-3x mb-3"></i>
+                            <p>Tidak ada shift aktif saat ini.</p>
+                        </div>
+
+                    @endif
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    {{-- LAPORAN --}}
+    <div class="card modern-card shadow-sm mb-4">
+
+        <div class="card-header bg-white border-0 pt-4 d-flex justify-content-between align-items-center">
+
+            <h5 class="section-title mb-0">
+                <i class="fas fa-file-alt text-primary mr-2"></i>
+                5 Laporan Terbaru
+            </h5>
+
+            <a href="{{ route('laporan.index') }}"
+               class="btn btn-primary btn-sm">
+                <i class="fas fa-folder-open"></i>
+                Semua Laporan
+            </a>
+
+        </div>
+
+        <div class="card-body p-0">
+
+            <div class="table-responsive">
+
+                <table class="table table-hover table-modern mb-0">
+
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Jenis</th>
+                            <th>Tanggal</th>
+                            <th>Total</th>
+                            <th class="text-center">Aksi</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        @if(isset($laporanTerbaru) && count($laporanTerbaru) > 0)
+
+                            @foreach($laporanTerbaru as $item)
+
+                                <tr>
+
+                                    <td>{{ $loop->iteration }}</td>
+
+                                    <td>
+                                        <span class="badge badge-info px-3 py-2">
+                                            {{ $item['jenis'] }}
+                                        </span>
+                                    </td>
+
+                                    <td>{{ $item['tanggal'] }}</td>
+
+                                    <td class="font-weight-bold text-success">
+                                        Rp {{ number_format($item['total'] ?? 0, 0, ',', '.') }}
+                                    </td>
+
+                                    <td class="text-center">
+                                        <a href="{{ $item['route'] }}"
+                                           class="btn btn-outline-primary btn-sm">
+                                            <i class="fas fa-eye"></i>
+                                            Detail
+                                        </a>
+                                    </td>
+
+                                </tr>
+
+                            @endforeach
+
+                        @else
+
+                            <tr>
+                                <td colspan="5" class="text-center text-muted py-5">
+                                    <i class="fas fa-folder-open fa-2x mb-2"></i>
+                                    <br>
+                                    Belum ada laporan terbaru.
+                                </td>
+                            </tr>
+
+                        @endif
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    {{-- QUICK ACCESS --}}
+    <div class="card modern-card shadow-sm">
+
+        <div class="card-header bg-white border-0 pt-4">
+            <h5 class="section-title mb-0">
+                <i class="fas fa-bolt text-warning mr-2"></i>
+                Quick Access
+            </h5>
+        </div>
+
+        <div class="card-body">
+
+            <div class="row text-center">
+
+                <div class="col-md-2 col-6 mb-4">
+                    <a href="{{ route('master.produk.index') }}"
+                       class="btn btn-info btn-block quick-menu shadow-sm p-4">
+                        <i class="fas fa-box"></i>
+                        <div>Produk</div>
+                    </a>
+                </div>
+
+                <div class="col-md-2 col-6 mb-4">
+                    <a href="{{ route('master.kategori.index') }}"
+                       class="btn btn-success btn-block quick-menu shadow-sm p-4">
+                        <i class="fas fa-list"></i>
+                        <div>Kategori</div>
+                    </a>
+                </div>
+
+                <div class="col-md-2 col-6 mb-4">
+                    <a href="{{ route('master.meja.index') }}"
+                       class="btn btn-warning btn-block quick-menu shadow-sm p-4">
+                        <i class="fas fa-chair"></i>
+                        <div>Meja</div>
+                    </a>
+                </div>
+
+                <div class="col-md-2 col-6 mb-4">
+                    <a href="{{ route('master.user.index') }}"
+                       class="btn btn-danger btn-block quick-menu shadow-sm p-4">
+                        <i class="fas fa-users"></i>
+                        <div>User</div>
+                    </a>
+                </div>
+
+                <div class="col-md-2 col-6 mb-4">
+                    <a href="{{ route('laporan.index') }}"
+                       class="btn btn-primary btn-block quick-menu shadow-sm p-4">
+                        <i class="fas fa-file-alt"></i>
+                        <div>Laporan</div>
+                    </a>
+                </div>
+
+                <div class="col-md-2 col-6 mb-4">
+                    <a href="{{ route('loginhistory.index') }}"
+                       class="btn btn-secondary btn-block quick-menu shadow-sm p-4">
+                        <i class="fas fa-history"></i>
+                        <div>History</div>
+                    </a>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
 
 </div>
+
 @endsection

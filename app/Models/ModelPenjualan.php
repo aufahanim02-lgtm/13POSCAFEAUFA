@@ -35,49 +35,67 @@ class ModelPenjualan extends Model
         'tanggalpenjualan'
     ];
 
-    /*
-    |--------------------------------------------------------------------------
-    | RELASI
-    |--------------------------------------------------------------------------
-    */
-
     public function pelanggan()
     {
-        return $this->belongsTo(ModelPelanggan::class, 'pelangganid');
+        return $this->belongsTo(
+            ModelPelanggan::class,
+            'pelangganid'
+        );
     }
 
     public function user()
     {
-        return $this->belongsTo(ModelUser::class, 'userid');
+        return $this->belongsTo(
+            ModelUser::class,
+            'userid'
+        );
     }
 
     public function meja()
     {
-        return $this->belongsTo(ModelMeja::class, 'mejaid');
+        return $this->belongsTo(
+            ModelMeja::class,
+            'mejaid'
+        );
     }
 
     public function shift()
     {
-        return $this->belongsTo(ModelShift::class, 'shiftid');
+        return $this->belongsTo(
+            ModelShift::class,
+            'shiftid'
+        );
     }
 
     public function promo()
     {
-        return $this->belongsTo(ModelPromo::class, 'promoid');
+        return $this->belongsTo(
+            ModelPromo::class,
+            'promoid'
+        );
     }
 
     public function pajakData()
     {
-        return $this->belongsTo(ModelPajak::class, 'pajakid');
+        return $this->belongsTo(
+            ModelPajak::class,
+            'pajakid'
+        );
     }
 
     public function detail()
     {
-        return $this->hasMany(ModelDetailPenjualan::class, 'penjualanid');
+        return $this->hasMany(
+            ModelDetailPenjualan::class,
+            'penjualanid'
+        );
     }
 
     public function pembayaran()
     {
-        return $this->hasOne(ModelPembayaran::class, 'penjualanid');
+        return $this->hasOne(
+            ModelPembayaran::class,
+            'penjualanid'
+        );
     }
 }

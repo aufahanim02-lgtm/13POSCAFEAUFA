@@ -21,14 +21,25 @@ class ModelProduk extends Model
         'status'
     ];
 
-    /*
-    |--------------------------------------------------------------------------
-    | RELATIONSHIP
-    |--------------------------------------------------------------------------
-    */
-
     public function kategori()
     {
-        return $this->belongsTo(ModelKategori::class, 'kategoriid', 'id');
+        return $this->belongsTo(
+            ModelKategori::class,
+            'kategoriid',
+            'id'
+        );
+    }
+
+    public function resep()
+    {
+        return $this->hasMany(
+            ModelResep::class,
+            'produkid'
+        );
+    }
+
+    public function wishlist()
+    {
+        return $this->hasMany(ModelWishlist::class, 'produkid');
     }
 }

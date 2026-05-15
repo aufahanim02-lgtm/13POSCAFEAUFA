@@ -9,6 +9,7 @@ class ModelUlasan extends Model
     protected $table = 'ulasan';
 
     protected $fillable = [
+        'penjualanid',
         'pelangganid',
         'produkid',
         'rating',
@@ -24,5 +25,10 @@ class ModelUlasan extends Model
     public function produk()
     {
         return $this->belongsTo(ModelProduk::class, 'produkid');
+    }
+
+    public function penjualan()
+    {
+        return $this->belongsTo(ModelPenjualan::class, 'penjualanid');
     }
 }

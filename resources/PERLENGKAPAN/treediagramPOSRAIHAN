@@ -39,6 +39,9 @@ APKBESAR/
 │   │   │   │   ├── ControllerMeja.php
 │   │   │   │   ├── ControllerMetodePembayaran.php
 │   │   │   │   ├── ControllerPajak.php
+│   │   │   │   ├── ControllerPelangganAdmin.php
+│   │   │   │   ├── ControllerResep.php
+│   │   │   │   ├── ControllerUlasanOwner.php
 │   │   │   │   ├── ControllerProduk.php
 │   │   │   │   ├── ControllerPromo.php
 │   │   │   │   ├── ControllerSupplier.php
@@ -100,6 +103,7 @@ APKBESAR/
 │   │   ├── ModelPesananPelanggan.php
 │   │   ├── ModelProduk.php
 │   │   ├── ModelPromo.php
+│   │   ├── ModelResep.php
 │   │   ├── ModelShift.php
 │   │   ├── ModelStok.php
 │   │   ├── ModelStokKeluar.php
@@ -133,7 +137,7 @@ APKBESAR/
 │       ├── auth/
 │       │   ├── login.blade.php
 │       │   ├── loginpelanggan.blade.php
-│       │   ├── pttlogin.blade.php
+│       │   ├── pilihlogin.blade.php
 │       │   └── registerpelanggan.blade.php
 │       │
 │       ├── layouts/
@@ -162,6 +166,93 @@ APKBESAR/
 │       │   ├── appmanager.blade.php
 │       │   └── apppelanggan.blade.php
 │       │
+│   │   ├── admin/
+│   │   │   ├── dashboard/
+│   │   │   │   └── dashboardadmin.blade.php
+│   │   │   │
+│   │   │   ├── user/
+│   │   │   │   ├── index.blade.php
+│   │   │   │   ├── create.blade.php
+│   │   │   │   ├── edit.blade.php
+│   │   │   │   └── show.blade.php
+│   │   │   │
+│   │   │   ├── kategori/
+│   │   │   │   ├── index.blade.php
+│   │   │   │   ├── create.blade.php
+│   │   │   │   ├── edit.blade.php
+│   │   │   │   └── show.blade.php
+│   │   │   │
+│   │   │   ├── produk/
+│   │   │   │   ├── index.blade.php
+│   │   │   │   ├── create.blade.php
+│   │   │   │   ├── edit.blade.php
+│   │   │   │   └── show.blade.php
+│   │   │   │
+│   │   │   ├── meja/
+│   │   │   │   ├── index.blade.php
+│   │   │   │   ├── create.blade.php
+│   │   │   │   ├── edit.blade.php
+│   │   │   │   └── show.blade.php
+│   │   │   │
+│   │   │   ├── supplier/
+│   │   │   │   ├── index.blade.php
+│   │   │   │   ├── create.blade.php
+│   │   │   │   ├── edit.blade.php
+│   │   │   │   └── show.blade.php
+│   │   │   │
+│   │   │   ├── metodepembayaran/
+│   │   │   │   ├── index.blade.php
+│   │   │   │   ├── create.blade.php
+│   │   │   │   ├── edit.blade.php
+│   │   │   │   └── show.blade.php
+│   │   │   │
+│   │   │   ├── promo/
+│   │   │   │   ├── index.blade.php
+│   │   │   │   ├── create.blade.php
+│   │   │   │   ├── edit.blade.php
+│   │   │   │   └── show.blade.php
+│   │   │   │
+│   │   │   ├── pajak/
+│   │   │   │   ├── index.blade.php
+│   │   │   │   ├── create.blade.php
+│   │   │   │   ├── edit.blade.php
+│   │   │   │   └── show.blade.php
+│   │   │   │
+│   │   │   ├── laporan/
+│   │   │   │   ├── harian/
+│   │   │   │   │   ├── index.blade.php
+│   │   │   │   │   ├── create.blade.php
+│   │   │   │   │   ├── edit.blade.php
+│   │   │   │   │   └── show.blade.php
+│   │   │   │   ├── bulanan/
+│   │   │   │   │   ├── index.blade.php
+│   │   │   │   │   ├── create.blade.php
+│   │   │   │   │   ├── edit.blade.php
+│   │   │   │   │   └── show.blade.php
+│   │   │   │   ├── kasir/
+│   │   │   │   │   ├── index.blade.php
+│   │   │   │   │   ├── create.blade.php
+│   │   │   │   │   ├── edit.blade.php
+│   │   │   │   │   └── show.blade.php
+│   │   │   │   ├── produk/
+│   │   │   │   │   ├── index.blade.php
+│   │   │   │   │   ├── create.blade.php
+│   │   │   │   │   ├── edit.blade.php
+│   │   │   │   │   └── show.blade.php
+│   │   │   │   ├── shift/
+│   │   │   │   │   ├── index.blade.php
+│   │   │   │   │   ├── create.blade.php
+│   │   │   │   │   ├── edit.blade.php
+│   │   │   │   │   └── show.blade.php
+│   │   │   │   ├── keuntungan/
+│   │   │   │   │   ├── index.blade.php
+│   │   │   │   │   ├── create.blade.php
+│   │   │   │   │   ├── edit.blade.php
+│   │   │   │   │   └── show.blade.php
+│   │   │   │   ├── index.blade.php
+│   │   │   │   ├── create.blade.php
+│   │   │   │   ├── edit.blade.php
+│   │   │   │   └── show.blade.php
 │       ├── kasir/
 │       │   ├── dashboard/
 │       │   │   └── dashboardkasir.blade.php
@@ -190,17 +281,17 @@ APKBESAR/
 │       │   │   ├── index.blade.php
 │       │   │   └── show.blade.php
 │       │   │
-│       │   ├── shift/
-│       │   │   ├── bukashift.blade.php
-│       │   │   ├── index.blade.php
-│       │   │   └── tutupshift.blade.php
-│       │   │
-│       │   └── landing/
-│       │       ├── home.blade.php
-│       │       ├── kontak.blade.php
-│       │       ├── menu.blade.php
-│       │       ├── promo.blade.php
-│       │       └── tentang.blade.php
+│       │   └── shift/
+│       │       ├── bukashift.blade.php
+│       │       ├── index.blade.php
+│       │       └── tutupshift.blade.php
+│       │   
+│       ├── landing/
+│       │    ├── home.blade.php
+│       │    ├── kontak.blade.php
+│       │    ├── menu.blade.php
+│       │    ├── promo.blade.php
+│       │    └── tentang.blade.php
 │       │
 │       ├── manager/
 │       │   ├── dashboard/
@@ -214,17 +305,61 @@ APKBESAR/
 │       │   │   │   └── show.blade.php
 │       │   │   │
 │       │   │   ├── pembelian/
+│       │   │   │   ├── create.blade.php
+│       │   │   │   ├── edit.blade.php
+│       │   │   │   ├── index.blade.php
+│       │   │   │   └── show.blade.php
 │       │   │   ├── stok/
+│       │   │   │   ├── create.blade.php
+│       │   │   │   ├── edit.blade.php
+│       │   │   │   ├── index.blade.php
+│       │   │   │   └── show.blade.php
 │       │   │   ├── stokkeluar/
+│       │   │   │   ├── create.blade.php
+│       │   │   │   ├── edit.blade.php
+│       │   │   │   ├── index.blade.php
+│       │   │   │   └── show.blade.php
 │       │   │   └── stokmasuk/
+│       │   │       ├── create.blade.php
+│       │   │       ├── edit.blade.php
+│       │   │       ├── index.blade.php
+│       │   │       └── show.blade.php
 │       │   │
-│       │   ├── laporan/
-│       │   │   ├── bulanan/
-│       │   │   ├── harian/
-│       │   │   ├── kasir/
-│       │   │   ├── keuntungan/
-│       │   │   ├── produk/
-│       │   │   └── shift/
+│   │   │   ├── laporan/
+│   │   │   │   ├── harian/
+│   │   │   │   │   ├── index.blade.php
+│   │   │   │   │   ├── create.blade.php
+│   │   │   │   │   ├── edit.blade.php
+│   │   │   │   │   └── show.blade.php
+│   │   │   │   ├── bulanan/
+│   │   │   │   │   ├── index.blade.php
+│   │   │   │   │   ├── create.blade.php
+│   │   │   │   │   ├── edit.blade.php
+│   │   │   │   │   └── show.blade.php
+│   │   │   │   ├── kasir/
+│   │   │   │   │   ├── index.blade.php
+│   │   │   │   │   ├── create.blade.php
+│   │   │   │   │   ├── edit.blade.php
+│   │   │   │   │   └── show.blade.php
+│   │   │   │   ├── produk/
+│   │   │   │   │   ├── index.blade.php
+│   │   │   │   │   ├── create.blade.php
+│   │   │   │   │   ├── edit.blade.php
+│   │   │   │   │   └── show.blade.php
+│   │   │   │   ├── shift/
+│   │   │   │   │   ├── index.blade.php
+│   │   │   │   │   ├── create.blade.php
+│   │   │   │   │   ├── edit.blade.php
+│   │   │   │   │   └── show.blade.php
+│   │   │   │   ├── keuntungan/
+│   │   │   │   │   ├── index.blade.php
+│   │   │   │   │   ├── create.blade.php
+│   │   │   │   │   ├── edit.blade.php
+│   │   │   │   │   └── show.blade.php
+│   │   │   │   ├── index.blade.php
+│   │   │   │   ├── create.blade.php
+│   │   │   │   ├── edit.blade.php
+│   │   │   │   └── show.blade.php
 │       │   │
 │       │   └── pelanggan/
 │       │       ├── checkout/

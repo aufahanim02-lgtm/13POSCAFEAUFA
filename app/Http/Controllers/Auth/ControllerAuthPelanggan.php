@@ -19,10 +19,29 @@ class ControllerAuthPelanggan extends Controller
     public function loginProses(Request $request)
     {
         $request->validate([
-            'username' => 'required',
-            'password' => 'required',
+            'username' => 'required|string',
+            'password' => 'required|string',
         ]);
 
+        // Ambil data pelanggan dulu berdasarkan username
+        $pelanggan = ModelPelanggan::where('username', $request->username)->first();
+
+        // Kalau username tidak ditemukan
+        if (!$pelanggan) {
+            return back()->with('error', 'Username atau password salah.');
+        }
+
+        // Kalau akun diblokir permanen
+        if ($pelanggan->status == 'blocked') {
+            return back()->with('error', 'Akun kamu telah diblokir permanen oleh admin.');
+        }
+
+        // Kalau akun nonaktif
+        if ($pelanggan->status == 'nonaktif') {
+            return back()->with('error', 'Akun kamu sedang dinonaktifkan. Silahkan hubungi admin.');
+        }
+
+        // Login attempt
         $login = [
             'username' => $request->username,
             'password' => $request->password,
@@ -32,10 +51,11 @@ class ControllerAuthPelanggan extends Controller
 
             $request->session()->regenerate();
 
-            return redirect()->route('pelanggan.dashboard');
+            return redirect()->route('pelanggan.dashboard')
+                ->with('success', 'Login berhasil, selamat datang!');
         }
 
-        return back()->with('error', 'Username atau password salah');
+        return back()->with('error', 'Username atau password salah.');
     }
 
     public function register()
@@ -77,6 +97,7 @@ class ControllerAuthPelanggan extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('pelanggan.login');
+        return redirect()->route('pelanggan.login')
+            ->with('success', 'Logout berhasil.');
     }
 }

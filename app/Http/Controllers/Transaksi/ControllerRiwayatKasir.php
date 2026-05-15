@@ -21,18 +21,22 @@ class ControllerRiwayatKasir extends Controller
     {
         $query = ModelPenjualan::with([
                 'pembayaran.metode',
-                'meja'
+                'meja',
+                'user',
+                'pelanggan'
             ])
-            ->where('userid', Auth::id())
+            // hanya transaksi yang sudah selesai dibayar
+            ->where('statuspembayaran', 'lunas')
+            ->where('status', 'paid')
             ->orderBy('id', 'desc');
 
-        // FILTER STATUS
-        if ($request->status) {
+        // FILTER STATUS (optional)
+        if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
 
         // SEARCH INVOICE
-        if ($request->search) {
+        if ($request->filled('search')) {
             $query->where('kodeinvoice', 'like', '%' . $request->search . '%');
         }
 
@@ -50,13 +54,16 @@ class ControllerRiwayatKasir extends Controller
     {
         $penjualan = ModelPenjualan::with([
                 'user',
+                'pelanggan',
                 'meja',
                 'promo',
                 'pajakData',
+                'detail.produk',
                 'pembayaran.metode'
             ])
-            ->where('userid', Auth::id())
             ->where('id', $id)
+            ->where('statuspembayaran', 'lunas')
+            ->where('status', 'paid')
             ->firstOrFail();
 
         $detail = ModelDetailPenjualan::with('produk')
@@ -79,18 +86,19 @@ class ControllerRiwayatKasir extends Controller
     {
         $query = ModelPenjualan::with([
                 'user',
+                'pelanggan',
                 'meja',
                 'pembayaran.metode'
             ])
-            ->latest();
+            ->orderBy('id', 'desc');
 
         // FILTER STATUS
-        if ($request->status) {
+        if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
 
         // SEARCH INVOICE
-        if ($request->search) {
+        if ($request->filled('search')) {
             $query->where('kodeinvoice', 'like', '%' . $request->search . '%');
         }
 
@@ -109,6 +117,7 @@ class ControllerRiwayatKasir extends Controller
         $data = ModelPenjualan::with([
                 'detail.produk',
                 'user',
+                'pelanggan',
                 'meja',
                 'promo',
                 'pajakData',

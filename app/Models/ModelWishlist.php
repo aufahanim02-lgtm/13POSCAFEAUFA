@@ -13,6 +13,12 @@ class ModelWishlist extends Model
         'produkid'
     ];
 
+    /*
+    |--------------------------------------------------------------------------
+    | RELASI
+    |--------------------------------------------------------------------------
+    */
+
     public function pelanggan()
     {
         return $this->belongsTo(ModelPelanggan::class, 'pelangganid');

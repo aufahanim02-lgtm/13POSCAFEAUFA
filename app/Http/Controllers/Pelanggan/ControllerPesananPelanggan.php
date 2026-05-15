@@ -4,7 +4,12 @@ namespace App\Http\Controllers\Pelanggan;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
+
 use App\Models\ModelPenjualan;
+use App\Models\ModelPembayaran;
+use App\Models\ModelMetodePembayaran;
 
 class ControllerPesananPelanggan extends Controller
 {
@@ -80,7 +85,6 @@ class ControllerPesananPelanggan extends Controller
             'status'           => 'pending'
         ]);
 
-        // 🔥 FIX ROUTE NAME
         return redirect()->route('pelanggan.pesanan.qris.page', $pesanan->id);
     }
 
@@ -100,24 +104,70 @@ class ControllerPesananPelanggan extends Controller
     }
 
     // =========================
-    // KONFIRMASI QRIS (SET LUNAS)
+    // KONFIRMASI QRIS (SET LUNAS + INSERT PEMBAYARAN)
     // =========================
     public function qrisKonfirmasi($id)
     {
         $pelanggan = Auth::guard('pelanggan')->user();
 
-        $pesanan = ModelPenjualan::where('id', $id)
-            ->where('pelangganid', $pelanggan->id)
-            ->firstOrFail();
+        DB::beginTransaction();
 
-        $pesanan->update([
-            'statuspembayaran' => 'lunas',
-            'statuspesanan'    => 'diproses',
-            'status'           => 'paid'
-        ]);
+        try {
 
-        return redirect()
-            ->route('pelanggan.pesanan.index')
-            ->with('success', 'Pembayaran QRIS berhasil. Pesanan sedang diproses.');
+            $pesanan = ModelPenjualan::where('id', $id)
+                ->where('pelangganid', $pelanggan->id)
+                ->lockForUpdate()
+                ->firstOrFail();
+
+            // jika sudah lunas jangan double insert pembayaran
+            if ($pesanan->statuspembayaran == 'lunas') {
+                return redirect()
+                    ->route('pelanggan.pesanan.index')
+                    ->with('success', 'Pesanan ini sudah lunas.');
+            }
+
+            // ambil metode pembayaran QRIS aktif
+            $metodeQris = ModelMetodePembayaran::where('jenis', 'noncash')
+                ->where('status', 'aktif')
+                ->first();
+
+            if (!$metodeQris) {
+                return redirect()
+                    ->route('pelanggan.pesanan.index')
+                    ->with('error', 'Metode pembayaran QRIS belum tersedia.');
+            }
+
+            // update status penjualan
+            $pesanan->update([
+                'statuspembayaran' => 'lunas',
+                'statuspesanan'    => 'diproses',
+                'status'           => 'paid'
+            ]);
+
+            // insert pembayaran sesuai struktur tabel kamu
+            ModelPembayaran::create([
+                'penjualanid'        => $pesanan->id,
+                'metodepembayaranid' => $metodeQris->id,
+                'jumlahbayar'        => $pesanan->total,
+                'kembalian'          => 0,
+                'tanggalbayar'       => Carbon::now(),
+                'buktibayar'         => null,
+                'status'             => 'paid',
+            ]);
+
+            DB::commit();
+
+            return redirect()
+                ->route('pelanggan.pesanan.index')
+                ->with('success', 'Pembayaran QRIS berhasil. Pesanan sedang diproses.');
+
+        } catch (\Throwable $e) {
+
+            DB::rollBack();
+
+            return redirect()
+                ->route('pelanggan.pesanan.index')
+                ->with('error', 'Gagal konfirmasi QRIS: ' . $e->getMessage());
+        }
     }
 }

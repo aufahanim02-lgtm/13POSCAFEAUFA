@@ -16,23 +16,12 @@ use App\Models\ModelMetodePembayaran;
 use App\Models\ModelShift;
 use App\Models\ModelPromo;
 use App\Models\ModelPajak;
-
-// LAPORAN
-use App\Models\ModelLaporan;
-use App\Models\ModelLaporanHarian;
-use App\Models\ModelLaporanBulanan;
-use App\Models\ModelLaporanProduk;
-use App\Models\ModelLaporanKasir;
-use App\Models\ModelLaporanShift;
-use App\Models\ModelLaporanKeuntungan;
+use App\Models\ModelResep;
+use App\Models\ModelBahanBaku;
+use App\Models\ModelStokKeluar;
 
 class ControllerPenjualan extends Controller
 {
-    /*
-    |--------------------------------------------------------------------------
-    | POS INDEX
-    |--------------------------------------------------------------------------
-    */
     public function index()
     {
         $produk = ModelProduk::where('status', 'aktif')->get();
@@ -42,7 +31,6 @@ class ControllerPenjualan extends Controller
         $subtotal = 0;
 
         foreach ($cart as $item) {
-
             $subtotal += $item['subtotal'];
         }
 
@@ -58,6 +46,7 @@ class ControllerPenjualan extends Controller
     | TAMBAH PRODUK
     |--------------------------------------------------------------------------
     */
+
     public function tambah(Request $request)
     {
         $request->validate([
@@ -66,7 +55,29 @@ class ControllerPenjualan extends Controller
 
         $produk = ModelProduk::findOrFail($request->produkid);
 
+        // VALIDASI STOK
+        if ($produk->stok <= 0) {
+
+            return back()->with(
+                'error',
+                'Stok produk ' . $produk->namaproduk . ' habis'
+            );
+        }
+
         $cart = session()->get('cart', []);
+
+        $qtySaatIni = isset($cart[$produk->id])
+            ? $cart[$produk->id]['qty']
+            : 0;
+
+        // CEK JANGAN LEBIH DARI STOK
+        if (($qtySaatIni + 1) > $produk->stok) {
+
+            return back()->with(
+                'error',
+                'Stok produk tidak mencukupi'
+            );
+        }
 
         if (isset($cart[$produk->id])) {
 
@@ -96,9 +107,10 @@ class ControllerPenjualan extends Controller
 
     /*
     |--------------------------------------------------------------------------
-    | HAPUS PRODUK
+    | HAPUS
     |--------------------------------------------------------------------------
     */
+
     public function hapus(Request $request)
     {
         $request->validate([
@@ -124,6 +136,7 @@ class ControllerPenjualan extends Controller
     | RESET CART
     |--------------------------------------------------------------------------
     */
+
     public function reset()
     {
         session()->forget('cart');
@@ -135,9 +148,10 @@ class ControllerPenjualan extends Controller
 
     /*
     |--------------------------------------------------------------------------
-    | HALAMAN PEMBAYARAN
+    | PEMBAYARAN
     |--------------------------------------------------------------------------
     */
+
     public function pembayaran()
     {
         $cart = session()->get('cart', []);
@@ -146,17 +160,15 @@ class ControllerPenjualan extends Controller
 
             return redirect()
                 ->route('kasir.pos')
-                ->with('error', 'Keranjang masih kosong');
+                ->with('error', 'Keranjang kosong');
         }
 
         $subtotal = 0;
 
         foreach ($cart as $item) {
-
             $subtotal += $item['subtotal'];
         }
 
-        // PROMO
         $promo = ModelPromo::where('status', 'aktif')->first();
 
         $diskon = 0;
@@ -173,30 +185,39 @@ class ControllerPenjualan extends Controller
             }
         }
 
-        // SETELAH DISKON
         $subtotalSetelahDiskon = $subtotal - $diskon;
+        /*
+|--------------------------------------------------------------------------
+| PAJAK
+|--------------------------------------------------------------------------
+*/
 
-        // PAJAK
-        $dataPajak = ModelPajak::where('status', 'aktif')->first();
+        $pajak = ModelPajak::where(
+            'status',
+            'aktif'
+        )->first();
 
-        $nominalPajak = 0;
+        $totalPajak = 0;
 
-        if ($dataPajak) {
+        if ($pajak) {
 
-            $nominalPajak =
-                ($subtotalSetelahDiskon * $dataPajak->persentase) / 100;
+            $totalPajak =
+                ($subtotalSetelahDiskon * $pajak->persentase) / 100;
         }
 
-        // TOTAL
-        $totalAkhir = $subtotalSetelahDiskon + $nominalPajak;
+        /*
+|--------------------------------------------------------------------------
+| TOTAL AKHIR
+|--------------------------------------------------------------------------
+*/
 
-        // METODE
+        $totalAkhir = $subtotalSetelahDiskon + $totalPajak;
+
         $metode = ModelMetodePembayaran::where(
             'status',
             'aktif'
         )->get();
 
-        // MEJA
         $meja = ModelMeja::where(
             'status',
             'kosong'
@@ -208,12 +229,12 @@ class ControllerPenjualan extends Controller
             'subtotal',
             'diskon',
             'subtotalSetelahDiskon',
-            'nominalPajak',
+            'totalPajak',
             'totalAkhir',
             'metode',
             'meja',
             'promo',
-            'dataPajak'
+            'pajak'
         ));
     }
 
@@ -222,6 +243,7 @@ class ControllerPenjualan extends Controller
     | PROSES PEMBAYARAN
     |--------------------------------------------------------------------------
     */
+
     public function proses(Request $request)
     {
         $cart = session()->get('cart', []);
@@ -240,7 +262,6 @@ class ControllerPenjualan extends Controller
             'mejaid'             => 'nullable'
         ]);
 
-        // SHIFT
         $shiftAktif = ModelShift::where(
             'userid',
             Auth::id()
@@ -256,15 +277,12 @@ class ControllerPenjualan extends Controller
                 ->with('error', 'Shift belum dibuka');
         }
 
-        // SUBTOTAL
         $subtotal = 0;
 
         foreach ($cart as $item) {
-
             $subtotal += $item['subtotal'];
         }
 
-        // PROMO
         $promo = ModelPromo::where('status', 'aktif')->first();
 
         $diskon = 0;
@@ -281,59 +299,91 @@ class ControllerPenjualan extends Controller
             }
         }
 
-        // SUBTOTAL SETELAH DISKON
         $subtotalSetelahDiskon = $subtotal - $diskon;
 
-        // PAJAK
-        $dataPajak = ModelPajak::where(
+        $pajak = ModelPajak::where(
             'status',
             'aktif'
         )->first();
 
         $nominalPajak = 0;
 
-        if ($dataPajak) {
+        if ($pajak) {
 
             $nominalPajak =
-                ($subtotalSetelahDiskon * $dataPajak->persentase) / 100;
+                ($subtotalSetelahDiskon * $pajak->persentase) / 100;
         }
 
-        // TOTAL
         $total = $subtotalSetelahDiskon + $nominalPajak;
 
-        // BAYAR
         $jumlahbayar = $request->jumlahbayar;
 
         $kembalian = $jumlahbayar - $total;
 
         if ($kembalian < 0) {
 
-            return redirect()
-                ->back()
-                ->with('error', 'Uang pembayaran kurang');
+            return back()->with(
+                'error',
+                'Uang pembayaran kurang'
+            );
         }
 
         DB::beginTransaction();
 
         try {
 
-
-
             /*
-|--------------------------------------------------------------------------
-| METODE PEMBAYARAN
-|--------------------------------------------------------------------------
-*/
+            |--------------------------------------------------------------------------
+            | VALIDASI STOK PRODUK & BAHAN BAKU
+            |--------------------------------------------------------------------------
+            */
 
-            $metodePembayaran = ModelMetodePembayaran::findOrFail(
-                $request->metodepembayaranid
-            );
+            foreach ($cart as $item) {
 
-            /*
-|--------------------------------------------------------------------------
-| PAYMENT GATEWAY
-|--------------------------------------------------------------------------
-*/
+                $produk = ModelProduk::lockForUpdate()
+                    ->findOrFail($item['produkid']);
+
+                if ($produk->stok < $item['qty']) {
+
+                    throw new \Exception(
+                        'Stok produk ' .
+                            $produk->namaproduk .
+                            ' tidak mencukupi'
+                    );
+                }
+
+                $resepList = ModelResep::where(
+                    'produkid',
+                    $produk->id
+                )->get();
+
+                foreach ($resepList as $resep) {
+
+                    $bahan = ModelBahanBaku::lockForUpdate()
+                        ->find($resep->bahanbakuid);
+
+                    if ($bahan) {
+
+                        $totalPakai =
+                            $resep->jumlah *
+                            $item['qty'];
+
+                        if ($bahan->stok < $totalPakai) {
+
+                            throw new \Exception(
+                                'Stok bahan baku ' .
+                                    $bahan->namabahan .
+                                    ' tidak mencukupi'
+                            );
+                        }
+                    }
+                }
+            }
+
+            $metodePembayaran =
+                ModelMetodePembayaran::findOrFail(
+                    $request->metodepembayaranid
+                );
 
             $paymentGateway = 'cash';
 
@@ -354,12 +404,6 @@ class ControllerPenjualan extends Controller
                 $qrisReference = 'QR-' . time();
             }
 
-            /*
-|--------------------------------------------------------------------------
-| PENJUALAN
-|--------------------------------------------------------------------------
-*/
-
             $penjualan = ModelPenjualan::create([
 
                 'kodeinvoice' =>
@@ -378,7 +422,7 @@ class ControllerPenjualan extends Controller
 
                 'promoid' => $promo?->id,
 
-                'pajakid' => $dataPajak?->id,
+                'pajakid' => $pajak?->id,
 
                 'subtotal' => $subtotal,
 
@@ -390,28 +434,24 @@ class ControllerPenjualan extends Controller
 
                 'sumberpesanan' => 'kasir',
 
-                'statuspesanan' => 'menunggu',
+                'statuspesanan' => 'selesai',
 
-                'statuspembayaran' => 'belumbayar',
+                'statuspembayaran' => 'lunas',
 
-                /*
-    |--------------------------------------------------------------------------
-    | FIX PAYMENT
-    |--------------------------------------------------------------------------
-    */
                 'payment_gateway' => $paymentGateway,
 
                 'qris_reference' => $qrisReference,
 
                 'qris_image' => $qrisImage,
 
-                'status' => 'pending',
+                'status' => 'paid',
 
                 'tanggalpenjualan' => now()
             ]);
+
             /*
             |--------------------------------------------------------------------------
-            | DETAIL PENJUALAN
+            | DETAIL + KURANGI STOK
             |--------------------------------------------------------------------------
             */
 
@@ -427,8 +467,66 @@ class ControllerPenjualan extends Controller
 
                     'harga' => $item['harga'],
 
-                    'subtotal' => $item['subtotal']
+                    'subtotal' => $item['subtotal'],
+
+                    'statusitem' => 'tersedia'
                 ]);
+
+                /*
+                |--------------------------------------------------------------------------
+                | KURANGI STOK PRODUK
+                |--------------------------------------------------------------------------
+                */
+
+                $produk = ModelProduk::find($item['produkid']);
+
+                $produk->stok =
+                    $produk->stok - $item['qty'];
+
+                $produk->save();
+
+                /*
+                |--------------------------------------------------------------------------
+                | KURANGI STOK BAHAN BAKU
+                |--------------------------------------------------------------------------
+                */
+
+                $resepList = ModelResep::where(
+                    'produkid',
+                    $item['produkid']
+                )->get();
+
+                foreach ($resepList as $resep) {
+
+                    $bahan = ModelBahanBaku::find(
+                        $resep->bahanbakuid
+                    );
+
+                    if ($bahan) {
+
+                        $totalPakai =
+                            $resep->jumlah *
+                            $item['qty'];
+
+                        $bahan->stok =
+                            $bahan->stok - $totalPakai;
+
+                        $bahan->save();
+
+                        ModelStokKeluar::create([
+
+                            'bahanbakuid' => $bahan->id,
+
+                            'jumlah' => $totalPakai,
+
+                            'tanggalkeluar' => now(),
+
+                            'alasan' =>
+                            'Penjualan Invoice: ' .
+                                $penjualan->kodeinvoice
+                        ]);
+                    }
+                }
             }
 
             /*
@@ -455,7 +553,7 @@ class ControllerPenjualan extends Controller
 
             /*
             |--------------------------------------------------------------------------
-            | UPDATE STATUS MEJA
+            | UPDATE MEJA
             |--------------------------------------------------------------------------
             */
 
@@ -471,12 +569,6 @@ class ControllerPenjualan extends Controller
                 }
             }
 
-            /*
-            |--------------------------------------------------------------------------
-            | RESET CART
-            |--------------------------------------------------------------------------
-            */
-
             session()->forget('cart');
 
             DB::commit();
@@ -484,7 +576,7 @@ class ControllerPenjualan extends Controller
             return redirect()
                 ->route('kasir.sukses', $penjualan->id)
                 ->with('success', 'Transaksi berhasil');
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
 
             DB::rollBack();
 
@@ -499,9 +591,10 @@ class ControllerPenjualan extends Controller
 
     /*
     |--------------------------------------------------------------------------
-    | HALAMAN SUKSES
+    | SUKSES
     |--------------------------------------------------------------------------
     */
+
     public function sukses($id)
     {
         $penjualan = ModelPenjualan::find($id);
@@ -527,13 +620,14 @@ class ControllerPenjualan extends Controller
     | STRUK
     |--------------------------------------------------------------------------
     */
+
     public function struk($id)
     {
         $penjualan = ModelPenjualan::with([
             'user',
             'meja',
             'promo',
-            'pajak',
+            'pajakData',
             'pembayaran'
         ])->findOrFail($id);
 

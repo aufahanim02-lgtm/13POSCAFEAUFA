@@ -87,6 +87,15 @@
                     </a>
                 </li>
 
+                <!-- DATA PELANGGAN -->
+                <li class="nav-item">
+                    <a href="{{ route('admin.pelanggan.index') }}"
+                        class="nav-link {{ request()->is('admin/pelanggan*') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-user-friends"></i>
+                        <p>Data Pelanggan</p>
+                    </a>
+                </li>
+
                 <li class="nav-item">
                     <a href="{{ route('master.kategori.index') }}"
                         class="nav-link {{ request()->is('master/kategori*') ? 'active' : '' }}">
@@ -100,6 +109,15 @@
                         class="nav-link {{ request()->is('master/produk*') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-box"></i>
                         <p>Produk</p>
+                    </a>
+                </li>
+
+                <!-- RESEP PRODUK -->
+                <li class="nav-item">
+                    <a href="{{ route('master.resep.index') }}"
+                        class="nav-link {{ request()->is('master/resep*') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-book"></i>
+                        <p>Resep Produk</p>
                     </a>
                 </li>
 
@@ -196,6 +214,16 @@
                         <p>Riwayat Transaksi</p>
                     </a>
                 </li>
+
+                <!-- ULASAN -->
+                <li class="nav-item">
+                    <a href="{{ route('admin.ulasan.index') }}"
+                        class="nav-link {{ request()->is('admin/ulasan*') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-star"></i>
+                        <p>Ulasan Pelanggan</p>
+                    </a>
+                </li>
+
                 <!-- LAPORAN -->
                 <li class="nav-header text-warning">LAPORAN</li>
 
@@ -206,17 +234,13 @@
                 @endphp
 
                 <li class="nav-item has-treeview {{ $laporanActive ? 'menu-open' : '' }}">
-
                     <a href="javascript:void(0)"
                         class="nav-link {{ $laporanActive ? 'active' : '' }}">
-
                         <i class="nav-icon fas fa-file-alt"></i>
-
                         <p>
                             Menu Laporan
                             <i class="right fas fa-angle-left"></i>
                         </p>
-
                     </a>
 
                     <ul class="nav nav-treeview">

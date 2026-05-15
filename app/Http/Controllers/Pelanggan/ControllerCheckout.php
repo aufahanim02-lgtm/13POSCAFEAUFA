@@ -63,6 +63,8 @@ class ControllerCheckout extends Controller
         $promoAktif = ModelPromo::where('status', 'aktif')
             ->whereDate('tanggalmulai', '<=', now())
             ->whereDate('tanggalselesai', '>=', now())
+            ->where('minimalbelanja', '<=', $subtotal)
+            ->orderByDesc('nilaidiskon')
             ->first();
 
         /*
@@ -83,23 +85,18 @@ class ControllerCheckout extends Controller
         if ($promoAktif) {
 
             if (
-                !$promoAktif->minimalbelanja ||
-                $subtotal >= $promoAktif->minimalbelanja
+                $promoAktif->jenis == 'persen' ||
+                $promoAktif->tipediskon == 'persentase'
             ) {
 
-                if (
-                    $promoAktif->jenis == 'persen' ||
-                    $promoAktif->tipediskon == 'persentase'
-                ) {
+                $diskon =
+                    ($promoAktif->nilaidiskon / 100)
+                    * $subtotal;
 
-                    $diskon =
-                        ($promoAktif->nilaidiskon / 100)
-                        * $subtotal;
-                } else {
+            } else {
 
-                    $diskon =
-                        $promoAktif->nilaidiskon;
-                }
+                $diskon =
+                    $promoAktif->nilaidiskon;
             }
         }
 
@@ -204,6 +201,8 @@ class ControllerCheckout extends Controller
             $promo = ModelPromo::where('status', 'aktif')
                 ->whereDate('tanggalmulai', '<=', now())
                 ->whereDate('tanggalselesai', '>=', now())
+                ->where('minimalbelanja', '<=', $subtotal)
+                ->orderByDesc('nilaidiskon')
                 ->first();
 
             $diskon = 0;
@@ -212,28 +211,23 @@ class ControllerCheckout extends Controller
             if ($promo) {
 
                 if (
-                    !$promo->minimalbelanja ||
-                    $subtotal >= $promo->minimalbelanja
+                    $promo->jenis == 'persen' ||
+                    $promo->tipediskon == 'persentase'
                 ) {
 
-                    if (
-                        $promo->jenis == 'persen' ||
-                        $promo->tipediskon == 'persentase'
-                    ) {
+                    $diskon =
+                        ($promo->nilaidiskon / 100)
+                        * $subtotal;
 
-                        $diskon =
-                            ($promo->nilaidiskon / 100)
-                            * $subtotal;
-                    } else {
+                } else {
 
-                        $diskon =
-                            $promo->nilaidiskon;
-                    }
-
-                    $diskon = min($diskon, $subtotal);
-
-                    $promoid = $promo->id;
+                    $diskon =
+                        $promo->nilaidiskon;
                 }
+
+                $diskon = min($diskon, $subtotal);
+
+                $promoid = $promo->id;
             }
 
             /*
@@ -241,7 +235,7 @@ class ControllerCheckout extends Controller
             | PAJAK
             |--------------------------------------------------------------------------
             */
-            $dataPajak = ModelPajak::where(
+            $pajak = ModelPajak::where(
                 'status',
                 'aktif'
             )->first();
@@ -249,13 +243,13 @@ class ControllerCheckout extends Controller
             $pajakValue = 0;
             $pajakid = null;
 
-            if ($dataPajak) {
+            if ($pajak) {
 
                 $pajakValue =
-                    ($dataPajak->persentase / 100)
+                    ($pajak->persentase / 100)
                     * ($subtotal - $diskon);
 
-                $pajakid = $dataPajak->id;
+                $pajakid = $pajak->id;
             }
 
             /*
@@ -293,13 +287,6 @@ class ControllerCheckout extends Controller
 
                 if ($metodeQris && $metodeQris->qrcode) {
 
-                    /*
-                    |--------------------------------------------------------------------------
-                    | HASIL FINAL:
-                    | qrcode/noeBR3juor5RudRjcsKQaBgGIVXeDce7omHRar6d.jpg
-                    |--------------------------------------------------------------------------
-                    */
-
                     $qris_image = str_replace(
                         [
                             'public/storage/',
@@ -314,13 +301,6 @@ class ControllerCheckout extends Controller
                 $qris_reference =
                     'QR-' . time() . rand(100, 999);
             }
-
-            /*
-            |--------------------------------------------------------------------------
-            | DEBUG CEK QRIS
-            |--------------------------------------------------------------------------
-            */
-            // dd($qris_image);
 
             /*
             |--------------------------------------------------------------------------

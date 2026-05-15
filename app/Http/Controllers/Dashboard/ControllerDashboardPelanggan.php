@@ -1,41 +1,88 @@
 <?php
+
 namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
+
 use App\Models\ModelPenjualan;
 use App\Models\ModelPromo;
-use Illuminate\Support\Facades\Auth;
 
 class ControllerDashboardPelanggan extends Controller
 {
     public function index()
     {
-        $user = Auth::guard('pelanggan')->user();
+        /*
+        |--------------------------------------------------------------------------
+        | Ambil Data Pelanggan Login
+        |--------------------------------------------------------------------------
+        */
 
-        if (!$user) {
-            return redirect()->route('pelanggan.login')
+        $pelanggan = Auth::guard('pelanggan')->user();
+
+        if (!$pelanggan) {
+
+            return redirect()
+                ->route('pelanggan.login')
                 ->with('error', 'Silakan login terlebih dahulu');
         }
 
-        $totalPesanan = ModelPenjualan::where('pelangganid', $user->id)->count();
+        /*
+        |--------------------------------------------------------------------------
+        | Statistik
+        |--------------------------------------------------------------------------
+        */
 
-        $pesananAktif = ModelPenjualan::where('pelangganid', $user->id)
-            ->whereIn('statuspesanan', ['menunggu', 'diproses', 'siapdiambil'])
-            ->count();
+        $totalPesanan = ModelPenjualan::where(
+            'pelangganid',
+            $pelanggan->id
+        )->count();
 
-        $promoAktif = ModelPromo::where('status', 'aktif')->count();
+        $pesananAktif = ModelPenjualan::where(
+            'pelangganid',
+            $pelanggan->id
+        )
+        ->whereIn('statuspesanan', [
+            'menunggu',
+            'diproses',
+            'siapdiambil'
+        ])
+        ->count();
 
-        $riwayat = ModelPenjualan::where('pelangganid', $user->id)
-            ->orderBy('tanggalpenjualan', 'desc')
-            ->limit(10)
-            ->get();
+        $promoAktif = ModelPromo::where(
+            'status',
+            'aktif'
+        )->count();
 
-        return view('pelanggan.dashboard.dashboardpelanggan', compact(
-            'user',
-            'totalPesanan',
-            'pesananAktif',
-            'promoAktif',
-            'riwayat'
-        ));
+        /*
+        |--------------------------------------------------------------------------
+        | Riwayat Pesanan
+        |--------------------------------------------------------------------------
+        */
+
+        $riwayat = ModelPenjualan::where(
+            'pelangganid',
+            $pelanggan->id
+        )
+        ->orderBy('tanggalpenjualan', 'desc')
+        ->limit(10)
+        ->get();
+
+        /*
+        |--------------------------------------------------------------------------
+        | Return View
+        |--------------------------------------------------------------------------
+        */
+
+        return view(
+            'pelanggan.dashboard.dashboardpelanggan',
+            compact(
+                'pelanggan',
+                'totalPesanan',
+                'pesananAktif',
+                'promoAktif',
+                'riwayat'
+            )
+        );
     }
 }

@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Pelanggan;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 use App\Models\ModelWishlist;
@@ -11,55 +10,80 @@ use App\Models\ModelProduk;
 
 class ControllerWishlist extends Controller
 {
+    /*
+    |--------------------------------------------------------------------------
+    | LIST WISHLIST
+    |--------------------------------------------------------------------------
+    */
+
     public function index()
     {
-        $pelangganId = Auth::guard('pelanggan')->id();
+        $pelangganid = Auth::guard('pelanggan')->id();
 
-        $wishlist = ModelWishlist::with('produk')
-            ->where('pelangganid', $pelangganId)
-            ->orderBy('id', 'desc')
+        $wishlist = ModelWishlist::with('produk.kategori')
+            ->where('pelangganid', $pelangganid)
+            ->latest()
             ->get();
 
         return view('pelanggan.wishlist.index', compact('wishlist'));
     }
 
-    public function tambah($produkid)
+    /*
+    |--------------------------------------------------------------------------
+    | TAMBAH WISHLIST
+    |--------------------------------------------------------------------------
+    */
+
+    public function tambah($id)
     {
-        $pelangganId = Auth::guard('pelanggan')->id();
+        $pelangganid = Auth::guard('pelanggan')->id();
 
-        if (!$pelangganId) {
-            return redirect()->route('pelanggan.login')
-                ->with('error', 'Silahkan login terlebih dahulu.');
-        }
+        $produk = ModelProduk::findOrFail($id);
 
-        $produk = ModelProduk::findOrFail($produkid);
-
-        $cek = ModelWishlist::where('pelangganid', $pelangganId)
-            ->where('produkid', $produkid)
+        $cek = ModelWishlist::where('pelangganid', $pelangganid)
+            ->where('produkid', $produk->id)
             ->first();
 
         if ($cek) {
-            return redirect()->back()->with('success', 'Produk sudah ada di wishlist.');
+
+            return back()->with(
+                'error',
+                'Produk sudah ada di wishlist'
+            );
         }
 
         ModelWishlist::create([
-            'pelangganid' => $pelangganId,
-            'produkid' => $produkid
+
+            'pelangganid' => $pelangganid,
+
+            'produkid' => $produk->id
         ]);
 
-        return redirect()->back()->with('success', 'Produk berhasil ditambahkan ke wishlist.');
+        return back()->with(
+            'success',
+            'Produk berhasil ditambahkan ke wishlist'
+        );
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | HAPUS WISHLIST
+    |--------------------------------------------------------------------------
+    */
 
     public function hapus($id)
     {
-        $pelangganId = Auth::guard('pelanggan')->id();
+        $pelangganid = Auth::guard('pelanggan')->id();
 
-        $data = ModelWishlist::where('id', $id)
-            ->where('pelangganid', $pelangganId)
+        $wishlist = ModelWishlist::where('pelangganid', $pelangganid)
+            ->where('id', $id)
             ->firstOrFail();
 
-        $data->delete();
+        $wishlist->delete();
 
-        return redirect()->back()->with('success', 'Wishlist berhasil dihapus.');
+        return back()->with(
+            'success',
+            'Wishlist berhasil dihapus'
+        );
     }
 }
