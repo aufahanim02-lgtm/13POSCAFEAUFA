@@ -1,6 +1,6 @@
 @extends('layouts.appadmin')
 
-@section('title', 'Detail Ulasan')
+
 
 @section('content')
 <div class="container-fluid py-3">
@@ -41,8 +41,9 @@
             <div class="row mb-3">
                 <div class="col-md-6">
                     <p class="mb-1"><b>Nama Pelanggan:</b></p>
+
                     <p class="fw-bold">
-                        {{ $data->pelanggan->nama ?? 'Tidak diketahui' }}
+                        {{ $data->pelanggan->name ?? 'Tidak diketahui' }}
                     </p>
                 </div>
 
@@ -76,8 +77,8 @@
 
             <div class="d-flex justify-content-end">
                 <form action="{{ route('admin.ulasan.destroy', $data->id) }}"
-                      method="POST"
-                      onsubmit="return confirm('Yakin ingin menghapus ulasan ini?')">
+                    method="POST"
+                    onsubmit="return confirm('Yakin ingin menghapus ulasan ini?')">
                     @csrf
                     @method('DELETE')
 

@@ -13,15 +13,28 @@ class ModelLaporanShift extends Model
         'shiftid',
         'tanggal',
         'totaltransaksi',
-        'totalpendapatan'
+        'totalpendapatan',
     ];
+
+    /*
+    |--------------------------------------------------------------------------
+    | RELASI USER
+    |--------------------------------------------------------------------------
+    */
+
     public function user()
     {
-        return $this->belongsTo(ModelUser::class, 'userid', 'id');
+        return $this->belongsTo(ModelUser::class, 'userid');
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | RELASI SHIFT
+    |--------------------------------------------------------------------------
+    */
 
     public function shift()
     {
-        return $this->belongsTo(ModelShift::class, 'shiftid', 'id');
+        return $this->belongsTo(ModelShift::class, 'shiftid');
     }
 }

@@ -1,89 +1,223 @@
 @extends('layouts.appadmin')
-
-@section('title', 'Laporan Harian')
-
 @section('content')
-<div class="content-wrapper">
 
-    <section class="content-header">
-        <div class="container-fluid">
-            <h1 class="fw-bold">Laporan Harian</h1>
-            <small class="text-muted">Data transaksi penjualan harian</small>
+<div class="container-fluid">
+
+    {{-- HEADER --}}
+    <div class="d-flex justify-content-between align-items-center mb-3">
+    </div>
+
+    {{-- FILTER --}}
+    <div class="card shadow-sm mb-3">
+
+        <div class="card-body">
+
+            <form method="GET">
+
+                <div class="row">
+
+                    <div class="col-md-4">
+
+                        <input type="date"
+                               name="tanggal"
+                               value="{{ $tanggal }}"
+                               class="form-control">
+
+                    </div>
+
+                    <div class="col-md-2">
+
+                        <button class="btn btn-primary w-100">
+
+                            <i class="fas fa-search"></i>
+
+                            Filter
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </form>
+
         </div>
-    </section>
 
-    <section class="content">
-        <div class="container-fluid">
+    </div>
 
-            {{-- ALERT --}}
-            @if(session('success'))
-                <div class="alert alert-success">
-                    {{ session('success') }}
-                </div>
-            @endif
+    {{-- STATISTIK --}}
+    <div class="row">
 
-            @if(session('error'))
-                <div class="alert alert-danger">
-                    {{ session('error') }}
-                </div>
-            @endif
+        <div class="col-md-3">
 
-            {{-- CARD --}}
-            <div class="card shadow-sm">
-                <div class="card-header bg-primary text-white">
-                    <h3 class="card-title">
-                        <i class="fas fa-calendar-day"></i> Data Laporan Harian
-                    </h3>
+            <div class="small-box bg-primary">
+
+                <div class="inner">
+
+                    <h3>{{ $totaltransaksi }}</h3>
+
+                    <p>Total Transaksi</p>
+
                 </div>
 
-                <div class="card-body table-responsive">
-                    <table class="table table-bordered table-striped">
-                        <thead class="table-dark">
-                            <tr>
-                                <th>No</th>
-                                <th>Tanggal</th>
-                                <th>Total Transaksi</th>
-                                <th>Total Pendapatan</th>
-                                <th>Aksi</th>
-                            </tr>
-                        </thead>
-
-                        <tbody>
-                            @forelse($data as $item)
-                                <tr>
-                                    <td>{{ $loop->iteration }}</td>
-                                    <td>{{ \Carbon\Carbon::parse($item->tanggal)->format('d-m-Y') }}</td>
-                                    <td>{{ $item->totaltransaksi }}</td>
-                                    <td>Rp {{ number_format($item->totalpendapatan, 0, ',', '.') }}</td>
-                                    <td>
-                                        <a href="{{ route('laporan.harian.show', $item->id) }}"
-                                           class="btn btn-sm btn-info">
-                                            <i class="fas fa-eye"></i> Detail
-                                        </a>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="5" class="text-center text-muted">
-                                        Tidak ada data laporan harian
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-
-                    </table>
-                </div>
-
-                <div class="card-footer">
-                    <a href="{{ route('laporan.index') }}" class="btn btn-secondary">
-                        <i class="fas fa-arrow-left"></i> Kembali
-                    </a>
+                <div class="icon">
+                    <i class="fas fa-shopping-cart"></i>
                 </div>
 
             </div>
 
         </div>
-    </section>
+
+        <div class="col-md-3">
+
+            <div class="small-box bg-success">
+
+                <div class="inner">
+
+                    <h3>
+                        Rp {{ number_format($totalpendapatan,0,',','.') }}
+                    </h3>
+
+                    <p>Total Pendapatan</p>
+
+                </div>
+
+                <div class="icon">
+                    <i class="fas fa-wallet"></i>
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-3">
+
+            <div class="small-box bg-warning">
+
+                <div class="inner">
+
+                    <h3>
+                        Rp {{ number_format($totaldiskon,0,',','.') }}
+                    </h3>
+
+                    <p>Total Diskon</p>
+
+                </div>
+
+                <div class="icon">
+                    <i class="fas fa-tags"></i>
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-3">
+
+            <div class="small-box bg-danger">
+
+                <div class="inner">
+
+                    <h3>
+                        Rp {{ number_format($totalpajak,0,',','.') }}
+                    </h3>
+
+                    <p>Total Pajak</p>
+
+                </div>
+
+                <div class="icon">
+                    <i class="fas fa-percent"></i>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    {{-- TABLE --}}
+    <div class="card shadow-sm">
+
+        <div class="card-header">
+
+            <h3 class="card-title">
+                Data Laporan Harian
+            </h3>
+
+        </div>
+
+        <div class="card-body table-responsive">
+
+            <table class="table table-bordered table-striped">
+
+                <thead class="table-dark">
+
+                    <tr>
+
+                        <th>No</th>
+                        <th>Tanggal</th>
+                        <th>Total Transaksi</th>
+                        <th>Total Pendapatan</th>
+                        <th>Total Diskon</th>
+                        <th>Total Pajak</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    @forelse($data as $row)
+
+                    <tr>
+
+                        <td>{{ $loop->iteration }}</td>
+
+                        <td>
+                            {{ date('d-m-Y', strtotime($row->tanggal)) }}
+                        </td>
+
+                        <td>
+                            {{ $row->totaltransaksi }}
+                        </td>
+
+                        <td>
+                            Rp {{ number_format($row->totalpendapatan,0,',','.') }}
+                        </td>
+
+                        <td>
+                            Rp {{ number_format($row->totaldiskon,0,',','.') }}
+                        </td>
+
+                        <td>
+                            Rp {{ number_format($row->totalpajak,0,',','.') }}
+                        </td>
+
+                    </tr>
+
+                    @empty
+
+                    <tr>
+
+                        <td colspan="6" class="text-center">
+
+                            Data laporan kosong
+
+                        </td>
+
+                    </tr>
+
+                    @endforelse
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
 
 </div>
+
 @endsection

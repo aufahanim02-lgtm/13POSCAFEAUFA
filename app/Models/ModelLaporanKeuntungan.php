@@ -13,11 +13,17 @@ class ModelLaporanKeuntungan extends Model
         'tanggal',
         'totalpemasukan',
         'totalpengeluaran',
-        'keuntungan'
+        'keuntungan',
     ];
+
+    /*
+    |--------------------------------------------------------------------------
+    | RELASI USER
+    |--------------------------------------------------------------------------
+    */
 
     public function user()
     {
-        return $this->belongsTo(ModelUser::class, 'userid', 'id');
+        return $this->belongsTo(ModelUser::class, 'userid');
     }
 }

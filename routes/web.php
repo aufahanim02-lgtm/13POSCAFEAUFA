@@ -407,6 +407,13 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/shift/buka/proses', [ControllerShift::class, 'prosesBukaShift'])->name('kasir.shift.buka.proses');
         Route::get('/shift/tutup', [ControllerShift::class, 'tutupShift'])->name('kasir.shift.tutup');
         Route::post('/shift/tutup/proses', [ControllerShift::class, 'prosesTutupShift'])->name('kasir.shift.tutup.proses');
+
+        // SOUND NOTIFIKASI PESANAN
+        Route::get(
+            '/cek-pesanan',
+            [ControllerPesananMasukKasir::class, 'cekPesanan']
+        )
+            ->name('kasir.cekpesanan');
     });
 
 

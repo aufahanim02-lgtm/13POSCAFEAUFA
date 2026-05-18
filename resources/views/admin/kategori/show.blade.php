@@ -1,6 +1,6 @@
 @extends('layouts.appadmin')
 
-@section('title', 'Detail Kategori')
+
 
 @section('content')
 

@@ -1,6 +1,6 @@
 @extends('layouts.appadmin')
 
-@section('title', 'Data Pelanggan')
+
 
 @section('content')
 
@@ -8,9 +8,7 @@
 
     {{-- HEADER --}}
     <div class="d-flex justify-content-between align-items-center mb-3">
-        <h3 class="mb-0 font-weight-bold">
-            <i class="fas fa-users text-primary"></i> Data Pelanggan
-        </h3>
+        
     </div>
 
     {{-- ALERT --}}

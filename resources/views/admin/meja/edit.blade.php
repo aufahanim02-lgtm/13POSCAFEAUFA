@@ -1,6 +1,6 @@
 @extends('layouts.appadmin')
 
-@section('title', 'Edit Meja')
+
 
 @section('content')
 

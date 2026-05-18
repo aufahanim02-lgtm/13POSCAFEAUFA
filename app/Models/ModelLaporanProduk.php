@@ -12,16 +12,28 @@ class ModelLaporanProduk extends Model
         'userid',
         'produkid',
         'totalterjual',
-        'totalpendapatan'
+        'totalpendapatan',
     ];
+
+    /*
+    |--------------------------------------------------------------------------
+    | RELASI USER
+    |--------------------------------------------------------------------------
+    */
 
     public function user()
     {
-        return $this->belongsTo(ModelUser::class, 'userid', 'id');
+        return $this->belongsTo(ModelUser::class, 'userid');
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | RELASI PRODUK
+    |--------------------------------------------------------------------------
+    */
 
     public function produk()
     {
-        return $this->belongsTo(ModelProduk::class, 'produkid', 'id');
+        return $this->belongsTo(ModelProduk::class, 'produkid');
     }
 }

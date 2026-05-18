@@ -1,9 +1,7 @@
 @extends('layouts.appmanager')
 
-@section('title', 'Detail Laporan Kasir')
-
 @section('content')
-<div class="content-wrapper">
+
 
     <section class="content-header">
         <div class="container-fluid">

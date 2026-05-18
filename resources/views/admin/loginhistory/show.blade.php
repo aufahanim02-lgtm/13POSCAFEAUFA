@@ -6,10 +6,7 @@
 
 <div class="content-header">
     <div class="container-fluid d-flex justify-content-between align-items-center">
-        <div>
-            <h1 class="m-0">Detail Login History</h1>
-            <small class="text-muted">Informasi lengkap riwayat login</small>
-        </div>
+        
 
         <a href="{{ route('loginhistory.index') }}" class="btn btn-secondary btn-sm">
             <i class="fas fa-arrow-left"></i> Kembali

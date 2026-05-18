@@ -54,7 +54,7 @@
                             {{ $loop->iteration }}
                         </td>
 
-                        <td class="fw-bold text-primary">
+                        <td class="fw-bold text-warning">
                             {{ $row->kodeinvoice }}
                         </td>
 

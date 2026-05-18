@@ -1,114 +1,107 @@
 @extends('layouts.appadmin')
-
-@section('title', 'Detail Transaksi')
-
 @section('content')
+<section class="content-header">
+    <div class="container-fluid">
+        <h1>Detail Transaksi</h1>
+    </div>
+</section>
+<section class="content">
+    <div class="container-fluid">
 
-<div class="content-wrapper">
+        <div class="card card-primary card-outline">
 
-    <section class="content-header">
-        <div class="container-fluid">
-            <h1>Detail Transaksi</h1>
-        </div>
-    </section>
+            <div class="card-header">
+                <h3 class="card-title">
+                    {{ $data->kodeinvoice }}
+                </h3>
+            </div>
 
-    <section class="content">
-        <div class="container-fluid">
+            <div class="card-body">
 
-            <div class="card card-primary card-outline">
+                <table class="table table-bordered">
 
-                <div class="card-header">
-                    <h3 class="card-title">
-                        {{ $data->kodeinvoice }}
-                    </h3>
-                </div>
+                    <tr>
+                        <th width="250">Kasir</th>
+                        <td>{{ $data->user->name ?? '-' }}</td>
+                    </tr>
 
-                <div class="card-body">
+                    <tr>
+                        <th>Meja</th>
+                        <td>{{ $data->meja->nomormeja ?? '-' }}</td>
+                    </tr>
 
-                    <table class="table table-bordered">
+                    <tr>
+                        <th>Status</th>
+                        <td>{{ strtoupper($data->status) }}</td>
+                    </tr>
+
+                    <tr>
+                        <th>Total</th>
+                        <td>
+                            Rp {{ number_format($data->total,0,',','.') }}
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <th>Tanggal</th>
+                        <td>{{ $data->tanggalpenjualan }}</td>
+                    </tr>
+
+                </table>
+
+                <hr>
+
+                <h5>Detail Produk</h5>
+
+                <table class="table table-bordered">
+
+                    <thead class="bg-light">
 
                         <tr>
-                            <th width="250">Kasir</th>
-                            <td>{{ $data->user->name ?? '-' }}</td>
+                            <th>Produk</th>
+                            <th>Qty</th>
+                            <th>Harga</th>
+                            <th>Subtotal</th>
                         </tr>
 
-                        <tr>
-                            <th>Meja</th>
-                            <td>{{ $data->meja->nomormeja ?? '-' }}</td>
-                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        @foreach($data->detailpenjualan as $item)
 
                         <tr>
-                            <th>Status</th>
-                            <td>{{ strtoupper($data->status) }}</td>
-                        </tr>
 
-                        <tr>
-                            <th>Total</th>
                             <td>
-                                Rp {{ number_format($data->total,0,',','.') }}
+                                {{ $item->produk->namaproduk ?? '-' }}
                             </td>
+
+                            <td>
+                                {{ $item->qty }}
+                            </td>
+
+                            <td>
+                                Rp {{ number_format($item->harga,0,',','.') }}
+                            </td>
+
+                            <td>
+                                Rp {{ number_format($item->subtotal,0,',','.') }}
+                            </td>
+
                         </tr>
 
-                        <tr>
-                            <th>Tanggal</th>
-                            <td>{{ $data->tanggalpenjualan }}</td>
-                        </tr>
+                        @endforeach
 
-                    </table>
+                    </tbody>
 
-                    <hr>
-
-                    <h5>Detail Produk</h5>
-
-                    <table class="table table-bordered">
-
-                        <thead class="bg-light">
-
-                            <tr>
-                                <th>Produk</th>
-                                <th>Qty</th>
-                                <th>Harga</th>
-                                <th>Subtotal</th>
-                            </tr>
-
-                        </thead>
-
-                        <tbody>
-
-                            @foreach($data->detailpenjualan as $item)
-
-                            <tr>
-
-                                <td>
-                                    {{ $item->produk->namaproduk ?? '-' }}
-                                </td>
-
-                                <td>
-                                    {{ $item->qty }}
-                                </td>
-
-                                <td>
-                                    Rp {{ number_format($item->harga,0,',','.') }}
-                                </td>
-
-                                <td>
-                                    Rp {{ number_format($item->subtotal,0,',','.') }}
-                                </td>
-
-                            </tr>
-
-                            @endforeach
-
-                        </tbody>
-
-                    </table>
-
-                </div>
+                </table>
 
             </div>
 
         </div>
-    </section>
+
+    </div>
+</section>
 
 </div>
 

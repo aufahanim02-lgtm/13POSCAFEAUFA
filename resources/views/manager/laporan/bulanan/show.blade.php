@@ -1,10 +1,5 @@
 @extends('layouts.appmanager')
-
-@section('title', 'Detail Laporan Bulanan')
-
 @section('content')
-<div class="content-wrapper">
-
     <section class="content-header">
         <div class="container-fluid">
             <h1 class="fw-bold">Detail Laporan Bulanan</h1>

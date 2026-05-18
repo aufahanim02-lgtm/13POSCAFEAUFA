@@ -8,7 +8,7 @@
     <section class="content-header">
         <div class="container-fluid">
             <h1 class="fw-bold">Tambah Laporan</h1>
-            <small class="text-muted">Buat laporan baru (Manager)</small>
+            <small class="text-muted">Buat laporan baru</small>
         </div>
     </section>
 
@@ -39,7 +39,7 @@
                         <div class="form-group mb-3">
                             <label>Jenis Laporan</label>
                             <input type="text" name="jenislaporan" class="form-control"
-                                   placeholder="Contoh: Laporan Bulanan" required>
+                                   placeholder="Contoh: Laporan Harian" required>
                         </div>
 
                         <div class="form-group mb-3">

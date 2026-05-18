@@ -3,12 +3,9 @@
 @section('title', 'Shift Kasir')
 
 @section('content')
-<div class="content-wrapper">
 
     <section class="content-header">
         <div class="container-fluid">
-            <h1 class="fw-bold">Shift Kasir</h1>
-            <small class="text-muted">Kelola buka dan tutup shift kasir</small>
         </div>
     </section>
 

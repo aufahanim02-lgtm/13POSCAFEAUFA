@@ -3,7 +3,7 @@
 @section('title', 'POS Kasir')
 
 @section('content')
-<div class="content-wrapper">
+
 
     <!-- HEADER -->
     <section class="content-header">

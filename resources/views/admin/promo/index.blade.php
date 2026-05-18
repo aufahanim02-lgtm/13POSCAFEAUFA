@@ -1,13 +1,11 @@
 @extends('layouts.appadmin')
 
-@section('title', 'Data Promo')
-
 @section('content')
 
 <div class="container-fluid">
 
     <div class="d-flex justify-content-between align-items-center mb-3">
-        <h4>Data Promo</h4>
+       
 
         <a href="{{ route('master.promo.create') }}"
            class="btn btn-primary">

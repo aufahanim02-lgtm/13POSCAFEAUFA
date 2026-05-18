@@ -1,63 +1,120 @@
 @extends('layouts.appmanager')
 
-@section('title', 'Laporan Keuntungan')
+
 
 @section('content')
-<div class="content-wrapper">
 
-    <section class="content-header">
-        <div class="container-fluid">
-            <h1 class="fw-bold">Laporan Keuntungan (Manager)</h1>
+<div class="content-header">
+    <div class="container-fluid">
+
+        <div class="d-flex justify-content-between align-items-center mb-3">
         </div>
-    </section>
 
-    <section class="content">
-        <div class="container-fluid">
+    </div>
+</div>
 
-            <div class="card shadow-sm">
-                <div class="card-header bg-success text-white">
-                    <h3 class="card-title mb-0"><i class="fas fa-chart-line"></i> Data Laporan Keuntungan</h3>
-                </div>
+<section class="content">
+    <div class="container-fluid">
 
-                <div class="card-body">
+        <div class="card shadow-sm">
+
+            <div class="card-header bg-dark">
+                <h3 class="card-title text-white">
+                    Data Laporan Keuntungan
+                </h3>
+            </div>
+
+            <div class="card-body">
+
+                <div class="table-responsive">
+
                     <table class="table table-bordered table-striped">
+
                         <thead class="table-dark">
-                            <tr>
-                                <th width="5%">No</th>
+
+                            <tr class="text-center">
+
+                                <th width="50">No</th>
                                 <th>Tanggal</th>
                                 <th>Total Pemasukan</th>
                                 <th>Total Pengeluaran</th>
                                 <th>Keuntungan</th>
-                                <th width="10%">Aksi</th>
+
                             </tr>
+
                         </thead>
+
                         <tbody>
-                            @forelse($data as $item)
+
+                            @forelse($data as $no => $row)
+
                             <tr>
-                                <td>{{ $loop->iteration }}</td>
-                                <td>{{ $item->tanggal }}</td>
-                                <td>Rp {{ number_format($item->totalpemasukan, 0, ',', '.') }}</td>
-                                <td>Rp {{ number_format($item->totalpengeluaran, 0, ',', '.') }}</td>
-                                <td>Rp {{ number_format($item->keuntungan, 0, ',', '.') }}</td>
-                                <td>
-                                    <a href="{{ route('laporan.keuntungan.show', $item->id) }}" class="btn btn-info btn-sm">
-                                        <i class="fas fa-eye"></i>
-                                    </a>
+
+                                <td class="text-center">
+                                    {{ $no + 1 }}
                                 </td>
+
+                                <td class="text-center">
+                                    {{ \Carbon\Carbon::parse($row->tanggal)->format('d-m-Y') }}
+                                </td>
+
+                                <td class="fw-bold text-success">
+                                    Rp {{ number_format($row->totalpemasukan, 0, ',', '.') }}
+                                </td>
+
+                                <td class="fw-bold text-danger">
+                                    Rp {{ number_format($row->totalpengeluaran, 0, ',', '.') }}
+                                </td>
+
+                                <td>
+
+                                    @if($row->keuntungan >= 0)
+
+                                        <span class="badge badge-success px-3 py-2">
+
+                                            Rp {{ number_format($row->keuntungan, 0, ',', '.') }}
+
+                                        </span>
+
+                                    @else
+
+                                        <span class="badge badge-danger px-3 py-2">
+
+                                            Rp {{ number_format($row->keuntungan, 0, ',', '.') }}
+
+                                        </span>
+
+                                    @endif
+
+                                </td>
+
                             </tr>
+
                             @empty
+
                             <tr>
-                                <td colspan="6" class="text-center text-muted">Belum ada data laporan keuntungan.</td>
+
+                                <td colspan="5" class="text-center text-muted">
+
+                                    Data laporan keuntungan kosong.
+
+                                </td>
+
                             </tr>
+
                             @endforelse
+
                         </tbody>
+
                     </table>
+
                 </div>
 
             </div>
 
         </div>
-    </section>
 
-</div>
+    </div>
+</section>
+
 @endsection

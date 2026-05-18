@@ -1,7 +1,4 @@
 @extends('layouts.appadmin')
-
-@section('title', 'Data Pajak')
-
 @section('content')
 
 <div class="container-fluid">

@@ -1,6 +1,5 @@
 @extends('layouts.appadmin')
 
-@section('title', 'Detail Promo')
 
 @section('content')
 

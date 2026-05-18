@@ -9,6 +9,11 @@ use App\Models\ModelMeja;
 
 class ControllerMeja extends Controller
 {
+    /*
+    |--------------------------------------------------------------------------
+    | INDEX
+    |--------------------------------------------------------------------------
+    */
     public function index()
     {
         $data = ModelMeja::orderBy('id', 'desc')->get();
@@ -16,11 +21,21 @@ class ControllerMeja extends Controller
         return view('admin.meja.index', compact('data'));
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | CREATE
+    |--------------------------------------------------------------------------
+    */
     public function create()
     {
         return view('admin.meja.create');
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | STORE
+    |--------------------------------------------------------------------------
+    */
     public function store(Request $request)
     {
         $request->validate([
@@ -31,7 +46,7 @@ class ControllerMeja extends Controller
         ModelMeja::create([
             'nomormeja' => $request->nomormeja,
             'kapasitas' => $request->kapasitas,
-            'status' => 'kosong',
+            'status'     => 'kosong',
         ]);
 
         return redirect()
@@ -39,6 +54,23 @@ class ControllerMeja extends Controller
             ->with('success', 'Meja berhasil ditambahkan!');
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | SHOW
+    |--------------------------------------------------------------------------
+    */
+    public function show($id)
+    {
+        $data = ModelMeja::findOrFail($id);
+
+        return view('admin.meja.show', compact('data'));
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | EDIT
+    |--------------------------------------------------------------------------
+    */
     public function edit($id)
     {
         $data = ModelMeja::findOrFail($id);
@@ -46,6 +78,11 @@ class ControllerMeja extends Controller
         return view('admin.meja.edit', compact('data'));
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | UPDATE
+    |--------------------------------------------------------------------------
+    */
     public function update(Request $request, $id)
     {
         $data = ModelMeja::findOrFail($id);
@@ -53,13 +90,13 @@ class ControllerMeja extends Controller
         $request->validate([
             'nomormeja' => 'required|unique:meja,nomormeja,' . $data->id,
             'kapasitas' => 'required|numeric',
-            'status' => 'required',
+            'status'     => 'required',
         ]);
 
         $data->update([
             'nomormeja' => $request->nomormeja,
             'kapasitas' => $request->kapasitas,
-            'status' => $request->status,
+            'status'     => $request->status,
         ]);
 
         return redirect()
@@ -67,7 +104,12 @@ class ControllerMeja extends Controller
             ->with('success', 'Meja berhasil diupdate!');
     }
 
-    public function delete($id)
+    /*
+    |--------------------------------------------------------------------------
+    | DESTROY
+    |--------------------------------------------------------------------------
+    */
+    public function destroy($id)
     {
         $data = ModelMeja::findOrFail($id);
 

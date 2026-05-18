@@ -13,71 +13,108 @@ use Illuminate\Support\Facades\DB;
 
 class ControllerPesananMasukKasir extends Controller
 {
-    // LIST PESANAN MASUK (SEMUA PESANAN PELANGGAN)
+    // ======================================================
+    // LIST PESANAN MASUK
+    // ======================================================
     public function index()
     {
-        $data = ModelPenjualan::with(['detail.produk', 'meja', 'pelanggan'])
+        $data = ModelPenjualan::with([
+            'detail.produk',
+            'meja',
+            'pelanggan'
+        ])
             ->where('sumberpesanan', 'pelanggan')
-            ->whereIn('statuspesanan', ['menunggu', 'diproses', 'siapdiambil'])
+            ->whereIn('statuspesanan', [
+                'menunggu',
+                'diproses',
+                'siapdiambil'
+            ])
             ->orderBy('id', 'desc')
             ->get();
 
         return view('kasir.pesananmasuk.index', compact('data'));
     }
 
+    // ======================================================
     // DETAIL PESANAN
+    // ======================================================
     public function detail($id)
     {
-        $data = ModelPenjualan::with(['detail.produk', 'meja', 'pelanggan'])
+        $data = ModelPenjualan::with([
+            'detail.produk',
+            'meja',
+            'pelanggan'
+        ])
             ->findOrFail($id);
 
         return view('kasir.pesananmasuk.show', compact('data'));
     }
 
-    // DIPROSES
+    // ======================================================
+    // SET DIPROSES
+    // ======================================================
     public function setDiproses($id)
     {
         ModelPenjualan::findOrFail($id)->update([
             'statuspesanan' => 'diproses'
         ]);
 
-        return back()->with('success', 'Pesanan diproses.');
+        return back()->with(
+            'success',
+            'Pesanan berhasil diproses.'
+        );
     }
 
-    // SIAP DIAMBIL
+    // ======================================================
+    // SET SIAP DIAMBIL
+    // ======================================================
     public function setSiapDiambil($id)
     {
         ModelPenjualan::findOrFail($id)->update([
             'statuspesanan' => 'siapdiambil'
         ]);
 
-        return back()->with('success', 'Pesanan siap diambil.');
+        return back()->with(
+            'success',
+            'Pesanan siap diambil.'
+        );
     }
 
-    // SELESAI + AUTO KURANGI STOK PRODUK + AUTO KURANGI STOK BAHAN BAKU + CATAT STOK KELUAR + AUTO KOSONGKAN MEJA
+    // ======================================================
+    // SET SELESAI
+    // ======================================================
     public function setSelesai($id)
     {
         DB::beginTransaction();
 
         try {
 
-            $pesanan = ModelPenjualan::with(['detail.produk', 'meja'])->findOrFail($id);
+            $pesanan = ModelPenjualan::with([
+                'detail.produk',
+                'meja'
+            ])
+                ->findOrFail($id);
 
-            // CEGAH DOUBLE KLIK / DOUBLE UPDATE
+            // CEGAH DOUBLE UPDATE
             if ($pesanan->statuspesanan == 'selesai') {
-                return back()->with('error', 'Pesanan ini sudah selesai sebelumnya.');
+
+                return back()->with(
+                    'error',
+                    'Pesanan sudah selesai sebelumnya.'
+                );
             }
 
             // LOOP DETAIL PESANAN
             foreach ($pesanan->detail as $item) {
 
-                // ============================
-                // 1. KURANGI STOK PRODUK
-                // ============================
+                // =========================================
+                // KURANGI STOK PRODUK
+                // =========================================
                 $produk = ModelProduk::find($item->produkid);
 
                 if ($produk) {
-                    $produk->stok = $produk->stok - $item->qty;
+
+                    $produk->stok -= $item->qty;
 
                     if ($produk->stok < 0) {
                         $produk->stok = 0;
@@ -86,22 +123,25 @@ class ControllerPesananMasukKasir extends Controller
                     $produk->save();
                 }
 
-                // ============================
-                // 2. KURANGI STOK BAHAN BAKU BERDASARKAN RESEP
-                // ============================
-                $resepList = ModelResep::where('produkid', $item->produkid)->get();
+                // =========================================
+                // KURANGI STOK BAHAN BAKU
+                // =========================================
+                $resepList = ModelResep::where(
+                    'produkid',
+                    $item->produkid
+                )->get();
 
                 foreach ($resepList as $resep) {
 
-                    $bahanbaku = ModelBahanBaku::find($resep->bahanbakuid);
+                    $bahanbaku = ModelBahanBaku::find(
+                        $resep->bahanbakuid
+                    );
 
                     if ($bahanbaku) {
 
-                        // total bahan baku yang dipakai
                         $totalPakai = $resep->jumlah * $item->qty;
 
-                        // kurangi stok bahan baku
-                        $bahanbaku->stok = $bahanbaku->stok - $totalPakai;
+                        $bahanbaku->stok -= $totalPakai;
 
                         if ($bahanbaku->stok < 0) {
                             $bahanbaku->stok = 0;
@@ -109,43 +149,59 @@ class ControllerPesananMasukKasir extends Controller
 
                         $bahanbaku->save();
 
-                        // ============================
-                        // 3. CATAT KE STOK KELUAR
-                        // ============================
+                        // =========================================
+                        // CATAT STOK KELUAR
+                        // =========================================
                         ModelStokKeluar::create([
                             'bahanbakuid'   => $bahanbaku->id,
                             'jumlah'        => $totalPakai,
                             'tanggalkeluar' => now(),
-                            'alasan'        => 'Penjualan Invoice: ' . $pesanan->kodeinvoice
+                            'alasan'        => 'Penjualan Invoice : ' . $pesanan->kodeinvoice
                         ]);
                     }
                 }
             }
 
-            // UPDATE STATUS PESANAN SELESAI
+            // =========================================
+            // UPDATE STATUS
+            // =========================================
             $pesanan->update([
                 'statuspesanan' => 'selesai'
             ]);
 
+            // =========================================
             // KOSONGKAN MEJA
+            // =========================================
             if (!empty($pesanan->mejaid)) {
-                ModelMeja::where('id', $pesanan->mejaid)->update([
+
+                ModelMeja::where(
+                    'id',
+                    $pesanan->mejaid
+                )->update([
                     'status' => 'kosong'
                 ]);
             }
 
             DB::commit();
 
-            return back()->with('success', 'Pesanan selesai. Stok produk & bahan baku otomatis berkurang, meja kosong.');
-
+            return back()->with(
+                'success',
+                'Pesanan selesai. Stok otomatis berkurang dan meja dikosongkan.'
+            );
         } catch (\Throwable $e) {
 
             DB::rollBack();
-            return back()->with('error', 'Gagal menyelesaikan pesanan: ' . $e->getMessage());
+
+            return back()->with(
+                'error',
+                'Gagal menyelesaikan pesanan : ' . $e->getMessage()
+            );
         }
     }
 
-    // BATALKAN + AUTO KOSONGKAN MEJA (STOK TIDAK DIKURANGI)
+    // ======================================================
+    // BATALKAN PESANAN
+    // ======================================================
     public function batalkan($id)
     {
         DB::beginTransaction();
@@ -154,30 +210,62 @@ class ControllerPesananMasukKasir extends Controller
 
             $pesanan = ModelPenjualan::findOrFail($id);
 
-            // kalau sudah selesai tidak boleh dibatalkan
+            // CEGAH BATALKAN PESANAN SELESAI
             if ($pesanan->statuspesanan == 'selesai') {
-                return back()->with('error', 'Pesanan sudah selesai, tidak bisa dibatalkan.');
+
+                return back()->with(
+                    'error',
+                    'Pesanan sudah selesai dan tidak bisa dibatalkan.'
+                );
             }
 
+            // UPDATE STATUS
             $pesanan->update([
                 'statuspesanan' => 'dibatalkan'
             ]);
 
-            // kosongkan meja jika ada meja
+            // KOSONGKAN MEJA
             if (!empty($pesanan->mejaid)) {
-                ModelMeja::where('id', $pesanan->mejaid)->update([
+
+                ModelMeja::where(
+                    'id',
+                    $pesanan->mejaid
+                )->update([
                     'status' => 'kosong'
                 ]);
             }
 
             DB::commit();
 
-            return back()->with('success', 'Pesanan dibatalkan dan meja otomatis kosong.');
-
+            return back()->with(
+                'success',
+                'Pesanan berhasil dibatalkan.'
+            );
         } catch (\Throwable $e) {
 
             DB::rollBack();
-            return back()->with('error', 'Gagal membatalkan pesanan: ' . $e->getMessage());
+
+            return back()->with(
+                'error',
+                'Gagal membatalkan pesanan : ' . $e->getMessage()
+            );
         }
+    }
+
+    // ======================================================
+    // CEK PESANAN BARU UNTUK SOUND NOTIF
+    // ======================================================
+    public function cekPesanan()
+    {
+        $pesanan = ModelPenjualan::where(
+            'statuspesanan',
+            'menunggu'
+        )
+            ->latest('id')
+            ->first();
+
+        return response()->json([
+            'lastid' => $pesanan ? $pesanan->id : 0
+        ]);
     }
 }

@@ -13,16 +13,28 @@ class ModelLaporanKasir extends Model
         'kasirid',
         'tanggal',
         'totaltransaksi',
-        'totalpendapatan'
+        'totalpendapatan',
     ];
+
+    /*
+    |--------------------------------------------------------------------------
+    | RELASI USER PEMBUAT LAPORAN
+    |--------------------------------------------------------------------------
+    */
 
     public function user()
     {
-        return $this->belongsTo(ModelUser::class, 'userid', 'id');
+        return $this->belongsTo(ModelUser::class, 'userid');
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | RELASI KASIR
+    |--------------------------------------------------------------------------
+    */
 
     public function kasir()
     {
-        return $this->belongsTo(ModelUser::class, 'kasirid', 'id');
+        return $this->belongsTo(ModelUser::class, 'kasirid');
     }
 }

@@ -1,6 +1,6 @@
 @extends('layouts.appadmin')
 
-@section('title', 'Data Stok Keluar')
+
 
 @section('content')
 

@@ -1,6 +1,6 @@
 @extends('layouts.appadmin')
 
-@section('title', 'Resep Produk')
+
 
 @section('content')
 <div class="container-fluid">

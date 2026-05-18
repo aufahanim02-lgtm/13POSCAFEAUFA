@@ -1,6 +1,6 @@
 @extends('layouts.appadmin')
 
-@section('title', 'Tambah Pembelian')
+
 
 @section('content')
 <div class="container-fluid px-4 mt-4">

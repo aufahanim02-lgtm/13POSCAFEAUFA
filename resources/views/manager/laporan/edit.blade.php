@@ -8,7 +8,7 @@
     <section class="content-header">
         <div class="container-fluid">
             <h1 class="fw-bold">Edit Laporan</h1>
-            <small class="text-muted">Perbarui data laporan (Manager)</small>
+            <small class="text-muted">Perbarui data laporan</small>
         </div>
     </section>
 

@@ -14,11 +14,17 @@ class ModelLaporanHarian extends Model
         'totaltransaksi',
         'totalpendapatan',
         'totaldiskon',
-        'totalpajak'
+        'totalpajak',
     ];
+
+    /*
+    |--------------------------------------------------------------------------
+    | RELASI USER
+    |--------------------------------------------------------------------------
+    */
 
     public function user()
     {
-        return $this->belongsTo(ModelUser::class, 'userid', 'id');
+        return $this->belongsTo(ModelUser::class, 'userid');
     }
 }

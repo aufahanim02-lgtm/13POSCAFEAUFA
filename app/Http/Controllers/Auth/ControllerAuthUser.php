@@ -10,11 +10,21 @@ use Carbon\Carbon;
 
 class ControllerAuthUser extends Controller
 {
+    /*
+    |--------------------------------------------------------------------------
+    | FORM LOGIN
+    |--------------------------------------------------------------------------
+    */
     public function login()
     {
         return view('auth.login');
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | PROSES LOGIN
+    |--------------------------------------------------------------------------
+    */
     public function loginProses(Request $request)
     {
         $request->validate([
@@ -27,78 +37,144 @@ class ControllerAuthUser extends Controller
             'password' => $request->password
         ];
 
+        /*
+        |--------------------------------------------------------------------------
+        | LOGIN BERHASIL
+        |--------------------------------------------------------------------------
+        */
         if (Auth::attempt($credentials)) {
 
             $request->session()->regenerate();
 
-            // SIMPAN LOGIN HISTORY
+            /*
+            |--------------------------------------------------------------------------
+            | SIMPAN LOGIN HISTORY
+            |--------------------------------------------------------------------------
+            */
             ModelLoginHistory::create([
+
                 'userid'    => Auth::user()->id,
+
                 'ipaddress' => $request->ip(),
+
                 'useragent' => $request->userAgent(),
+
                 'loginat'   => Carbon::now(),
+
                 'logoutat'  => null,
+
                 'status'    => 'success'
             ]);
 
+            /*
+            |--------------------------------------------------------------------------
+            | REDIRECT BERDASARKAN ROLE
+            |--------------------------------------------------------------------------
+            */
             $role = Auth::user()->role;
 
             if ($role == 'owner') {
-                return redirect('/dashboardowner')->with('success', 'Login berhasil sebagai Owner');
+
+                return redirect('/dashboardowner')
+                    ->with(
+                        'success',
+                        'Login berhasil sebagai Owner'
+                    );
             }
 
             if ($role == 'manager') {
-                return redirect('/dashboardmanager')->with('success', 'Login berhasil sebagai Manager');
+
+                return redirect('/dashboardmanager')
+                    ->with(
+                        'success',
+                        'Login berhasil sebagai Manager'
+                    );
             }
 
             if ($role == 'kasir') {
-                return redirect('/dashboardkasir')->with('success', 'Login berhasil sebagai Kasir');
+
+                return redirect('/dashboardkasir')
+                    ->with(
+                        'success',
+                        'Login berhasil sebagai Kasir'
+                    );
             }
 
+            /*
+            |--------------------------------------------------------------------------
+            | ROLE TIDAK VALID
+            |--------------------------------------------------------------------------
+            */
             Auth::logout();
-            return redirect('/login')->with('error', 'Role tidak valid!');
+
+            return redirect('/login')
+                ->with(
+                    'error',
+                    'Role tidak valid!'
+                );
         }
 
-        // SIMPAN LOGIN GAGAL (OPTIONAL)
-        // Kalau kamu mau, bisa aktifkan ini:
         /*
-        ModelLoginHistory::create([
-            'userid'    => null,
-            'ipaddress' => $request->ip(),
-            'useragent' => $request->userAgent(),
-            'loginat'   => Carbon::now(),
-            'logoutat'  => null,
-            'status'    => 'failed'
-        ]);
+        |--------------------------------------------------------------------------
+        | LOGIN GAGAL
+        |--------------------------------------------------------------------------
         */
-
-        return redirect('/login')->with('error', 'Username atau Password salah!');
+        return redirect('/login')
+            ->with(
+                'error',
+                'Username atau Password salah!'
+            );
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | LOGOUT
+    |--------------------------------------------------------------------------
+    */
     public function logout(Request $request)
     {
         $user = Auth::user();
 
-        // UPDATE LOGOUT HISTORY TERAKHIR (AMAN)
+        /*
+        |--------------------------------------------------------------------------
+        | UPDATE LOGOUT HISTORY
+        |--------------------------------------------------------------------------
+        */
         if ($user) {
-            $history = ModelLoginHistory::where('userid', $user->id)
-                ->whereNull('logoutat')
-                ->orderBy('id', 'desc')
-                ->first();
+
+            $history = ModelLoginHistory::where(
+                'userid',
+                $user->id
+            )
+            ->whereNull('logoutat')
+            ->latest()
+            ->first();
 
             if ($history) {
+
                 $history->update([
-                    'logoutat' => Carbon::now(),
-                    'status'   => 'logout'
+
+                    'logoutat' => Carbon::now()
+
                 ]);
             }
         }
 
+        /*
+        |--------------------------------------------------------------------------
+        | LOGOUT USER
+        |--------------------------------------------------------------------------
+        */
         Auth::logout();
 
         $request->session()->invalidate();
+
         $request->session()->regenerateToken();
 
-        return redirect('/login')->with('success', 'Logout berhasil!');
+        return redirect('/login')
+            ->with(
+                'success',
+                'Logout berhasil!'
+            );
     }
 }

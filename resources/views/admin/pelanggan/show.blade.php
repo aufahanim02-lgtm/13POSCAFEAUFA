@@ -1,6 +1,5 @@
 @extends('layouts.appadmin')
 
-@section('title', 'Detail Pelanggan')
 
 @section('content')
 
@@ -8,9 +7,7 @@
 
     {{-- HEADER --}}
     <div class="d-flex justify-content-between align-items-center mb-3">
-        <h3 class="mb-0 font-weight-bold">
-            <i class="fas fa-user text-primary"></i> Detail Pelanggan
-        </h3>
+        
 
         <a href="{{ route('admin.pelanggan.index') }}" class="btn btn-secondary">
             <i class="fas fa-arrow-left"></i> Kembali
@@ -34,7 +31,7 @@
                 <div class="card-body text-center">
 
                     @if($pelanggan->foto)
-                        <img src="{{ asset('storage/' . $pelanggan->foto) }}"
+                        <img src="{{ asset('storage/pelanggan/' . $pelanggan->foto) }}"
                             class="img-thumbnail"
                             style="width:180px; height:180px; object-fit:cover; border-radius:50%;">
                     @else

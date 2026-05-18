@@ -1,15 +1,12 @@
 @extends('layouts.appadmin')
 
-@section('title', 'Metode Pembayaran')
+
 
 @section('content')
 
 <div class="container-fluid">
 
     <div class="d-flex justify-content-between mb-3">
-
-        <h4>Metode Pembayaran</h4>
-
         <a href="{{ route('master.metodepembayaran.create') }}"
             class="btn btn-primary">
 

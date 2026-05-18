@@ -3,12 +3,9 @@
 @section('title', 'Riwayat Transaksi')
 
 @section('content')
-<div class="content-wrapper">
 
     <section class="content-header">
         <div class="container-fluid">
-            <h1 class="fw-bold">Riwayat Transaksi</h1>
-            <small class="text-muted">Daftar transaksi yang pernah dilakukan kasir</small>
         </div>
     </section>
 
