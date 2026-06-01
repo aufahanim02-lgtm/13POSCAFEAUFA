@@ -20,14 +20,12 @@ class ControllerRiwayatKasir extends Controller
     public function index(Request $request)
     {
         $query = ModelPenjualan::with([
-                'pembayaran.metode',
-                'meja',
-                'user',
-                'pelanggan'
-            ])
-            // hanya transaksi yang sudah selesai dibayar
+            'pembayaran.metode',
+            'meja',
+            'user',
+            'pelanggan'
+        ])
             ->where('statuspembayaran', 'lunas')
-            ->where('status', 'paid')
             ->orderBy('id', 'desc');
 
         // FILTER STATUS (optional)
@@ -53,17 +51,16 @@ class ControllerRiwayatKasir extends Controller
     public function show($id)
     {
         $penjualan = ModelPenjualan::with([
-                'user',
-                'pelanggan',
-                'meja',
-                'promo',
-                'pajakData',
-                'detail.produk',
-                'pembayaran.metode'
-            ])
+            'user',
+            'pelanggan',
+            'meja',
+            'promo',
+            'pajakData',
+            'detail.produk',
+            'pembayaran.metode'
+        ])
             ->where('id', $id)
             ->where('statuspembayaran', 'lunas')
-            ->where('status', 'paid')
             ->firstOrFail();
 
         $detail = ModelDetailPenjualan::with('produk')
@@ -85,11 +82,11 @@ class ControllerRiwayatKasir extends Controller
     public function adminIndex(Request $request)
     {
         $query = ModelPenjualan::with([
-                'user',
-                'pelanggan',
-                'meja',
-                'pembayaran.metode'
-            ])
+            'user',
+            'pelanggan',
+            'meja',
+            'pembayaran.metode'
+        ])
             ->orderBy('id', 'desc');
 
         // FILTER STATUS
@@ -115,14 +112,14 @@ class ControllerRiwayatKasir extends Controller
     public function adminShow($id)
     {
         $data = ModelPenjualan::with([
-                'detail.produk',
-                'user',
-                'pelanggan',
-                'meja',
-                'promo',
-                'pajakData',
-                'pembayaran.metode'
-            ])
+            'detail.produk',
+            'user',
+            'pelanggan',
+            'meja',
+            'promo',
+            'pajakData',
+            'pembayaran.metode'
+        ])
             ->findOrFail($id);
 
         return view('admin.riwayat.show', compact('data'));

@@ -18,12 +18,13 @@
         align-items: center;
         overflow: hidden;
 
+
         background:
             linear-gradient(
                 rgba(0,0,0,0.75),
                 rgba(0,0,0,0.70)
             ),
-            url("{{ asset('storage/banner/ruangan.jpg') }}");
+            url("{{ asset('storage/banner/cafe.jpeg') }}");
 
         background-size: cover;
         background-position: center;

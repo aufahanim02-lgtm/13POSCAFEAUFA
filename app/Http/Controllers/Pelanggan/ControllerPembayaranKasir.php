@@ -123,16 +123,16 @@ class ControllerPembayaranKasir extends Controller
 
             $pesanan->update([
 
-                'userid' =>
-                Auth::id(),
+                'userid' => Auth::id(),
 
-                'payment_gateway' =>
-                'qris',
+                'payment_gateway' => 'qris',
 
-                'statuspembayaran' =>
-                'belumbayar',
+                'statuspembayaran' => 'lunas',
+
+                'statuspesanan' => 'selesai',
+
+                'status' => 'paid'
             ]);
-
             /*
             |--------------------------------------------------------------------------
             | REDIRECT KE HALAMAN QRIS KASIR
@@ -207,6 +207,18 @@ class ControllerPembayaranKasir extends Controller
                 'statuspesanan' =>
                 'diproses',
             ]);
+            $pesanan->update([
+
+                'userid' => Auth::id(),
+
+                'payment_gateway' => 'cash',
+
+                'statuspembayaran' => 'lunas',
+
+                'statuspesanan' => 'selesai',
+
+                'status' => 'paid'
+            ]);
 
             DB::commit();
 
@@ -224,7 +236,6 @@ class ControllerPembayaranKasir extends Controller
                             '.'
                         )
                 );
-
         } catch (\Throwable $e) {
 
             DB::rollBack();
@@ -359,7 +370,6 @@ class ControllerPembayaranKasir extends Controller
                     'success',
                     'Pembayaran QRIS berhasil.'
                 );
-
         } catch (\Throwable $e) {
 
             DB::rollBack();

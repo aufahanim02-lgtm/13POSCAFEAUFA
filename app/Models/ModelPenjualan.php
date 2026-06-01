@@ -29,7 +29,6 @@ class ModelPenjualan extends Model
 
         'payment_gateway',
         'qris_reference',
-        'qris_image',
 
         'status',
         'tanggalpenjualan'

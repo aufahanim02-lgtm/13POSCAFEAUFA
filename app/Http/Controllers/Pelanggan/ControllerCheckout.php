@@ -7,7 +7,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
-
 use App\Models\ModelKeranjang;
 use App\Models\ModelPenjualan;
 use App\Models\ModelDetailPenjualan;
@@ -272,7 +271,6 @@ class ControllerCheckout extends Controller
                 : 'cash';
 
             $qris_reference = null;
-            $qris_image = null;
 
             /*
             |--------------------------------------------------------------------------
@@ -284,19 +282,6 @@ class ControllerCheckout extends Controller
                 $metodeQris = ModelMetodePembayaran::where('jenis', 'noncash')
                     ->where('status', 'aktif')
                     ->first();
-
-                if ($metodeQris && $metodeQris->qrcode) {
-
-                    $qris_image = str_replace(
-                        [
-                            'public/storage/',
-                            '/storage/',
-                            'storage/'
-                        ],
-                        '',
-                        $metodeQris->qrcode
-                    );
-                }
 
                 $qris_reference =
                     'QR-' . time() . rand(100, 999);
@@ -340,8 +325,6 @@ class ControllerCheckout extends Controller
                 'payment_gateway'  => $payment_gateway,
 
                 'qris_reference'   => $qris_reference,
-
-                'qris_image'       => $qris_image,
 
                 'status'           => 'pending',
 
