@@ -200,6 +200,7 @@
                                     onclick="return confirm('Pesanan siap diambil?')">
 
                                     <i class="fas fa-box"></i>
+                                    siap diambil
 
                                 </button>
 
